@@ -16,25 +16,31 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "UserEntity")
-public class    UserEntity {
+@Table(name = "user")
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name="user_id", nullable = false)
+    private Long userId;
 
     @ColumnDefault("-1")
     private int studentId;
 
+    @Column(name="user_name", nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
     private String addition;
 
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public UserEntity(int studentId, String username, String addition, String email, String role) {
