@@ -1,10 +1,13 @@
-package hello.cluebackend.domain.user.service;
+package hello.cluebackend.global.security.oauth2.service;
 
 
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import hello.cluebackend.domain.user.presentation.dto.*;
+import hello.cluebackend.global.security.oauth2.CustomOAuth2User;
+import hello.cluebackend.global.security.oauth2.dto.GoogleResponseDTO;
+import hello.cluebackend.global.security.oauth2.dto.OAuth2ResponseDTO;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -41,7 +44,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         else role = Role.STUDENT;
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+        OAuth2ResponseDTO oAuth2Response = new GoogleResponseDTO(oAuth2User.getAttributes());
 
         String username = oAuth2Response.getName();
         username = username.substring(2);

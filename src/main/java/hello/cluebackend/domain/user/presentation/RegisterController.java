@@ -1,7 +1,6 @@
 package hello.cluebackend.domain.user.presentation;
 
-import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDTO;
-import hello.cluebackend.domain.user.presentation.dto.RegisterUserDTO;
+import hello.cluebackend.domain.user.presentation.dto.OAuthUserRegisterDTO;
 import hello.cluebackend.domain.user.presentation.dto.UserDTO;
 import hello.cluebackend.domain.user.service.RegisterUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +32,7 @@ public class RegisterController {
             value = "/register",
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> processRegistration(@RequestBody DefaultRegisterUserDTO defaultRegisterUserDTO) {
+    public ResponseEntity<?> processRegistration(@RequestBody OAuthUserRegisterDTO defaultRegisterUserDTO) {
         System.out.println("StudentID 1 : " + defaultRegisterUserDTO.getStudentId());
         registerUserService.registerUser(defaultRegisterUserDTO);
         System.out.println("User registered successfully!");

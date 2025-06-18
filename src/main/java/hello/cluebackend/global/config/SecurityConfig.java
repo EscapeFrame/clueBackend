@@ -1,7 +1,10 @@
 package hello.cluebackend.global.config;
 
-import hello.cluebackend.domain.user.service.CustomOAuth2UserService;
-import hello.cluebackend.global.security.jwt.RefreshTokenService;
+import hello.cluebackend.global.security.jwt.JWTFilter;
+import hello.cluebackend.global.security.jwt.JWTUtil;
+import hello.cluebackend.global.security.oauth2.service.CustomOAuth2UserService;
+import hello.cluebackend.global.security.jwt.service.RefreshTokenService;
+import hello.cluebackend.global.security.oauth2.handler.CustomSuccessHandler;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package hello.cluebackend.global.security.jwt;
+package hello.cluebackend.global.security.jwt.domain;
 
 import lombok.Getter;
 import lombok.ToString;

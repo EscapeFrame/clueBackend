@@ -1,12 +1,12 @@
-package hello.cluebackend.domain.user.presentation.dto;
+package hello.cluebackend.global.security.oauth2.dto;
 
 import java.util.Map;
 
-public class GoogleResponse implements OAuth2Response {
+public class GoogleResponseDTO implements OAuth2ResponseDTO {
 
     private final Map<String, Object> attribute;
 
-    public GoogleResponse(Map<String, Object> attribute) {
+    public GoogleResponseDTO(Map<String, Object> attribute) {
         this.attribute = attribute;
     }
 

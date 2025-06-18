@@ -1,7 +1,7 @@
-package hello.cluebackend.global.config;
+package hello.cluebackend.global.security.jwt;
 
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
+import hello.cluebackend.global.security.oauth2.CustomOAuth2User;
 import hello.cluebackend.domain.user.presentation.dto.UserDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

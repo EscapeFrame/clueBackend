@@ -1,6 +1,6 @@
-package hello.cluebackend.domain.user.presentation.dto;
+package hello.cluebackend.global.security.oauth2.dto;
 
-public interface OAuth2Response {
+public interface OAuth2ResponseDTO {
 
     //제공자 (Ex. naver, google, ...)
     String getProvider();

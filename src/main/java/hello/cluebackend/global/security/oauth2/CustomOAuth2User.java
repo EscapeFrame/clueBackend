@@ -1,6 +1,6 @@
-package hello.cluebackend.domain.user.presentation.dto;
+package hello.cluebackend.global.security.oauth2;
 
-import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.presentation.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 

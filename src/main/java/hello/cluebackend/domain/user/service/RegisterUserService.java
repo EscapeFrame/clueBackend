@@ -2,8 +2,7 @@ package hello.cluebackend.domain.user.service;
 
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
-import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDTO;
-import hello.cluebackend.domain.user.presentation.dto.RegisterUserDTO;
+import hello.cluebackend.domain.user.presentation.dto.OAuthUserRegisterDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +12,7 @@ public class RegisterUserService {
         this.userRepository = userRepository;
     }
 
-    public void registerUser(DefaultRegisterUserDTO userDTO) {
+    public void registerUser(OAuthUserRegisterDTO userDTO) {
         UserEntity userEntity = new UserEntity(userDTO.getStudentId(), userDTO.getUsername(), userDTO.getStudentId()+userDTO.getUsername(), userDTO.getEmail(), userDTO.getRole());
         userRepository.save(userEntity);
     }

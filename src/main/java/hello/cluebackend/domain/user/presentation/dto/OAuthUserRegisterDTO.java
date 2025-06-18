@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterUserDTO {
+public class OAuthUserRegisterDTO {
     private String email;
     private String username;
     private int studentId;

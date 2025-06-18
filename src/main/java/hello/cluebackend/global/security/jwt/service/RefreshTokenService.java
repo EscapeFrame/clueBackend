@@ -1,7 +1,9 @@
-package hello.cluebackend.global.security.jwt;
+package hello.cluebackend.global.security.jwt.service;
 
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.global.config.JWTUtil;
+import hello.cluebackend.global.security.jwt.JWTUtil;
+import hello.cluebackend.global.security.jwt.domain.RefreshToken;
+import hello.cluebackend.global.security.jwt.domain.repository.RefreshTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
