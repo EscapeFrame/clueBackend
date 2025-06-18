@@ -34,7 +34,8 @@ public class UserEntity {
     private String email;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(nullable = false)
     private String addition;
@@ -43,7 +44,7 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public UserEntity(int studentId, String username, String addition, String email, String role) {
+    public UserEntity(int studentId, String username, String addition, String email, Role role) {
         this.studentId = studentId;
         this.username = username;
         this.addition = addition;
