@@ -35,7 +35,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String isBssm = email.split("@")[1];
         String isTeacher = email.split("@")[0];
         if(!isBssm.equals("bssm.hs.kr")) {
-            System.out.println("not bssm");
             throw new IllegalArgumentException("not bssm email");
         }
 
@@ -57,7 +56,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setUsername(username);
             userDTO.setRole(role);
             userDTO.setStudentId(-1);
-            System.out.println("Role : " + role);
             return new CustomOAuth2User(userDTO);
         }
 

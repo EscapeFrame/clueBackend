@@ -34,7 +34,6 @@ public class RefreshTokenService {
     }
 
     public void reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationCredentialsNotFoundException {
-        System.out.println("reissueRefreshToken");
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {

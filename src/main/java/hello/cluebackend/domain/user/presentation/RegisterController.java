@@ -23,7 +23,6 @@ public class RegisterController {
     public UserDTO showRegistrationForm(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDTO dto = (UserDTO) session.getAttribute("firstUser");
-        System.out.println("Register-Role : " + dto.getRole().name());
         session.removeAttribute("firstUser");
         return dto;
     }
@@ -33,9 +32,7 @@ public class RegisterController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> processRegistration(@RequestBody OAuthUserRegisterDTO defaultRegisterUserDTO) {
-        System.out.println("StudentID 1 : " + defaultRegisterUserDTO.getStudentId());
         registerUserService.registerUser(defaultRegisterUserDTO);
-        System.out.println("User registered successfully!");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
