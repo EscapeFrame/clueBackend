@@ -54,7 +54,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setUsername(username);
             userDTO.setRole(role);
             userDTO.setStudentId(-1);
-
+            System.out.println("Role : " + role);
             return new CustomOAuth2User(userDTO);
         }
 

@@ -1,5 +1,6 @@
 package hello.cluebackend.global.security.jwt;
 
+import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.global.config.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -64,10 +65,10 @@ public class RefreshTokenService {
         }
 
         String username = jwtUtil.getUsername(refreshToken);
-        String role = jwtUtil.getRole(refreshToken);
+        Role role = jwtUtil.getRole(refreshToken);
 
-        String newAccessToken = jwtUtil.createJwt("access", username, role, 60 * 10 * 1000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", username, role,24 * 60 * 60 * 1000L);
+        String newAccessToken = jwtUtil.createJwt("access", username, role.name(), 60 * 10 * 1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", username, role.name(),24 * 60 * 60 * 1000L);
 
         saveRefreshToken(newRefreshToken, username);
         deleteByRefresh(refreshToken);

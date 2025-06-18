@@ -24,6 +24,7 @@ public class RegisterController {
     public UserDTO showRegistrationForm(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDTO dto = (UserDTO) session.getAttribute("firstUser");
+        System.out.println("Register-Role : " + dto.getRole().name());
         session.removeAttribute("firstUser");
         return dto;
     }

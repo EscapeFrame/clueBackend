@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity {
 
     @Id
@@ -43,6 +43,11 @@ public class UserEntity {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public UserEntity(int studentId, String username, String addition, String email, Role role) {
         this.studentId = studentId;
