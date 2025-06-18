@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.classroom.domain;
 
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,16 @@ public class ClassRoom {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "classRoom")
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
+
+    public ClassRoomDTO toDTO() {
+        return ClassRoomDTO.builder()
+                .classRoomId(classRoomId)
+                .name(name)
+                .description(description)
+                .code(code)
+                .createdAt(createdAt)
+                .build();
+    }
 }
