@@ -64,7 +64,7 @@ public class RefreshTokenService {
         }
 
         String username = jwtUtil.getUsername(refreshToken);
-        String role = jwtUtil.getRole(refreshToken);
+        String role = jwtUtil.getRole(refreshToken).name();
 
         String newAccessToken = jwtUtil.createJwt("access", username, role, 60 * 10 * 1000L);
         String newRefreshToken = jwtUtil.createJwt("refresh", username, role,24 * 60 * 60 * 1000L);
