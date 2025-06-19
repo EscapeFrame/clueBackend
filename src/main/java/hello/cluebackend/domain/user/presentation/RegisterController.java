@@ -39,7 +39,6 @@ public class RegisterController {
     public ResponseEntity<?> processRegistration(@RequestBody DefaultRegisterUserDTO defaultRegisterUserDTO) {
         System.out.println("StudentID 1 : " + defaultRegisterUserDTO.getStudentId());
         registerUserService.registerUser(defaultRegisterUserDTO);
-        System.out.println("User registered successfully!");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.user.presentation.dto;
 
+import hello.cluebackend.domain.user.domain.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -31,7 +32,7 @@ public class CustomOAuth2User implements OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return userDTO.getRole();
+                return userDTO.getRole().name();
             }
         });
 

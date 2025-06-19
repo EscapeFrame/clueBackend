@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.user.service;
 
 
+import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import hello.cluebackend.domain.user.presentation.dto.*;
@@ -29,20 +30,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuth2User.getAttribute("email");
         String isBssm = email.split("@")[1];
-
+        String isTeacher = email.split("@")[0];
         if(!isBssm.equals("bssm.hs.kr")) {
             System.out.println("not bssm");
             throw new IllegalArgumentException("not bssm email");
         }
 
+        Role role;
+        if(isTeacher.equals("teacher")) role = Role.TEACHER;
+        else role = Role.STUDENT;
+
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
-        if(registrationId.equals("google")) {
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        }
-        else {
-            return null;
-        }
+        OAuth2Response oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
 
         String username = oAuth2Response.getName();
         username = username.substring(2);
@@ -53,7 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserDTO userDTO = new UserDTO();
             userDTO.setEmail(oAuth2Response.getEmail());
             userDTO.setUsername(username);
-            userDTO.setRole("ROLE_USER");
+            userDTO.setRole(role);
             userDTO.setStudentId(-1);
 
             return new CustomOAuth2User(userDTO);
