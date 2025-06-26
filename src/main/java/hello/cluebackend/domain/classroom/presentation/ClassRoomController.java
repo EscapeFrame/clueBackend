@@ -2,6 +2,7 @@ package hello.cluebackend.domain.classroom.presentation;
 
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
+import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,13 @@ public class ClassRoomController {
     public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDTO classRoomDTO, HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
-        String role = jwtUtil.getRole(token);
+        Role role = jwtUtil.getRole(token);
 
-        if(!role.equals("teacher")) {
+        if(!role.name().equals("teacher")) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
+        classRoomService.createClassRoom(classRoomDTO);
+        return null;
     }
 }

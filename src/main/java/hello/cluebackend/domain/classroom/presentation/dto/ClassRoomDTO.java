@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.classroom.presentation.dto;
 
+import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,5 +30,12 @@ public class ClassRoomDTO {
             randomStringBuilder.append(characters.charAt(randomIndex));
         }
         this.code = randomStringBuilder.toString();
+    }
+
+    public ClassRoom toEntity() {
+        return ClassRoom.builder()
+                .name(name)
+                .description(description)
+                .code(code).build();
     }
 }

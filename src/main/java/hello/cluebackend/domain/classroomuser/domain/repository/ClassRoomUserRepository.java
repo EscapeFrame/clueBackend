@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ClassRoomUserRepository extends JpaRepository<ClassRoomUser, Long> {
-    List<ClassRoomUser> findByUserId(Long userId);
+
+    List<ClassRoomUser> findByUser_UserId(Long userId);
+
 }

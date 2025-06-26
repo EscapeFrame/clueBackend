@@ -3,10 +3,7 @@ package hello.cluebackend.domain.classroom.domain;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,8 +13,9 @@ import java.util.List;
 @Table(name="class_room")
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ClassRoom {
 
     @Id
@@ -36,6 +34,11 @@ public class ClassRoom {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();

@@ -31,7 +31,7 @@ public class RefreshTokenService {
     }
 
     public void reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationCredentialsNotFoundException {
-        System.out.println("reissueRefreshToken");
+//        System.out.println("reissueRefreshToken");
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -65,9 +65,11 @@ public class RefreshTokenService {
 
         String username = jwtUtil.getUsername(refreshToken);
         String role = jwtUtil.getRole(refreshToken).name();
+        Long userId = jwtUtil.getUserId(refreshToken);
 
-        String newAccessToken = jwtUtil.createJwt("access", username, role, 60 * 10 * 1000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", username, role,24 * 60 * 60 * 1000L);
+
+        String newAccessToken = jwtUtil.createJwt("access", userId, username, role, 60 * 10 * 1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", userId, username, role,24 * 60 * 60 * 1000L);
 
         saveRefreshToken(newRefreshToken, username);
         deleteByRefresh(refreshToken);
