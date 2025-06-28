@@ -2,9 +2,6 @@ package hello.cluebackend.global.config;
 
 import org.springframework.context.annotation.Configuration;
 
-package hello.cluebackend.global.config;
-
-
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
