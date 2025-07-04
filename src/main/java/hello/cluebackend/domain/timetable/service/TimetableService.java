@@ -61,6 +61,8 @@ public class TimetableService {
                     .path(TIMETABLE_PATH)
                     .queryParam("KEY", neisApiKey)
                     .queryParam("Type", "json")
+                    .queryParam("pIndex", "1")
+                    .queryParam("pSize", "100")
                     .queryParam("ATPT_OFCDC_SC_CODE", atptCode)
                     .queryParam("SD_SCHUL_CODE", schoolCode)
                     .queryParam("GRADE", request.getGrade())

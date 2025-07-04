@@ -24,12 +24,10 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TimetableController {
-
   private final TimetableService timetableService;
 
   @GetMapping("/today")
   public Mono<ResponseEntity<List<TimetableResponseDto>>> getTodayTimetable(@RequestParam TimetableRequestDto request) {
-
     return timetableService.getTodayTimetable(request)
             .map(ResponseEntity::ok)
             .defaultIfEmpty(ResponseEntity.noContent().build())
@@ -38,7 +36,6 @@ public class TimetableController {
 
   @GetMapping("/weekly")
   public Mono<ResponseEntity<List<TimetableResponseDto>>> getWeeklyTimetable(@RequestParam TimetableRequestDto request) {
-
     return timetableService.getWeeklyTimetable(request)
             .map(ResponseEntity::ok)
             .defaultIfEmpty(ResponseEntity.noContent().build())
