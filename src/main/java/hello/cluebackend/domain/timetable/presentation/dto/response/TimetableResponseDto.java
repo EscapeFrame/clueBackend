@@ -16,7 +16,6 @@ public class TimetableResponseDto {
   private String period;
   private String subject;
   private String room;
-  private String teacher;
   private String date;
   private String dayOfWeek;
 
@@ -25,9 +24,6 @@ public class TimetableResponseDto {
 
     dto.period = (String) map.getOrDefault("PERIO", "");
     dto.subject = (String) map.getOrDefault("ITRT_CNTNT", "");
-    dto.room = (String) map.getOrDefault("CLRM_NM", "");
-    dto.teacher = (String) map.getOrDefault("ITRT_TCHR_NM", "");
-    dto.date = (String) map.getOrDefault("ALL_TI_YMD", "");
 
     if (!dto.date.isEmpty() && dto.date.length() == 8) {
       try {

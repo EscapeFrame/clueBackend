@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -24,8 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
-
-  @Value("${spring.neis.api.host}") // https:// 제거한 host만 사용하도록
+  @Value("${spring.neis.api.host}")
   private String neisApiHost;
 
   @Value("${spring.neis.api.key}")
@@ -42,18 +42,28 @@ public class TimetableService {
   private static final String TIMETABLE_PATH = "/hisTimetable";
 
   public Mono<List<TimetableResponseDto>> getTodayTimetable(TimetableRequestDto request) {
-    String today = LocalDate.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-    return fetchTimetable(request, today, today);
+    LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
+    String year = now.format(DateTimeFormatter.ofPattern("yyyy"));
+    int Month = Integer.parseInt(now.format(DateTimeFormatter.ofPattern("MM")));
+    String sem = (Month <= 8) ? "1" : "2";
+    String today = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    return fetchTimetable(request, year, sem, today, today);
   }
 
   public Mono<List<TimetableResponseDto>> getWeeklyTimetable(TimetableRequestDto request) {
     LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
+    String year = now.format(DateTimeFormatter.ofPattern("yyyy"));
     String from = now.with(java.time.DayOfWeek.MONDAY).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     String to = now.with(java.time.DayOfWeek.FRIDAY).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-    return fetchTimetable(request, from, to);
+    Integer Month = Integer.parseInt(now.format(DateTimeFormatter.ofPattern("MM")));
+    String sem = "0";
+    sem = (Month <= 8) ? "1" : "2";
+    String today = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    return fetchTimetable(request, year, sem, from, to);
   }
 
-  private Mono<List<TimetableResponseDto>> fetchTimetable(TimetableRequestDto request, String from, String to) {
+  private Mono<List<TimetableResponseDto>> fetchTimetable(TimetableRequestDto request, String year, String sem, String from, String to) {
     return webClient.get()
             .uri(uriBuilder -> uriBuilder
                     .scheme("https")
@@ -65,15 +75,18 @@ public class TimetableService {
                     .queryParam("pSize", "100")
                     .queryParam("ATPT_OFCDC_SC_CODE", atptCode)
                     .queryParam("SD_SCHUL_CODE", schoolCode)
+                    .queryParam("AY", year)
+                    .queryParam("SEM", sem)
                     .queryParam("GRADE", request.getGrade())
                     .queryParam("CLASS_NM", request.getClassNumber())
                     .queryParam("TI_FROM_YMD", from)
                     .queryParam("TI_TO_YMD", to)
                     .build())
             .retrieve()
-            .onStatus(status -> status.is4xxClientError(), response -> response.bodyToMono(String.class).flatMap(body -> Mono.error(new IllegalArgumentException("잘못된 요청: " + body))))
-            .onStatus(status -> status.is5xxServerError(), response -> Mono.error(new RuntimeException("NEIS 서버 오류 발생")))
-            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+            .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(String.class).flatMap(body -> Mono.error(new IllegalArgumentException("잘못된 요청: " + body))))
+            .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("NEIS 서버 오류 발생")))
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
             .timeout(Duration.ofSeconds(10))
             .retryWhen(Retry.backoff(2, Duration.ofSeconds(1)).filter(throwable -> !(throwable instanceof WebClientResponseException.BadRequest)))
             .map(this::parseTimetableResponse);

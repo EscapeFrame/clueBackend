@@ -22,19 +22,18 @@ public class WebClientConfig {
     return WebClient.builder()
             .baseUrl("https://api.example.com")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024)) // 2MB
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
             .build();
   }
 
-  // 타임아웃과 커넥션 풀 설정이 필요한 경우
   @Bean
   public WebClient advancedWebClient() {
     HttpClient httpClient = HttpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000) // 연결 타임아웃
-            .responseTimeout(Duration.ofSeconds(30)) // 응답 타임아웃
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
+            .responseTimeout(Duration.ofSeconds(60))
             .doOnConnected(conn -> conn
-                    .addHandlerLast(new ReadTimeoutHandler(30)) // 읽기 타임아웃
-                    .addHandlerLast(new WriteTimeoutHandler(30))); // 쓰기 타임아웃
+                    .addHandlerLast(new ReadTimeoutHandler(60))
+                    .addHandlerLast(new WriteTimeoutHandler(60)));
 
     return WebClient.builder()
             .clientConnector(new ReactorClientHttpConnector(httpClient))
