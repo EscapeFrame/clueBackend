@@ -37,7 +37,7 @@ spring:
 
   neis:
     api:
-      host: open.neis.go.kr
+      host: open.neis.go.kr/hub
       key: 03d0657812b64b87b5ab5fc6945001c9
 
 server:
