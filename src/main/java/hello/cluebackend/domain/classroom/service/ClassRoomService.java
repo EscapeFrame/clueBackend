@@ -5,6 +5,8 @@ import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
+import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +16,11 @@ public class ClassRoomService {
 
     private final ClassRoomUserRepository classRoomUserRepository;
     private final ClassRoomRepository classRoomRepository;
-    public ClassRoomService(ClassRoomUserRepository classRoomUserRepository, ClassRoomRepository classRoomRepository) {
+    private final UserRepository userRepository;
+    public ClassRoomService(ClassRoomUserRepository classRoomUserRepository, ClassRoomRepository classRoomRepository, UserRepository userRepository) {
         this.classRoomUserRepository = classRoomUserRepository;
         this.classRoomRepository = classRoomRepository;
+        this.userRepository = userRepository;
     }
 
     public List<ClassRoomDTO> findMyClassRoomById(Long id) {
@@ -27,10 +31,18 @@ public class ClassRoomService {
                 .toList();
     }
 
-    public void createClassRoom(ClassRoomDTO classRoomDTO) {
+    public void createClassRoom(ClassRoomDTO classRoomDTO, Long userId) {
         classRoomDTO.generateCode();
         ClassRoom classRoom = classRoomDTO.toEntity();
         classRoomRepository.save(classRoom);
+
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+
+        ClassRoomUser classRoomUser = ClassRoomUser.builder()
+                .classRoom(classRoom)
+                .user(user)
+                .build();
+        classRoomUserRepository.save(classRoomUser);
     }
 
 }

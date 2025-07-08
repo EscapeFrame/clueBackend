@@ -39,12 +39,12 @@ public class ClassRoomController {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
         Role role = jwtUtil.getRole(token);
-
+        Long userId = jwtUtil.getUserId(token);
         if(!role.name().equals("teacher")) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        classRoomService.createClassRoom(classRoomDTO);
-        return null;
+        classRoomService.createClassRoom(classRoomDTO, userId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
