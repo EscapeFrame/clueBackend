@@ -16,11 +16,6 @@ import java.util.List;
 public class TimetableController {
   private final TimetableService timetableService;
 
-  @GetMapping("/test")
-  public String test(){
-    return "Test";
-  }
-
   @GetMapping("/today")
   public Mono<ResponseEntity<List<TimetableResponseDto>>> getTodayTimetable(
           @RequestParam(required = true) String grade,
