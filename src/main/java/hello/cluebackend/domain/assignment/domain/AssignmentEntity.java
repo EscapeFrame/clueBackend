@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,18 +16,17 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @NoArgsConstructor
 public class AssignmentEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name="assignment")
   private Long assignmentId;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="class_room_id", updatable = false)
-  private ClassRoom classRoomId;
+  private ClassRoom classRoom;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="user_id", updatable = false)
-  private UserEntity userId;
+  private UserEntity user;
 
   @Column(name = "title")
   private String title;
@@ -41,12 +41,12 @@ public class AssignmentEntity {
   private LocalDateTime endDate;
 
   @Builder
-  public AssignmentEntity(String title, String content, String startDate, String endDate){
+  public AssignmentEntity(String title, String content, String startDate, String endDate, ClassRoom classRoom, UserEntity user){
     this.title = title;
     this. content = content;
-    this.startDate = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
-    this.endDate = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    this.startDate = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    this.endDate = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    this.classRoom = classRoom;
+    this.user = user;
   }
-
-
 }

@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/class")
 public class ClassRoomController {
-
     private final JWTUtil jwtUtil;
     private final ClassRoomService classRoomService;
 

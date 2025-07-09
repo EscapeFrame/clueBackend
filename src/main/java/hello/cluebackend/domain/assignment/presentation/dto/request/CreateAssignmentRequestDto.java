@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.assignment.presentation.dto.request;
 
-import hello.cluebackend.domain.assignment.domain.AssignmentEntity;
 import lombok.Builder;
 import lombok.Getter;
 
