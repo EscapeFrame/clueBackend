@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.assignment.domain;
 
+import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class AssignmentEntity {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name="class_room_id", updatable = false)
-  private classRoom classRoomId;
+  private ClassRoom classRoomId;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name="user_id", updatable = false)
