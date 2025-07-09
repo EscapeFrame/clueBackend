@@ -2,7 +2,7 @@ spring:
   application:
     name: CLUE-Backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/clue
+    url: jdbc:postgresql://my_postgres:5432/clue
     username: clue1234
     password: clue52025
     driver-class-name: org.postgresql.Driver
@@ -13,7 +13,7 @@ spring:
       ddl-auto: update
   data:
     redis:
-      host: localhost
+      host: my_redis
       port: 6379
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
