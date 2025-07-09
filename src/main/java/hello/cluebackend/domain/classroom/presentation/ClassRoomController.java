@@ -28,10 +28,8 @@ public class ClassRoomController {
     public List<ClassRoomDTO> getClassRoom(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
-        String username = jwtUtil.getUsername(token);
-
-        // 수정 필요
-        return classRoomService.findMyClassRoomById(1L);
+        Long userId = jwtUtil.getUserId(token);
+        return classRoomService.findMyClassRoomById(userId);
     }
 
     @PostMapping("/create-room")
@@ -43,8 +41,17 @@ public class ClassRoomController {
         if(!role.name().equals("teacher")) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
-        classRoomService.createClassRoom(classRoomDTO, userId);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        try {
+            classRoomService.createClassRoom(classRoomDTO, userId);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
+
+    @GetMapping("/{classid}")
+    public ClassRoomDTO getClassRoom(@PathVariable Long classid, HttpServletRequest request) {
+        return classRoomService.getClassRoomByClassId(classid);
+    }
+
 }

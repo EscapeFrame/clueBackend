@@ -7,6 +7,7 @@ import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +25,14 @@ public class ClassRoomService {
     }
 
     public List<ClassRoomDTO> findMyClassRoomById(Long id) {
-        List<ClassRoomUser> userClassRooms = classRoomUserRepository.findByUser_UserId(id);
-        return userClassRooms.stream()
+        List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(id);
+        return classRoomUsers.stream()
                 .map(ClassRoomUser::getClassRoom)
                 .map(ClassRoom::toDTO)
                 .toList();
     }
 
+    @Transactional
     public void createClassRoom(ClassRoomDTO classRoomDTO, Long userId) {
         classRoomDTO.generateCode();
         ClassRoom classRoom = classRoomDTO.toEntity();
@@ -45,4 +47,8 @@ public class ClassRoomService {
         classRoomUserRepository.save(classRoomUser);
     }
 
+    public ClassRoomDTO getClassRoomByClassId(Long classid) {
+        ClassRoom classRoom = classRoomRepository.findById(classid).orElseThrow(() -> new RuntimeException("classroom not found"));
+        return classRoom.toDTO();
+    }
 }
