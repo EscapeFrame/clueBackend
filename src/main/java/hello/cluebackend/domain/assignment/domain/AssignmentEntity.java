@@ -19,13 +19,13 @@ public class AssignmentEntity {
   @Column(name="assignment")
   private Long assignmentId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="member_id", updatable = false)
-  private classRoom classRoom;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name="class_room_id", updatable = false)
+  private classRoom classRoomId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name="user_id", updatable = false)
-  private UserEntity user;
+  private UserEntity userId;
 
   @Column(name = "title")
   private String title;
@@ -46,4 +46,6 @@ public class AssignmentEntity {
     this.startDate = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
     this.endDate = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
   }
+
+
 }
