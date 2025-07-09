@@ -38,3 +38,4 @@ out/
 
 ### env ###
 .envpostgres-data/
+postgres-data/
