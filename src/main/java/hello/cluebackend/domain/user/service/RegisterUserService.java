@@ -14,7 +14,13 @@ public class RegisterUserService {
     }
 
     public void registerUser(DefaultRegisterUserDTO userDTO) {
-        UserEntity userEntity = new UserEntity(userDTO.getStudentId(), userDTO.getUsername(), userDTO.getStudentId()+userDTO.getUsername(), userDTO.getEmail(), userDTO.getRole());
+        UserEntity userEntity = new UserEntity(
+                userDTO.getStudentId(),
+                userDTO.getUsername(),
+                userDTO.getStudentId()+userDTO.getUsername(),
+                userDTO.getEmail(),
+                userDTO.getRole()
+        );
         userRepository.save(userEntity);
     }
 }
