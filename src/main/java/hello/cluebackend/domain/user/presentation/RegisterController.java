@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class RegisterController {
-
     private final RegisterUserService registerUserService;
 
     public RegisterController(RegisterUserService registerUserService) {

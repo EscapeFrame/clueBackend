@@ -74,14 +74,12 @@ public class SecurityConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
                         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
+                        configuration.setAllowCredentials(true);
+                        configuration.setMaxAge(3600L);
                         return configuration;
                     }
                 }));
@@ -116,12 +114,12 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "refresh-token", "/register", "/first-register").permitAll()
+                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**").permitAll()
                         .anyRequest().authenticated());
 
 
         http
-                .securityMatcher("/first-register", "/register")
+                .securityMatcher("/first-register", "/register","api/timetable/**")
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
