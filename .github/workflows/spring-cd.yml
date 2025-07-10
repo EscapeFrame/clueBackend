@@ -43,22 +43,22 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
+    - name: Upload JAR artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-jar
+        path: build/libs/*.jar
+
   deploy-on-merge:
-    if: github.event.pull_request.merged == true  # ✔ merge된 PR일 때만 실행
+    needs: build
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
         with:
-          distribution: 'temurin'
-          java-version: 17
-
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+          name: app-jar
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -67,11 +67,11 @@ jobs:
 
       - name: Copy JAR to EC2
         run: |
-          scp -i ${{secrets.EC2_SSH_KEY}} -o StrictHostKeyChecking=no build/libs/*.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/app.jar
+          scp -o StrictHostKeyChecking=no *.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/app.jar
 
       - name: Restart App with Docker Compose
         run: |
-          ssh -i ${{secrets.EC2_SSH_KEY}} -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/${{ secrets.EC2_USER }}/app
             docker compose up -d --force-recreate
           EOF
