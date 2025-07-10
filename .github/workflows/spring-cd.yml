@@ -2,10 +2,8 @@ name: Deploy on PR Merged to develop
 
 on:
   pull_request:
-    branches:
-      - develop
-    types:
-      - closed
+    types: [closed]
+    branches: [develop]
 
 jobs:
   build:
