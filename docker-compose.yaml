@@ -6,6 +6,7 @@ services:
       - web-net
     ports:
       - 8080:8080
+
   postgres:
     image: postgres:15
     container_name: my_postgres
