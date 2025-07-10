@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +39,7 @@ public class AssignmentEntity {
   private LocalDateTime startDate;
 
   @Column(name = "end_date")
+
   private LocalDateTime endDate;
 
   @Builder

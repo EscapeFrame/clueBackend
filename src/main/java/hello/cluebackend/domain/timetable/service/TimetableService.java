@@ -75,7 +75,7 @@ public class TimetableService {
     return fetchTimetable(request, from, to);
   }
 
-  private Mono<List<TimetableResponseDto>> fetchTimetable(TimetableRequestDto request, String from, String to) {
+  private Mono<List<TimetableResponseDto>>  fetchTimetable(TimetableRequestDto request, String from, String to) {
     LocalDate now = LocalDate.now(KOREA_TIMEZONE);
     String year = now.format(YEAR_FORMATTER);
     String semester = determineSemester(now);
