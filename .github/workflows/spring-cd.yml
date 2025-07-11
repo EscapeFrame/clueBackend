@@ -35,15 +35,18 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no build/libs/*.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/app/app.jar
 
-      - name: Restart Spring App on EC2 with Docker Compose
+      - name: Restart Spring App Container on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            set -e
+
             cd /home/${{ secrets.EC2_USER }}/app
 
-            # 만약 app.jar이 디렉토리로 존재할 경우 삭제
+            # 기존 app.jar이 디렉토리일 경우 삭제
             if [ -d "app.jar" ]; then
               rm -rf app.jar
             fi
 
-            docker compose up -d --force-recreate
+            # spring 서비스 컨테이너만 다시 빌드하고 재시작
+            docker compose up -d --build --force-recreate paletto
           EOF
