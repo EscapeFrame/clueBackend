@@ -1,14 +1,14 @@
 package hello.cluebackend.domain.user.domain.repository;
 
-import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
 
-    Optional<UserEntity> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 }

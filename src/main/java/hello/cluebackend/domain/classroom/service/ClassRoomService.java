@@ -5,7 +5,7 @@ import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
-import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.domain.User;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ public class ClassRoomService {
         ClassRoom classRoom = classRoomDTO.toEntity();
         classRoomRepository.save(classRoom);
 
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
 
         ClassRoomUser classRoomUser = ClassRoomUser.builder()
                 .classRoom(classRoom)

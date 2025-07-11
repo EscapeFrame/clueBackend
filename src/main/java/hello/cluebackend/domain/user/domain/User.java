@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_entity")
-public class UserEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +56,7 @@ public class UserEntity {
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
 
-    public UserEntity(int studentId, String username, String addition, String email, Role role) {
+    public User(int studentId, String username, String addition, String email, Role role) {
         this.studentId = studentId;
         this.username = username;
         this.addition = addition;

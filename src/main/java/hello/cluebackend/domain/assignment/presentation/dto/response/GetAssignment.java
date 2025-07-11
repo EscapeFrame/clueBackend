@@ -3,9 +3,9 @@ package hello.cluebackend.domain.assignment.presentation.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
-@Getter
-public class AllStudentAssignmentResponseDto {
+@Getter @Builder
+public class GetAssignment {
+  private Long assignmentId;
   private String title;
   private String content;
   private String startDate;
