@@ -1,4 +1,4 @@
-name: CD on Merge to develop
+name: Spring CD
 
 on:
   pull_request:
