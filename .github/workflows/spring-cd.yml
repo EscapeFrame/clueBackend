@@ -46,6 +46,6 @@ jobs:
               rm -rf app.jar
             fi
 
-            # spring 서비스 컨테이너만 다시 빌드하고 재시작
+            # spring 서비스 컨테이너만 다시 빌드하고 재시작 test
             docker compose up -d --build --force-recreate paletto
           EOF
