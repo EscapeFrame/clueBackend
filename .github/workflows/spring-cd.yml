@@ -2,7 +2,7 @@ name: Spring CD
 
 on:
   push:
-    branches: [develop]
+    branches: ["*"]
 
 jobs:
   build:
