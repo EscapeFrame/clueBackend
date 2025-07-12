@@ -28,7 +28,8 @@ public class UserEntity {
     private Long userId;
 
     @ColumnDefault("-1")
-    private int studentId;
+    @Column(name="class_code")
+    private int classCode;
 
     @Column(name="user_name", nullable = false)
     private String username;
@@ -39,9 +40,6 @@ public class UserEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Column(nullable = false)
-    private String addition;
 
     @CreatedDate
     @Column(nullable = false)
@@ -55,16 +53,14 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
-
-    public UserEntity(int studentId, String username, String addition, String email, Role role) {
-        this.studentId = studentId;
+    public UserEntity(int classCode, String username, String email, Role role) {
+        this.classCode = classCode;
         this.username = username;
-        this.addition = addition;
         this.email = email;
         this.role = role;
     }
 
     public UserDTO toUserDTO() {
-        return new UserDTO(userId, email, role, username, studentId, addition);
+        return new UserDTO(userId, email, role, username, classCode);
     }
 }

@@ -23,11 +23,14 @@ public class ClassRoom {
     @Column(nullable = false)
     private Long classRoomId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String description;
+
+    @Column(nullable = false, length = 30)
+    private String sort;
 
     @Column(nullable = false)
     private String code;

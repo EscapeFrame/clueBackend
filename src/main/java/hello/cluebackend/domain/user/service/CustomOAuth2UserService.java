@@ -53,7 +53,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setEmail(oAuth2Response.getEmail());
             userDTO.setUsername(username);
             userDTO.setRole(role);
-            userDTO.setStudentId(-1);
+            userDTO.setClassCode(-1);
 
             return new CustomOAuth2User(userDTO);
         }
