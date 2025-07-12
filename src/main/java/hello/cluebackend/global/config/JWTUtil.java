@@ -2,6 +2,7 @@ package hello.cluebackend.global.config;
 
 import hello.cluebackend.domain.user.domain.Role;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JWTUtil {
@@ -60,5 +63,19 @@ public class JWTUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public String getToken(HttpServletRequest request) {
+        String authHeader =  request.getHeader("Authorization");
+        return authHeader.replace("Bearer ", "");
+    }
+
+    public Map<String, String> getClaims(String token) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put("category", getCategory(token));
+        claims.put("username", getUsername(token));
+        claims.put("userId", getUserId(token).toString());
+        claims.put("role", getRole(token).name());
+        return claims;
     }
 }

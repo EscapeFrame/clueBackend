@@ -52,7 +52,7 @@ public class UserEntity {
         createdAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
 

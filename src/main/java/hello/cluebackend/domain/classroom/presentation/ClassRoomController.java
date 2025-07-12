@@ -24,26 +24,24 @@ public class ClassRoomController {
         this.classRoomService = classRoomService;
     }
 
-    @GetMapping("/request")
-    public List<ClassRoomDTO> getClassRoom(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
+    @GetMapping
+    public ResponseEntity<List<ClassRoomDTO>> getAllClassRooms(HttpServletRequest request){
+        String token = jwtUtil.getToken(request);
         Long userId = jwtUtil.getUserId(token);
-        return classRoomService.findMyClassRoomById(userId);
+        return ResponseEntity.ok(classRoomService.findMyClassRoomById(userId));
     }
 
-    @PostMapping("/create-room")
+    @PostMapping
     public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDTO classRoomDTO, HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
+        String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
         Long userId = jwtUtil.getUserId(token);
         if(!role.name().equals("teacher")) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
             classRoomService.createClassRoom(classRoomDTO, userId);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

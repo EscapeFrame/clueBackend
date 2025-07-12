@@ -23,6 +23,7 @@ public class RegisterController {
     public String processRegistration(RegisterUserDTO registerUserDTO) {
         return "redirect:/";
     }
+
     @PostMapping("/first-register")
     public UserDTO showRegistrationForm(HttpServletRequest request) {
         HttpSession session = request.getSession();

@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.classroom.presentation.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class ClassRoomDTO {
     private Long classRoomId;
     private String name;
     private String description;
+    @JsonIgnore
     private String code;
     private LocalDateTime createdAt;
 

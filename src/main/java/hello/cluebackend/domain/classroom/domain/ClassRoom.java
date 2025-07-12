@@ -41,7 +41,7 @@ public class ClassRoom {
     }
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
+    private List<ClassRoomUser> classRoomUserList;
 
     public ClassRoomDTO toDTO() {
         return ClassRoomDTO.builder()
