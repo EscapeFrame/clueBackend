@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.classroom.presentation;
 
-import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.global.config.JWTUtil;
@@ -25,14 +26,14 @@ public class ClassRoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClassRoomDTO>> getAllClassRooms(HttpServletRequest request){
+    public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(HttpServletRequest request){
         String token = jwtUtil.getToken(request);
         Long userId = jwtUtil.getUserId(token);
         return ResponseEntity.ok(classRoomService.findMyClassRoomById(userId));
     }
 
     @PostMapping
-    public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDTO classRoomDTO, HttpServletRequest request) {
+    public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
         Long userId = jwtUtil.getUserId(token);
@@ -48,7 +49,7 @@ public class ClassRoomController {
     }
 
     @GetMapping("/{classid}")
-    public ClassRoomDTO getClassRoom(@PathVariable Long classid, HttpServletRequest request) {
+    public ClassRoomDto getClassRoom(@PathVariable Long classid, HttpServletRequest request) {
         return classRoomService.getClassRoomByClassId(classid);
     }
 

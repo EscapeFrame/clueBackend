@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.user.domain;
 
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
-import hello.cluebackend.domain.user.presentation.dto.UserDTO;
+import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -60,7 +60,7 @@ public class UserEntity {
         this.role = role;
     }
 
-    public UserDTO toUserDTO() {
-        return new UserDTO(userId, email, role, username, classCode);
+    public UserDto toUserDTO() {
+        return new UserDto(userId, email, role, username, classCode);
     }
 }

@@ -1,7 +1,7 @@
 package hello.cluebackend.global.config;
 
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
-import hello.cluebackend.domain.user.presentation.dto.UserDTO;
+import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import hello.cluebackend.global.security.jwt.RefreshTokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -32,7 +32,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        UserDTO userDTO = customUserDetails.getUserDTO();
+        UserDto userDTO = customUserDetails.getUserDTO();
 
         int studentId = userDTO.getClassCode();
         if (studentId == -1) {

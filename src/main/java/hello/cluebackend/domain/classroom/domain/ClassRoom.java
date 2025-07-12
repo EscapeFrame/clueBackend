@@ -1,12 +1,12 @@
 package hello.cluebackend.domain.classroom.domain;
 
-import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,10 +33,16 @@ public class ClassRoom {
     private String sort;
 
     @Column(nullable = false)
+    private String target;
+
+    @Column(nullable = false)
     private String code;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private Boolean isActivation;
 
     @PrePersist
     protected void onCreate() {
@@ -46,13 +52,23 @@ public class ClassRoom {
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
     private List<ClassRoomUser> classRoomUserList;
 
-    public ClassRoomDTO toDTO() {
-        return ClassRoomDTO.builder()
+    public ClassRoomDto toDTO() {
+        return ClassRoomDto.builder()
                 .classRoomId(classRoomId)
                 .name(name)
                 .description(description)
                 .code(code)
                 .createdAt(createdAt)
+                .build();
+    }
+
+    public ClassRoomCardDto toCardDTO() {
+        return ClassRoomCardDto.builder()
+                .classRoomId(classRoomId)
+                .name(name)
+                .sort(sort)
+                .target(target)
+                .studentCount(classRoomUserList.size())
                 .build();
     }
 }

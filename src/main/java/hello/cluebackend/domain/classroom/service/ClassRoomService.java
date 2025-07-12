@@ -2,7 +2,8 @@ package hello.cluebackend.domain.classroom.service;
 
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
-import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
 import hello.cluebackend.domain.user.domain.UserEntity;
@@ -24,16 +25,16 @@ public class ClassRoomService {
         this.userRepository = userRepository;
     }
 
-    public List<ClassRoomDTO> findMyClassRoomById(Long id) {
+    public List<ClassRoomCardDto> findMyClassRoomById(Long id) {
         List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(id);
         return classRoomUsers.stream()
                 .map(ClassRoomUser::getClassRoom)
-                .map(ClassRoom::toDTO)
+                .map(ClassRoom::toCardDTO)
                 .toList();
     }
 
     @Transactional
-    public void createClassRoom(ClassRoomDTO classRoomDTO, Long userId) {
+    public void createClassRoom(ClassRoomDto classRoomDTO, Long userId) {
         classRoomDTO.generateCode();
         ClassRoom classRoom = classRoomDTO.toEntity();
         classRoomRepository.save(classRoom);
@@ -47,7 +48,7 @@ public class ClassRoomService {
         classRoomUserRepository.save(classRoomUser);
     }
 
-    public ClassRoomDTO getClassRoomByClassId(Long classid) {
+    public ClassRoomDto getClassRoomByClassId(Long classid) {
         ClassRoom classRoom = classRoomRepository.findById(classid).orElseThrow(() -> new RuntimeException("classroom not found"));
         return classRoom.toDTO();
     }

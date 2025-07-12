@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
+public class UserDto {
     private Long userId;
     private String email;
     private Role role;
@@ -14,7 +14,7 @@ public class UserDTO {
     private int classCode;
     private String addition;
 
-    public UserDTO(Long userId, String email, Role role, String username, int classCode) {
+    public UserDto(Long userId, String email, Role role, String username, int classCode) {
         this.userId = userId;
         this.email = email;
         this.role = role;
@@ -22,5 +22,5 @@ public class UserDTO {
         this.classCode = classCode;
     }
 
-    public UserDTO() {}
+    public UserDto() {}
 }

@@ -12,7 +12,7 @@ import java.util.Random;
 @Getter
 @Setter
 @Builder
-public class ClassRoomDTO {
+public class ClassRoomDto {
 
     private Long classRoomId;
     private String name;
