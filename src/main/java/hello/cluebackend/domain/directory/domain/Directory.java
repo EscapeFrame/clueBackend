@@ -3,14 +3,14 @@ package hello.cluebackend.domain.directory.domain;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.directory.presentation.dto.DirectoryDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Directory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

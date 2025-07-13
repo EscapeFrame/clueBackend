@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.directory.presentation;
 
-import hello.cluebackend.domain.directory.presentation.dto.CreateDirectoryDto;
+import hello.cluebackend.domain.directory.presentation.dto.RequestDirectoryDto;
 import hello.cluebackend.domain.directory.service.DirectoryService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.global.config.JWTUtil;
@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,14 +28,29 @@ public class DirectoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createDirectory(@RequestBody CreateDirectoryDto createDirectoryDto, HttpServletRequest request){
+    public ResponseEntity<?> createDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto, HttpServletRequest request){
         String token = jwtUtil.getToken(request);
         if(!jwtUtil.getRole(token).equals(Role.TEACHER)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
-            directoryService.createDirectory(createDirectoryDto);
+            directoryService.createDirectory(requestDirectoryDto);
         } catch (IllegalArgumentException e){
+            log.debug(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> updateDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto, HttpServletRequest request){
+        String token = jwtUtil.getToken(request);
+        if(!jwtUtil.getRole(token).equals(Role.TEACHER)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        try {
+            directoryService.updateDirectory(requestDirectoryDto);
+        } catch (IllegalArgumentException e) {
             log.debug(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
