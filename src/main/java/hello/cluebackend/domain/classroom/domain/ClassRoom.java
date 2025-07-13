@@ -3,6 +3,7 @@ package hello.cluebackend.domain.classroom.domain;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
+import hello.cluebackend.domain.directory.domain.Directory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,6 +52,9 @@ public class ClassRoom {
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
     private List<ClassRoomUser> classRoomUserList;
+
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    private List<Directory>  directoryList;
 
     public ClassRoomDto toDTO() {
         return ClassRoomDto.builder()
