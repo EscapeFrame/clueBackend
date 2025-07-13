@@ -66,8 +66,8 @@ public class ClassRoomController {
         }
     }
 
-    @GetMapping("/{classRoomId}")
-    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable Long classRoomId, HttpServletRequest request) {
+    @GetMapping("/{classId}")
+    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable Long classId, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
 
@@ -75,7 +75,7 @@ public class ClassRoomController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        ClassRoomDto findClassRoomDto = classRoomService.findById(classRoomId);
+        ClassRoomDto findClassRoomDto = classRoomService.findById(classId);
         return ResponseEntity.ok(findClassRoomDto);
     }
 }
