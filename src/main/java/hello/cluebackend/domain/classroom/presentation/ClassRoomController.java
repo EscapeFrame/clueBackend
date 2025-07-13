@@ -60,9 +60,22 @@ public class ClassRoomController {
         try {
             classRoomService.joinClassRoom(userId, code);
             return ResponseEntity.ok().build();
-        } catch (RuntimeException e){
+        } catch (IllegalArgumentException e){
             log.debug(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/{classRoomId}")
+    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable Long classRoomId, HttpServletRequest request) {
+        String token = jwtUtil.getToken(request);
+        Role role = jwtUtil.getRole(token);
+
+        if(role != Role.TEACHER) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        ClassRoomDto findClassRoomDto = classRoomService.findById(classRoomId);
+        return ResponseEntity.ok(findClassRoomDto);
     }
 }

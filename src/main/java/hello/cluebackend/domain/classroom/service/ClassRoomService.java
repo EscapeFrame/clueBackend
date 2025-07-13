@@ -60,12 +60,17 @@ public class ClassRoomService {
     }
 
     public void joinClassRoom(Long userId, String code) {
-        ClassRoom findClassRoom = classRoomRepository.findByCode(code).orElseThrow(() -> new RuntimeException("classroom not found"));
-        UserEntity findUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+        ClassRoom findClassRoom = classRoomRepository.findByCode(code).orElseThrow(() -> new IllegalArgumentException("classroom not found"));
+        UserEntity findUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
         ClassRoomUser classRoomUser = ClassRoomUser.builder()
                 .user(findUser)
                 .classRoom(findClassRoom)
                 .build();
         classRoomUserRepository.save(classRoomUser);
+    }
+
+    public ClassRoomDto findById(Long classRoomId) {
+        ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+        return findClassRoom.toDTO();
     }
 }
