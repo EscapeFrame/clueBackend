@@ -59,12 +59,13 @@ public class ClassRoomService {
         return classRoomRepository.existsByCode(code);
     }
 
-    public void joinClassRoom(Long userId, Long classRoomId) {
-//        ClassRoomUser classRoomUser = ClassRoomUser.builder()
-//        classRoomUserRepository.
-    }
-
-    public ClassRoomDto findByCode(String code) {
-        return classRoomRepository.findByCode(code).get().toDTO();
+    public void joinClassRoom(Long userId, String code) {
+        ClassRoom findClassRoom = classRoomRepository.findByCode(code).orElseThrow(() -> new RuntimeException("classroom not found"));
+        UserEntity findUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+        ClassRoomUser classRoomUser = ClassRoomUser.builder()
+                .user(findUser)
+                .classRoom(findClassRoom)
+                .build();
+        classRoomUserRepository.save(classRoomUser);
     }
 }

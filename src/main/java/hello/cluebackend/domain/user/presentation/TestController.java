@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     private final JWTUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/test")
     public ResponseEntity<?> issueToken(@RequestParam Long userId, @RequestParam String username, @RequestParam String role, HttpServletResponse response) {

@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.user.presentation.dto;
 
 import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -24,5 +25,16 @@ public class UserDto {
         this.role = role;
         this.username = username;
         this.classCode = classCode;
+    }
+
+    public UserEntity toEntity() {
+        return UserEntity.builder()
+                .userId(userId)
+                .email(email)
+                .role(role)
+                .username(username)
+                .classCode(classCode)
+                .createdAt(createdAt)
+                .build();
     }
 }

@@ -5,8 +5,10 @@ import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
+import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,16 +16,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/class")
 public class ClassRoomController {
 
     private final JWTUtil jwtUtil;
     private final ClassRoomService classRoomService;
+    private final UserService userService;
 
-    public ClassRoomController(JWTUtil jwtUtil, ClassRoomService classRoomService) {
+    public ClassRoomController(JWTUtil jwtUtil, ClassRoomService classRoomService,  UserService userService) {
         this.jwtUtil = jwtUtil;
         this.classRoomService = classRoomService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -49,23 +54,21 @@ public class ClassRoomController {
         }
     }
 
-//    @PostMapping("/{code}")
-//    public ResponseEntity<String> joinClassRoom(@PathVariable String code, HttpServletRequest request) {
-//        String token = jwtUtil.getToken(request);
-//        Role role = jwtUtil.getRole(token);
-//        Long userId = jwtUtil.getUserId(token);
-//
-//        if(!role.name().equals(Role.STUDENT.name())) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//        ClassRoomDto findClassRoom = classRoomService.findByCode(code);
-//        if(findClassRoom == null) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//
-//        classRoomService.joinClassRoom(userId, findClassRoom.getClassRoomId());
-//        return null;
-//    }
+    @PostMapping("/{code}/members")
+    public ResponseEntity<?> joinClassRoom(@PathVariable String code, HttpServletRequest request) {
+        String token = jwtUtil.getToken(request);
+        Long userId = jwtUtil.getUserId(token);
+
+        try {
+            classRoomService.joinClassRoom(userId, code);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e){
+            log.debug(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
+    }
 
     @GetMapping("/{classid}")
     public ClassRoomDto getClassRoom(@PathVariable Long classid, HttpServletRequest request) {

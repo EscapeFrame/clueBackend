@@ -3,10 +3,7 @@ package hello.cluebackend.domain.user.domain;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -17,6 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_entity")
