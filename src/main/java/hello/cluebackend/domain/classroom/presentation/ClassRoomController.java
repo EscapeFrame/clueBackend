@@ -43,7 +43,7 @@ public class ClassRoomController {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
         Long userId = jwtUtil.getUserId(token);
-        if(!role.name().equals(Role.TEACHER.name())) {
+        if(role != Role.TEACHER) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
@@ -68,11 +68,6 @@ public class ClassRoomController {
         }
 
 
-    }
-
-    @GetMapping("/{classid}")
-    public ClassRoomDto getClassRoom(@PathVariable Long classid, HttpServletRequest request) {
-        return classRoomService.getClassRoomByClassId(classid);
     }
 
 }

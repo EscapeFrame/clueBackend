@@ -9,6 +9,6 @@ import lombok.Setter;
 public class RegisterUserDto {
     private String email;
     private String username;
-    private int studentId;
+    private int classCode;
     private Role role;
 }

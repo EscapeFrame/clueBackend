@@ -2,13 +2,12 @@ package hello.cluebackend.domain.classroom.presentation.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Getter
 @Setter
@@ -27,7 +26,7 @@ public class ClassRoomDto {
     public void generateCode() {
         int length = 6;
         StringBuilder randomStringBuilder = new StringBuilder();
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         for (int i = 0; i < length; i++) {
@@ -39,12 +38,14 @@ public class ClassRoomDto {
 
     public ClassRoom toEntity() {
         return ClassRoom.builder()
+                .classRoomId(classRoomId)
                 .name(name)
                 .description(description)
                 .sort(sort)
                 .target(target)
                 .isActivation(isActivation)
                 .code(code)
+                .createdAt(createdAt)
                 .build();
     }
 }

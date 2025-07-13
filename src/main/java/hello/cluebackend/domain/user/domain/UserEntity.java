@@ -5,7 +5,6 @@ import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
