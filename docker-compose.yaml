@@ -6,9 +6,11 @@ services:
       - web-net
     ports:
       - 8080:8080
+
   postgres:
     image: postgres:15
     container_name: my_postgres
+    restart: always
     networks:
       - web-net
     ports:
@@ -30,4 +32,4 @@ services:
  
 networks:
   web-net:
-    external: true
+    driver: bridge
