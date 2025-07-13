@@ -21,8 +21,10 @@ public class Directory {
     @JoinColumn(name = "class_room_id",  nullable = false)
     private ClassRoom classRoom;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private int directoryOrder;
 
     public DirectoryDto  toDto() {
