@@ -69,6 +69,7 @@ public class ClassRoom {
                 .sort(sort)
                 .target(target)
                 .studentCount(classRoomUserList.size())
+                .isActivation(isActivation)
                 .build();
     }
 }

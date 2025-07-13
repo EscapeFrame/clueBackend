@@ -41,4 +41,6 @@ public class RegisterController {
         registerUserService.registerUser(defaultRegisterUserDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+
 }

@@ -13,4 +13,5 @@ public class ClassRoomCardDto {
     private String sort;
     private String target;
     private int studentCount;
+    private boolean isActivation;
 }

@@ -114,7 +114,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**").permitAll()
+                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**", "/test", "/api/class/**").permitAll()
                         .anyRequest().authenticated());
 
 

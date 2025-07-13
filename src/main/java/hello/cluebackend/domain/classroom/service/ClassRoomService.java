@@ -6,6 +6,7 @@ import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
+import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,7 @@ public class ClassRoomService {
     public List<ClassRoomCardDto> findMyClassRoomById(Long id) {
         List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(id);
         return classRoomUsers.stream()
+                .filter(cu -> cu.getUser().getRole() == Role.STUDENT)
                 .map(ClassRoomUser::getClassRoom)
                 .map(ClassRoom::toCardDTO)
                 .toList();

@@ -37,7 +37,7 @@ public class ClassRoomController {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
         Long userId = jwtUtil.getUserId(token);
-        if(!role.name().equals("teacher")) {
+        if(!role.name().equals(Role.TEACHER.name())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
