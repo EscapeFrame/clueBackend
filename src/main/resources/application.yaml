@@ -2,7 +2,8 @@ spring:
   application:
     name: CLUE-Backend
   datasource:
-    url: jdbc:postgresql://postgresql:5432/clue
+    url: jdbc:postgresql://my_postgres:5432/clue
+#    url: jdbc:postgresql://localhost:5432/clue
     username: clue1234
     password: clue52025
     driver-class-name: org.postgresql.Driver
@@ -14,6 +15,7 @@ spring:
   data:
     redis:
       host: my_redis
+#      host: localhost
       port: 6379
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
@@ -38,8 +40,7 @@ spring:
   neis:
     api:
       host: open.neis.go.kr/hub
-      key: ${spring.neis.api.key}
-
+      key: ${NEIS_API_KEY}
 server:
   address: 0.0.0.0
   port: 8080

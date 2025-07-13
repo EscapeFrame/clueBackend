@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.user.presentation.dto;
 
-import hello.cluebackend.domain.user.domain.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -9,13 +8,13 @@ import java.util.Collection;
 import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
-    private final UserDTO userDTO;
+    private final UserDto userDTO;
 
-    public CustomOAuth2User(UserDTO userDTO) {
+    public CustomOAuth2User(UserDto userDTO) {
         this.userDTO = userDTO;
     }
 
-    public UserDTO getUserDTO() {
+    public UserDto getUserDTO() {
         return userDTO;
     }
 
@@ -46,5 +45,13 @@ public class CustomOAuth2User implements OAuth2User {
 
     public String getUsername() {
         return userDTO.getUsername();
+    }
+
+    public Long getUserId() {
+        return userDTO.getUserId();
+    }
+
+    public int getClassCode() {
+        return userDTO.getClassCode();
     }
 }

@@ -60,6 +60,8 @@ dependencies {
 
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.mockito:mockito-junit-jupiter'
+
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
 
 ext {
