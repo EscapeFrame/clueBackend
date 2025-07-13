@@ -1,18 +1,22 @@
 package hello.cluebackend.domain.user.presentation.dto;
 
 import hello.cluebackend.domain.user.domain.Role;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     private Long userId;
     private String email;
     private Role role;
     private String username;
     private int classCode;
-    private String addition;
+    private LocalDateTime createdAt;
 
     public UserDto(Long userId, String email, Role role, String username, int classCode) {
         this.userId = userId;
@@ -21,6 +25,4 @@ public class UserDto {
         this.username = username;
         this.classCode = classCode;
     }
-
-    public UserDto() {}
 }

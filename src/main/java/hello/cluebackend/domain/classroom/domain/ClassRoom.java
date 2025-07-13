@@ -57,8 +57,11 @@ public class ClassRoom {
                 .classRoomId(classRoomId)
                 .name(name)
                 .description(description)
+                .sort(sort)
+                .target(target)
                 .code(code)
                 .createdAt(createdAt)
+                .isActivation(isActivation)
                 .build();
     }
 

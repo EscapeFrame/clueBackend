@@ -3,7 +3,7 @@ package hello.cluebackend.domain.user.presentation;
 import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.RegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
-import hello.cluebackend.domain.user.service.RegisterUserService;
+import hello.cluebackend.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class RegisterController {
-    private final RegisterUserService registerUserService;
+    private final UserService userService;
 
-    public RegisterController(RegisterUserService registerUserService) {
-        this.registerUserService = registerUserService;
+    public RegisterController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping
@@ -38,7 +38,7 @@ public class RegisterController {
     )
     public ResponseEntity<?> processRegistration(@RequestBody DefaultRegisterUserDto defaultRegisterUserDTO) {
         System.out.println("StudentID 1 : " + defaultRegisterUserDTO.getClassCode());
-        registerUserService.registerUser(defaultRegisterUserDTO);
+        userService.registerUser(defaultRegisterUserDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

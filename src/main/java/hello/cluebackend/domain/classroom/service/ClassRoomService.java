@@ -54,4 +54,17 @@ public class ClassRoomService {
         ClassRoom classRoom = classRoomRepository.findById(classid).orElseThrow(() -> new RuntimeException("classroom not found"));
         return classRoom.toDTO();
     }
+
+    public boolean existCode(String code) {
+        return classRoomRepository.existsByCode(code);
+    }
+
+    public void joinClassRoom(Long userId, Long classRoomId) {
+//        ClassRoomUser classRoomUser = ClassRoomUser.builder()
+//        classRoomUserRepository.
+    }
+
+    public ClassRoomDto findByCode(String code) {
+        return classRoomRepository.findByCode(code).get().toDTO();
+    }
 }

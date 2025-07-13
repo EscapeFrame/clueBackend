@@ -4,6 +4,7 @@ import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,24 @@ public class ClassRoomController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+//    @PostMapping("/{code}")
+//    public ResponseEntity<String> joinClassRoom(@PathVariable String code, HttpServletRequest request) {
+//        String token = jwtUtil.getToken(request);
+//        Role role = jwtUtil.getRole(token);
+//        Long userId = jwtUtil.getUserId(token);
+//
+//        if(!role.name().equals(Role.STUDENT.name())) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        ClassRoomDto findClassRoom = classRoomService.findByCode(code);
+//        if(findClassRoom == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        classRoomService.joinClassRoom(userId, findClassRoom.getClassRoomId());
+//        return null;
+//    }
 
     @GetMapping("/{classid}")
     public ClassRoomDto getClassRoom(@PathVariable Long classid, HttpServletRequest request) {

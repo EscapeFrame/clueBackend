@@ -6,9 +6,9 @@ import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RegisterUserService {
+public class UserService {
     private final UserRepository userRepository;
-    public RegisterUserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -21,4 +21,6 @@ public class RegisterUserService {
         );
         userRepository.save(userEntity);
     }
+
+
 }

@@ -61,6 +61,14 @@ public class UserEntity {
     }
 
     public UserDto toUserDTO() {
-        return new UserDto(userId, email, role, username, classCode);
+//        return new UserDto(userId, email, role, username, classCode);
+        return UserDto.builder()
+                .userId(userId)
+                .classCode(classCode)
+                .username(username)
+                .email(email)
+                .role(role)
+                .createdAt(createdAt)
+                .build();
     }
 }
