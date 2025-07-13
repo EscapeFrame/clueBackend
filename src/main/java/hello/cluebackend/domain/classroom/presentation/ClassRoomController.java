@@ -23,12 +23,10 @@ public class ClassRoomController {
 
     private final JWTUtil jwtUtil;
     private final ClassRoomService classRoomService;
-    private final UserService userService;
 
-    public ClassRoomController(JWTUtil jwtUtil, ClassRoomService classRoomService,  UserService userService) {
+    public ClassRoomController(JWTUtil jwtUtil, ClassRoomService classRoomService) {
         this.jwtUtil = jwtUtil;
         this.classRoomService = classRoomService;
-        this.userService = userService;
     }
 
     @GetMapping
@@ -66,8 +64,5 @@ public class ClassRoomController {
             log.debug(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-
     }
-
 }
