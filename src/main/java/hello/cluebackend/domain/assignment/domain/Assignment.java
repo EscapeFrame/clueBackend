@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "assignments")
 @Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Assignment {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "assignment_id")
@@ -25,7 +28,7 @@ public class Assignment {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="creator_id")
-  private User user;
+  private User creator;
 
   @Column(name = "title")
   private String title;
@@ -34,8 +37,8 @@ public class Assignment {
   private String content;
 
   @Column(name="start_date")
-  private String startDate;
+  private LocalDateTime startDate;
 
   @Column(name="due_date")
-  private String dueDate;
+  private LocalDateTime dueDate;
 }
