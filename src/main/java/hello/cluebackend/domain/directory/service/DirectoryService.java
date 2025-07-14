@@ -38,4 +38,12 @@ public class DirectoryService {
 
         directoryRepository.save(directory);
     }
+
+    public void deleteById(Long directoryId) {
+        try {
+            directoryRepository.deleteById(directoryId);
+        } catch(Exception e) {
+            throw e;
+        }
+    }
 }
