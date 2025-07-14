@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 public class RequestDocumentDto {
 
+    private Long documentId;
     private String title;
     private int type;
 
