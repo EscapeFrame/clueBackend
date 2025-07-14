@@ -41,8 +41,20 @@ class ClassRoomControllerTest {
         when(jwtUtil.getUserId(token)).thenReturn(userId);
 
         List<ClassRoomCardDto> mockList = List.of(
-                new ClassRoomCardDto(1L, "자바를 자바라", "JAVA", "2-2", 2),
-                new ClassRoomCardDto(2L, "자바를 자바라", "JAVA", "2-1", 2)
+                ClassRoomCardDto.builder()
+                        .classRoomId(1L)
+                        .name("자바를 자바라")
+                        .sort("JAVA")
+                        .target("2-2")
+                        .studentCount(2)
+                        .build(),
+                ClassRoomCardDto.builder()
+                        .classRoomId(2L)
+                        .name("자바를 자바라")
+                        .sort("JAVA")
+                        .target("2-1")
+                        .studentCount(2)
+                        .build()
         );
         when(classRoomService.findMyClassRoomById(userId)).thenReturn(mockList);
         // when

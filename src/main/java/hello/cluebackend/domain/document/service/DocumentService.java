@@ -6,6 +6,7 @@ import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.directory.domain.repository.DirectoryRepository;
 import hello.cluebackend.domain.document.domain.Document;
 import hello.cluebackend.domain.document.domain.repository.DocumentRepository;
+import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
 import hello.cluebackend.domain.document.presentation.dto.FileUpload;
 import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
 import lombok.extern.slf4j.Slf4j;
@@ -95,19 +96,6 @@ public class DocumentService {
                 .build();
     }
 
-    public List<FileUpload> storeFiles(MultipartFile[] files) {
-        List<FileUpload> responses = new ArrayList<>();
-        for (MultipartFile file : files) {
-            try {
-                FileUpload uploadResult = upload(file);
-                responses.add(uploadResult);
-            } catch(Exception e) {
-                log.error("Failed to store file {}: {}", file.getOriginalFilename(), e.getMessage());
-            }
-        }
-        return responses;
-    }
-
     // uuid_원본파일명
     private String generateStoredFileName(String originalFileName) {
         return UUID.randomUUID().toString() + "_" + originalFileName;
@@ -133,5 +121,10 @@ public class DocumentService {
             throw new RuntimeException("수업자료 삭제 실패 " + documentId, e);
         }
 
+    }
+
+    public DocumentDto findById(Long documentId) {
+        Document findDocument = documentRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업자료가 존재하지 않습니다."));
+        return findDocument.toDto();
     }
 }

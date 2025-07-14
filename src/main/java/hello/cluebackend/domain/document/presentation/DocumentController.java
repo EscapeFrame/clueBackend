@@ -1,5 +1,7 @@
 package hello.cluebackend.domain.document.presentation;
 
+import com.nimbusds.jose.util.Resource;
+import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
 import hello.cluebackend.domain.document.presentation.dto.FileUpload;
 import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
 import hello.cluebackend.domain.document.service.DocumentService;
@@ -73,6 +75,24 @@ public class DocumentController {
         try {
             documentService.deleteById(requestDocumentDto.getDocumentId());
         } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadDocument(@RequestParam("documentId") Long documentId) {
+
+        try {
+            DocumentDto documentDto = documentService.findById(documentId);
+            String fullPath = documentDto.getContent();
+            UrlResource resource = new UrlResource("file:" + fullPath);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
