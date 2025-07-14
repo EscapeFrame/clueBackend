@@ -1,12 +1,14 @@
 package hello.cluebackend.domain.classroom.domain;
 
-import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDTO;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
+import hello.cluebackend.domain.directory.domain.Directory;
+import hello.cluebackend.domain.document.domain.Document;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,11 +25,17 @@ public class ClassRoom {
     @Column(nullable = false)
     private Long classRoomId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String description;
+
+    @Column(nullable = false, length = 30)
+    private String sort;
+
+    @Column(nullable = false)
+    private String target;
 
     @Column(nullable = false)
     private String code;
@@ -35,21 +43,44 @@ public class ClassRoom {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private Boolean isActivation;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
+    private List<ClassRoomUser> classRoomUserList;
 
-    public ClassRoomDTO toDTO() {
-        return ClassRoomDTO.builder()
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    private List<Directory>  directoryList;
+
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    private List<Document> documentList;
+
+    public ClassRoomDto toDTO() {
+        return ClassRoomDto.builder()
                 .classRoomId(classRoomId)
                 .name(name)
                 .description(description)
+                .sort(sort)
+                .target(target)
                 .code(code)
                 .createdAt(createdAt)
+                .isActivation(isActivation)
+                .build();
+    }
+
+    public ClassRoomCardDto toCardDTO() {
+        return ClassRoomCardDto.builder()
+                .classRoomId(classRoomId)
+                .name(name)
+                .sort(sort)
+                .target(target)
+                .studentCount(classRoomUserList.size())
+                .isActivation(isActivation)
                 .build();
     }
 }

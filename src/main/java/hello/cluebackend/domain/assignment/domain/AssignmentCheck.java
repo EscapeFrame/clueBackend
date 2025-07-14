@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.assignment.domain;
 
-import hello.cluebackend.domain.user.domain.User;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class AssignmentCheck {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  private User user;
+  private UserEntity user;
 
   @Column(name = "is_submitted")
   private Boolean isSubmitted;

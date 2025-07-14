@@ -2,6 +2,7 @@ spring:
   application:
     name: CLUE-Backend
   datasource:
+#    url: jdbc:postgresql://my_postgres:5432/clue
     url: jdbc:postgresql://localhost:5432/clue
     username: clue1234
     password: clue52025
@@ -13,6 +14,7 @@ spring:
       ddl-auto: update
   data:
     redis:
+#      host: my_redis
       host: localhost
       port: 6379
   jwt:
@@ -34,11 +36,19 @@ spring:
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth?prompt=consent
-
   neis:
     api:
       host: open.neis.go.kr/hub
-      key: ${spring.neis.api.key}
+      key: ${NEIS_API_KEY}
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+      enabled: true
+
+upload:
+  local:
+    dir: ${UPLOAD_FILE_DIR}
 
 server:
   address: 0.0.0.0

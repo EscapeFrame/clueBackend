@@ -40,3 +40,4 @@ out/
 .env
 postgres-data/
 
+src/main/resources/files

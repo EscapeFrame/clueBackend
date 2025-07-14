@@ -1,0 +1,30 @@
+package hello.cluebackend.domain.user.service;
+
+import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.domain.repository.UserRepository;
+import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
+import hello.cluebackend.domain.user.presentation.dto.UserDto;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public void registerUser(DefaultRegisterUserDto userDTO) {
+        UserEntity userEntity = new UserEntity(
+                userDTO.getClassCode(),
+                userDTO.getUsername(),
+                userDTO.getEmail(),
+                userDTO.getRole()
+        );
+        userRepository.save(userEntity);
+    }
+
+    public UserDto findById(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId).get();
+        return userEntity.toUserDTO();
+    }
+}

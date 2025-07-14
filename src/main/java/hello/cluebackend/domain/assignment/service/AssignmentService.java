@@ -6,7 +6,7 @@ import hello.cluebackend.domain.assignment.domain.repository.AssignmentRepositor
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.domain.User;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class AssignmentService {
 
   public void createAssignment(Long userId, Long classId ,AssignmentCreateRequestDto requestDto){
     Assignment assignment = Assignment.builder()
-            .creator(User.builder().userId(userId).build())
+            .creator(UserEntity.builder().userId(userId).build())
             .classRoom(ClassRoom.builder().classRoomId(classId).build())
             .title(requestDto.getTitle())
             .content(requestDto.getContent())
@@ -31,7 +31,7 @@ public class AssignmentService {
   }
 
   public void deleteAssignment(Long userId ,Long assignmentId, Long classRoomId){
-    User user = userRepository.findById(userId);
+    UserEntity user = userRepository.findById(userId);
 
     if(user.getRole() == Role.STUDENT){
       assignmentRepository.deleteById(assignmentId);

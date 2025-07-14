@@ -2,7 +2,7 @@ package hello.cluebackend.domain.user.service;
 
 
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.domain.User;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import hello.cluebackend.domain.user.presentation.dto.*;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -46,24 +46,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = oAuth2Response.getName();
         username = username.substring(2);
 
-        Optional<User> existDataOptional = userRepository.findByEmail(email);
+        Optional<UserEntity> existDataOptional = userRepository.findByEmail(email);
 
         if(existDataOptional.isEmpty()) {
-            UserDTO userDTO = new UserDTO();
+            UserDto userDTO = new UserDto();
             userDTO.setEmail(oAuth2Response.getEmail());
             userDTO.setUsername(username);
             userDTO.setRole(role);
-            userDTO.setStudentId(-1);
+            userDTO.setClassCode(-1);
 
             return new CustomOAuth2User(userDTO);
         }
 
-        User existData = existDataOptional.get();
+        UserEntity existData = existDataOptional.get();
         existData.setEmail(oAuth2Response.getEmail());
         existData.setUsername(oAuth2Response.getName());
         userRepository.save(existData);
 
-        UserDTO userDTO = existData.toUserDTO();
+        UserDto userDTO = existData.toUserDTO();
         return new CustomOAuth2User(userDTO);
     }
 

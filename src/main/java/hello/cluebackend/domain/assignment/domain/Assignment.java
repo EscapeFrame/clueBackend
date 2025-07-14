@@ -1,14 +1,10 @@
 package hello.cluebackend.domain.assignment.domain;
 
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import hello.cluebackend.domain.user.domain.User;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,7 +24,7 @@ public class Assignment {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="creator_id")
-  private User creator;
+  private UserEntity creator;
 
   @Column(name = "title")
   private String title;

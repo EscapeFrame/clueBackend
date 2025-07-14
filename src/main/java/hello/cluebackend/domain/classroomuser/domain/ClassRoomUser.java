@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.classroomuser.domain;
 
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import hello.cluebackend.domain.user.domain.User;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class ClassRoomUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_room_id", nullable = false)

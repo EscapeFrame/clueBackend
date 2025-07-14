@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.assignment.domain;
 
-import hello.cluebackend.domain.user.domain.User;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ public class AssignmentContent {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @Column(name="user_id")
-  private User user;
+  private UserEntity user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @Column(name="assignment_check_id")
