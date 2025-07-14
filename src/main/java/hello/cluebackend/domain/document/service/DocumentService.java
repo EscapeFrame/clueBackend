@@ -1,0 +1,135 @@
+package hello.cluebackend.domain.document.service;
+
+import hello.cluebackend.domain.classroom.domain.ClassRoom;
+import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
+import hello.cluebackend.domain.directory.domain.Directory;
+import hello.cluebackend.domain.directory.domain.repository.DirectoryRepository;
+import hello.cluebackend.domain.document.domain.Document;
+import hello.cluebackend.domain.document.domain.repository.DocumentRepository;
+import hello.cluebackend.domain.document.presentation.dto.FileUpload;
+import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Slf4j
+@Service
+public class DocumentService {
+
+    @Value("${upload.local.dir}")
+    private String uploadDir;
+
+    private final DocumentRepository documentRepository;
+    private final ClassRoomRepository classRoomRepository;
+    private final DirectoryRepository directoryRepository;
+
+    public DocumentService(DocumentRepository documentRepository, ClassRoomRepository classRoomRepository, DirectoryRepository directoryRepository) {
+        this.documentRepository = documentRepository;
+        this.classRoomRepository = classRoomRepository;
+        this.directoryRepository = directoryRepository;
+    }
+
+//    public void storeFiles(RequestDocumentDto requestDocumentDto) {
+//
+//        ClassRoom findClassRoom = classRoomRepository.findById(requestDocumentDto.getClassRoomId()).orElseThrow(() -> new IllegalArgumentException("해당 교실을 찾을 수가 없습니다."));
+//        Directory findDirectory = directoryRepository.findById(requestDocumentDto.getDirectoryId()).orElseThrow(() -> new IllegalArgumentException("해당 디렉토를을 찾을 수가 없습니다."));
+//
+//        for (MultipartFile file : requestDocumentDto.getFiles()) {
+//            try {
+//                FileUpload uploadResult = upload(file);
+//                Document document = Document.builder()
+//                        .classRoom(findClassRoom)
+//                        .directory(findDirectory)
+//                        .title(requestDocumentDto.getTitle())
+//                        .type(requestDocumentDto.getType())
+//                        .content(uploadResult.getFullPath())
+//                        .build();
+//                documentRepository.save(document);
+//            } catch(Exception e) {
+//                log.error("Failed to store file {}: {}", file.getOriginalFilename(), e.getMessage());
+//            }
+//        }
+//
+//    }
+    public void storeFiles(Long classRoomId, Long directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+        ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 교실을 찾을 수가 없습니다."));
+        Directory findDirectory = directoryRepository.findById(directoryId).orElseThrow(() -> new IllegalArgumentException("해당 디렉토를을 찾을 수가 없습니다."));
+
+        if(requestDocumentDto.size() != files.size()) {
+            throw new RuntimeException("한쪽 요소 부족");
+        }
+        for(int i = 0; i < requestDocumentDto.size(); i++) {
+            try {
+                FileUpload uploadResult = upload(files.get(i));
+                Document document = Document.builder()
+                        .classRoom(findClassRoom)
+                        .directory(findDirectory)
+                        .title(requestDocumentDto.get(i).getTitle())
+                        .type(requestDocumentDto.get(i).getType())
+                        .content(uploadResult.getFullPath())
+                        .build();
+                documentRepository.save(document);
+            } catch(Exception e) {
+                log.error("Failed to store file {}: {}", files.get(i).getOriginalFilename(), e.getMessage());
+            }
+        }
+    }
+
+    public String getFullPath(String fileName) {
+        return uploadDir + File.separator + fileName;
+    }
+
+    public FileUpload upload(MultipartFile file) {
+
+        String originalFileName = file.getOriginalFilename();
+        String storedFileName = generateStoredFileName(originalFileName);
+        String fullPath = getFullPath(storedFileName);
+        File dest = new File(fullPath);
+
+        if(!dest.getParentFile().exists()) {
+            boolean created = dest.getParentFile().mkdirs();
+            if(!created) {
+                log.error("Unable to create directory {}", dest.getParentFile().getAbsolutePath());
+                throw new RuntimeException("Directory creation failed");
+            }
+        }
+
+        try {
+            file.transferTo(dest);
+        } catch (IOException e) {
+            log.error("File uploading failed {}", originalFileName, e);
+            throw new RuntimeException("File uploading failed " + originalFileName, e);
+        }
+        log.info("File uploaded {}", originalFileName);
+        return FileUpload.builder()
+                .originalFileName(originalFileName)
+                .storedFileName(storedFileName)
+                .fullPath(fullPath)
+                .build();
+    }
+
+    public List<FileUpload> storeFiles(MultipartFile[] files) {
+        List<FileUpload> responses = new ArrayList<>();
+        for (MultipartFile file : files) {
+            try {
+                FileUpload uploadResult = upload(file);
+                responses.add(uploadResult);
+            } catch(Exception e) {
+                log.error("Failed to store file {}: {}", file.getOriginalFilename(), e.getMessage());
+            }
+        }
+        return responses;
+    }
+
+    // uuid_원본파일명
+    private String generateStoredFileName(String originalFileName) {
+        return UUID.randomUUID().toString() + "_" + originalFileName;
+    }
+}
