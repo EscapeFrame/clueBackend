@@ -36,6 +36,15 @@ public class ClassRoomController {
         return ResponseEntity.ok(classRoomService.findMyClassRoomById(userId));
     }
 
+    @GetMapping("/{classId}/all")
+    public ResponseEntity<?> getAllInfo(HttpServletRequest request, @PathVariable Long classId){
+        String token = jwtUtil.getToken(request);
+//        Long userId = jwtUtil.getUserId(token);
+//        Role role = jwtUtil.getRole(token);
+
+        return ResponseEntity.ok(classRoomService.getAllInfo(classId));
+    }
+
     @PostMapping
     public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
