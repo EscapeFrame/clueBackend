@@ -2,14 +2,16 @@ package hello.cluebackend.domain.assignment.domain;
 
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "assignment_check")
 @Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class AssignmentCheck {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name="assignment_check_id")

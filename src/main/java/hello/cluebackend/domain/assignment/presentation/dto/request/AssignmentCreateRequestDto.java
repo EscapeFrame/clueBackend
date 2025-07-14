@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.assignment.presentation.dto.request;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +10,13 @@ public class AssignmentCreateRequestDto {
   private String title;
   private String content;
   private LocalDateTime startData;
-  private LocalDateTime endDate;
+  private LocalDateTime dueDate;
+
+  // 파일 저장을 위한 정보
+  private String originalFileName;
+  private String storedFileName;
+  private String filePath;
+  private int fileSize;
+  private int submitType;
+  private LocalDateTime updateDate;
 }

@@ -12,34 +12,33 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssignmentContent {
+public class AssignmentAttachment {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="assignment_content_id")
   private Long assignmentContentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @Column(name="user_id")
+  @JoinColumn(name = "user_id")
   private UserEntity user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="assignment_id")
   private Assignment assignment;
 
-  @JoinColumn(name="original_file_name")
+  @Column(name = "original_file_name")
   private String originalFileName;
 
-  @Column(name="stored_file_name")
+  @Column(name = "stored_file_name")
   private String storedFileName;
 
-  @Column(name="file_path")
+  @Column(name = "file_path")
   private String filePath;
 
-  @Column(name="file_size")
-  private int fileSize;
+  @Column(name = "file_size")
+  private Integer fileSize;
 
   @Column(name = "submit_type")
-  private int submitType; // 1. 랑크 , 2. 파일
+  private Integer submitType;
 
-  @Column(name="update_date")
+  @Column(name = "update_date")
   private LocalDateTime updateDate;
 }

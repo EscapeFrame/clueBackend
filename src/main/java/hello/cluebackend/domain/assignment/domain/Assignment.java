@@ -19,22 +19,22 @@ public class Assignment {
   private Long assignmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="class_id")
+  @JoinColumn(name = "class_id")
   private ClassRoom classRoom;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="creator_id")
+  @JoinColumn(name = "creator_id")
   private UserEntity creator;
 
   @Column(name = "title")
   private String title;
 
-  @Column(name="content")
+  @Column(name = "content")
   private String content;
 
-  @Column(name="start_date")
+  @Column(name = "start_date")
   private LocalDateTime startDate;
 
-  @Column(name="due_date")
+  @Column(name = "due_date")
   private LocalDateTime dueDate;
 }
