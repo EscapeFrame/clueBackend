@@ -60,7 +60,7 @@ class ClassRoomControllerTest {
         // when
         ResponseEntity<List<ClassRoomCardDto>> response = classRoomController.getAllClassRooms(mockRequest);
 
-        // then
+        // then.
         assertThat(200).isEqualTo(response.getStatusCode().value());
         Assertions.assertNotNull(response.getBody());
         assertThat(2).isEqualTo(response.getBody().size());
