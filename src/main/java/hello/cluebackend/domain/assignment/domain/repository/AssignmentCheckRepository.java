@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface AssignmentCheckRepository extends JpaRepository<AssignmentCheck, Long> {
 
+  List<AssignmentCheck> findAllByAssignment_AssignmentId(Long assignmentId);
 }

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class AssignmentAttachment {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long assignmentContentId;
+  private Long assignmentAttachmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
