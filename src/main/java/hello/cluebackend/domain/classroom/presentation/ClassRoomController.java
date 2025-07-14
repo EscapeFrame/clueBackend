@@ -60,9 +60,41 @@ public class ClassRoomController {
         try {
             classRoomService.joinClassRoom(userId, code);
             return ResponseEntity.ok().build();
-        } catch (RuntimeException e){
+        } catch (IllegalArgumentException e){
             log.debug(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/{classId}")
+    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable Long classId, HttpServletRequest request) {
+        String token = jwtUtil.getToken(request);
+        Role role = jwtUtil.getRole(token);
+
+        if(role != Role.TEACHER) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        ClassRoomDto findClassRoomDto = classRoomService.findById(classId);
+        return ResponseEntity.ok(findClassRoomDto);
+    }
+
+    @PatchMapping("/{classId}")
+    public ResponseEntity<?> updateClassRoom(@PathVariable Long classId, @RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
+        String token = jwtUtil.getToken(request);
+        Role role = jwtUtil.getRole(token);
+
+        if(role != Role.TEACHER) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            classRoomService.updateClassRoom(classId, classRoomDTO);
+        } catch (IllegalArgumentException e){
+            log.debug(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

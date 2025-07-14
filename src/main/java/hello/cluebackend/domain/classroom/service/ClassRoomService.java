@@ -50,22 +50,28 @@ public class ClassRoomService {
         classRoomUserRepository.save(classRoomUser);
     }
 
-    public ClassRoomDto getClassRoomByClassId(Long classid) {
-        ClassRoom classRoom = classRoomRepository.findById(classid).orElseThrow(() -> new RuntimeException("classroom not found"));
-        return classRoom.toDTO();
-    }
-
-    public boolean existCode(String code) {
-        return classRoomRepository.existsByCode(code);
-    }
-
     public void joinClassRoom(Long userId, String code) {
-        ClassRoom findClassRoom = classRoomRepository.findByCode(code).orElseThrow(() -> new RuntimeException("classroom not found"));
-        UserEntity findUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+        ClassRoom findClassRoom = classRoomRepository.findByCode(code).orElseThrow(() -> new IllegalArgumentException("classroom not found"));
+        UserEntity findUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
         ClassRoomUser classRoomUser = ClassRoomUser.builder()
                 .user(findUser)
                 .classRoom(findClassRoom)
                 .build();
         classRoomUserRepository.save(classRoomUser);
+    }
+
+    public ClassRoomDto findById(Long classRoomId) {
+        ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+        return findClassRoom.toDTO();
+    }
+
+    public void updateClassRoom(Long classId, ClassRoomDto classRoomDTO) {
+        ClassRoom findClassRoom =  classRoomRepository.findById(classId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+        findClassRoom.setName(classRoomDTO.getName());
+        findClassRoom.setSort(classRoomDTO.getSort());
+        findClassRoom.setDescription(classRoomDTO.getDescription());
+        findClassRoom.setTarget(classRoomDTO.getTarget());
+        findClassRoom.setIsActivation(classRoomDTO.getIsActivation());
+        classRoomRepository.save(findClassRoom);
     }
 }
