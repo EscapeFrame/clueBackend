@@ -36,8 +36,8 @@ public class ClassRoomService {
         this.userRepository = userRepository;
     }
 
-    public List<ClassRoomCardDto> findMyClassRoomById(Long id) {
-        List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(id);
+    public List<ClassRoomCardDto> findMyClassRoomById(Long userId) {
+        List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(userId);
         return classRoomUsers.stream()
                 .filter(cu -> cu.getUser().getRole() == Role.STUDENT)
                 .map(ClassRoomUser::getClassRoom)

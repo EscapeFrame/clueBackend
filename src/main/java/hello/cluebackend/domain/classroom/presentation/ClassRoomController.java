@@ -82,9 +82,9 @@ public class ClassRoomController {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
 
-        if(role != Role.TEACHER) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+//        if(role != Role.TEACHER) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
 
         ClassRoomDto findClassRoomDto = classRoomService.findById(classId);
         return ResponseEntity.ok(findClassRoomDto);
