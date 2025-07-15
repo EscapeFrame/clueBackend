@@ -130,9 +130,10 @@ public class DocumentService {
     }
 
     public void updateDocument(Long classRoomId, Long directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+        System.out.println("directoryId = " + directoryId);
         ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 교실을 찾을 수가 없습니다."));
         Directory findDirectory = directoryRepository.findById(directoryId).orElseThrow(() -> new IllegalArgumentException("해당 디렉토를을 찾을 수가 없습니다."));
-
+        System.out.println("통과");
         if(requestDocumentDto.size() != files.size()) {
             throw new RuntimeException("한쪽 요소 부족");
         }
@@ -153,14 +154,10 @@ public class DocumentService {
 
             try {
                 FileUpload uploadResult = upload(files.get(i));
-                Document document = Document.builder()
-                        .classRoom(findClassRoom)
-                        .directory(findDirectory)
-                        .title(requestDocumentDto.get(i).getTitle())
-                        .type(requestDocumentDto.get(i).getType())
-                        .content(uploadResult.getFullPath())
-                        .build();
-                documentRepository.save(document);
+                findDocument.setTitle(requestDocumentDto.get(i).getTitle());
+                findDocument.setType(requestDocumentDto.get(i).getType());
+                findDocument.setContent(uploadResult.getFullPath());
+                documentRepository.save(findDocument);
             } catch(Exception e) {
                 log.error("Failed to store file {}: {}", files.get(i).getOriginalFilename(), e.getMessage());
             }
