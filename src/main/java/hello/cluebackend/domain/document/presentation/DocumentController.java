@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.document.presentation;
 
-import com.nimbusds.jose.util.Resource;
 import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
 import hello.cluebackend.domain.document.presentation.dto.FileUpload;
 import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
@@ -81,22 +80,24 @@ public class DocumentController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/download")
-    public ResponseEntity<Resource> downloadDocument(@RequestParam("documentId") Long documentId) {
+    @GetMapping("/download/{documentId}")
+    public ResponseEntity<UrlResource> downloadDocument(@PathVariable("documentId") Long documentId) {
 
         try {
             DocumentDto documentDto = documentService.findById(documentId);
             String fullPath = documentDto.getContent();
             UrlResource resource = new UrlResource("file:" + fullPath);
-        } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (MalformedURLException e) {
+
+            String encodedFileName = UriUtils.encode(fullPath.split("_")[1], StandardCharsets.UTF_8);
+            String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                    .body(resource);
+        } catch (MalformedURLException | IllegalArgumentException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/test")
@@ -110,19 +111,6 @@ public class DocumentController {
 
         List<FileUpload> fileUploads = localStorageService.storeFiles(files);
         return ResponseEntity.ok(fileUploads);
-    }
-
-    @GetMapping("/download/{filename}")
-    public ResponseEntity<UrlResource> downloadFile(@PathVariable String filename) throws MalformedURLException {
-        String fullPath = localStorageService.getFullPath(filename);
-        UrlResource resource = new UrlResource("file:" + fullPath);
-
-        String encodedFileName = UriUtils.encode(filename, StandardCharsets.UTF_8);
-        String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(resource);
     }
 
 }
