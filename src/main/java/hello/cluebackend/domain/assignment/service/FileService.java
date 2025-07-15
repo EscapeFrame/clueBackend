@@ -36,8 +36,7 @@ public class FileService {
 
     try {
       // 3. S3에 업로드
-      amazonS3Client.putObject(new PutObjectRequest(bucket, storedFileName, file.getInputStream(), metadata)
-              .withCannedAcl(CannedAccessControlList.PublicRead)); // 공개 권한 설정
+      amazonS3Client.putObject(new PutObjectRequest(bucket, storedFileName, file.getInputStream(), metadata)); // 공개 권한 설정
 
       // 4. 업로드 후 URL 반환
       return amazonS3Client.getUrl(bucket, storedFileName).toString();

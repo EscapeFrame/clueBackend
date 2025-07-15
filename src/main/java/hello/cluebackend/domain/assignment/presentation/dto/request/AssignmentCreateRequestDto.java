@@ -15,5 +15,5 @@ public class AssignmentCreateRequestDto {
   private LocalDateTime startData;
   private LocalDateTime dueDate;
 
-  private List<MultipartFile> files;
+  List<MultipartFile> files;
 }
