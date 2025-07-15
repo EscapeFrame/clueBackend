@@ -16,6 +16,7 @@ import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class ClassRoomService {
         ClassRoom classRoom = classRoomDTO.toEntity();
         classRoomRepository.save(classRoom);
 
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
 
         ClassRoomUser classRoomUser = ClassRoomUser.builder()
                 .classRoom(classRoom)

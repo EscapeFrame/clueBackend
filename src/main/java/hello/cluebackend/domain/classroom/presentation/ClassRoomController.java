@@ -7,6 +7,7 @@ import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.config.JWTUtil;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,8 @@ public class ClassRoomController {
         try {
             classRoomService.createClassRoom(classRoomDTO, userId);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (RuntimeException e){
+        } catch (EntityNotFoundException e){
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
