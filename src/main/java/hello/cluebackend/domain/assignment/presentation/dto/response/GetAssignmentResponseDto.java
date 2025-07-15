@@ -1,13 +1,12 @@
 package hello.cluebackend.domain.assignment.presentation.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-public record AssignmentListResponseDto(
+public record GetAssignmentResponseDto(
+        Long assignmentId,
         String title,
-        String content,
-        LocalDateTime startDate,
         LocalDateTime endDate,
-        String fileName,
-        Long fileId
-) {
-}
+        String duringDate,
+        List<Assignmentfile> files
+) {}

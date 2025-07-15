@@ -1,9 +1,12 @@
 package hello.cluebackend.domain.assignment.presentation.dto.request;
 
+import hello.cluebackend.domain.assignment.domain.SubmitType;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Setter
 public class AssignmentCreateRequestDto {
@@ -12,11 +15,5 @@ public class AssignmentCreateRequestDto {
   private LocalDateTime startData;
   private LocalDateTime dueDate;
 
-  // 파일 저장을 위한 정보
-  private String originalFileName;
-  private String storedFileName;
-  private String filePath;
-  private int fileSize;
-  private int submitType;
-  private LocalDateTime updateDate;
+  private List<MultipartFile> files;
 }

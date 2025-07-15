@@ -19,12 +19,12 @@ public class Assignment {
   private Long assignmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "class_id")
+  @JoinColumn(name = "class_room_id")
   private ClassRoom classRoom;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "creator_id")
-  private UserEntity creator;
+  private UserEntity user;
 
   @Column(name = "title")
   private String title;

@@ -3,9 +3,11 @@ package hello.cluebackend.domain.assignment.domain.repository;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface AssignmentAttachmentRepository extends JpaRepository<Long, AssignmentAttachment> {
-  Optional<Object> findByAssignment(Assignment assignment);
+@Repository
+public interface AssignmentAttachmentRepository extends JpaRepository<AssignmentAttachment,Long> {
+  List<AssignmentAttachment> findAllByAssignment(Assignment assignment);
 }

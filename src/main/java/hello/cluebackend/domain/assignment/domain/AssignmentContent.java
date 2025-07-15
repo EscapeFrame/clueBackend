@@ -18,7 +18,7 @@ public class AssignmentContent {
   private Long assignmentContentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @Column(name="user_id")
+  @JoinColumn(name="user_id")
   private UserEntity user;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -37,8 +37,9 @@ public class AssignmentContent {
   @Column(name="file_size")
   private int fileSize;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "submit_type")
-  private int submitType; // 1. 랑크 , 2. 파일
+  private SubmitType submitType; // 1. 랑크 , 2. 파일
 
   @Column(name="update_date")
   private LocalDateTime updateDate;
