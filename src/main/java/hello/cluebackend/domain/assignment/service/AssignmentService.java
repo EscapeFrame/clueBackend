@@ -50,7 +50,7 @@ public class AssignmentService {
   private UserEntity validated(Long userId, Long classId){
     UserEntity user = userRepository.findById(userId)
             .orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을수 없습니다."));
-
+//    System.out.println("user = " + user);
     if(!Role.TEACHER.equals(user.getRole())) {
       throw new AccessDeniedException("권한이 부족한 사용자 입니다.");
     }
@@ -122,7 +122,7 @@ public class AssignmentService {
 
   @Transactional
   public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto, List<MultipartFile> files) {
-    UserEntity user = validated(classId, userId);
+    UserEntity user = validated(userId, classId);
     ClassRoom classRoom = classRoomRepository.findById(classId)
             .orElseThrow(() -> new EntityNotFoundException("해당 반을 찾을 수 없습니다."));
 

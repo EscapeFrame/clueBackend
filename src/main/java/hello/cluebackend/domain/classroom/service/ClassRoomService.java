@@ -39,7 +39,7 @@ public class ClassRoomService {
     public List<ClassRoomCardDto> findMyClassRoomById(Long userId) {
         List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(userId);
         return classRoomUsers.stream()
-                .filter(cu -> cu.getUser().getRole() == Role.STUDENT)
+//                .filter(cu -> cu.getUser().getRole() == Role.STUDENT)
                 .map(ClassRoomUser::getClassRoom)
                 .map(ClassRoom::toCardDTO)
                 .toList();

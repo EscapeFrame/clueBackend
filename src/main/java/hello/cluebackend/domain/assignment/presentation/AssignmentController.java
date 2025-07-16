@@ -14,6 +14,7 @@ import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/assignments")
@@ -56,9 +58,14 @@ public class AssignmentController {
           @RequestPart("metadata") AssignmentCreateRequestDto requestDto,
           @RequestPart("files") List<MultipartFile> files
   ){
-    Long userId = jwtTokenTaker(request);
-    assignmentService.createAssignment(userId, classId, requestDto, files);
-    return ResponseEntity.status(HttpStatus.CREATED).body("과제 생성 완료");
+    try {
+      Long userId = jwtTokenTaker(request);
+      assignmentService.createAssignment(userId, classId, requestDto, files);
+      return ResponseEntity.status(HttpStatus.CREATED).body("과제 생성 완료");
+    } catch(Exception e) {
+      log.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
   }
 
   // 선생님 첨부 파일 다운 받기
