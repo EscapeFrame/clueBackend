@@ -38,6 +38,7 @@ public class AssignmentController {
     return userId;
   }
 
+  // 교실 전체 과제 조회하기
   @GetMapping("/{classId}")
   public ResponseEntity<List<GetAssignmentResponseDto>> getAllAssignment(
           HttpServletRequest request,
@@ -47,6 +48,7 @@ public class AssignmentController {
     return ResponseEntity.ok(assignmentService.getAllAssignment(classId, userId));
   }
 
+  // 과제 생성하기
   @PostMapping("/{classId}")
   public ResponseEntity<?> createAssignment(
           HttpServletRequest request,
@@ -59,6 +61,7 @@ public class AssignmentController {
     return ResponseEntity.status(HttpStatus.CREATED).body("과제 생성 완료");
   }
 
+  // 선생님 첨부 파일 다운 받기
   @GetMapping("/attachment/{attachmentId}")
   public ResponseEntity<Resource> downloadAttachment(
           @PathVariable Long attachmentId,
@@ -74,14 +77,18 @@ public class AssignmentController {
             .body(file);
   }
 
-//  // 학생 메인 페이지 과제 남은 일수
-//  @GetMapping("/check")
-//  public ResponseEntity<List<StudentAssignmentRemain>> getStudentRemainCard (
-//          HttpServletRequest request
-//  ){
-//    Long userId = jwtTokenTaker(request);
-//    return ResponseEntity.ok(assignmentService.StudentAssignmentRemain(userId));
-//  }
+
+  // 학생 메인 페이지 과제 남은 일수
+  @GetMapping("/check")
+  public ResponseEntity<List<StudentAssignmentRemain>> getStudentRemainCard (
+          HttpServletRequest request
+  ){
+    Long userId = jwtTokenTaker(request);
+    List<StudentAssignmentRemain> remains = assignmentService.getUnsubmittedAssignments(userId);
+    return ResponseEntity.ok(remains);
+  }
+
+
 
 //
 //  @DeleteMapping("/{classId}")
@@ -114,17 +121,6 @@ public class AssignmentController {
 //    return ResponseEntity.ok(assignmentService.getAssignmentList(classId));
 //  }
 
-//  @GetMapping("/{classId}/check")
-//  public ResponseEntity<?> getSubmitStatus(
-//          HttpServletRequest request,
-//          @PathVariable Long classId,
-//          @RequestParam Long assignmentId
-//  ) {
-//    String token = jWTUtil.getToken(request);
-//    Long userId = jWTUtil.getUserId(token);
-//
-//    return ResponseEntity.ok(assignmentService.getSubmissionStatus(classId, assignmentId));
-//  }
 
 //  @GetMapping("{classId}")
 //  public ResponseEntity<List<AssignmentCardDto>> getAllAssignments(

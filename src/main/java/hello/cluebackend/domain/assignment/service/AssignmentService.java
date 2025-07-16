@@ -14,6 +14,7 @@ import hello.cluebackend.domain.assignment.domain.repository.AssignmentContentRe
 import hello.cluebackend.domain.assignment.domain.repository.AssignmentRepository;
 import hello.cluebackend.domain.assignment.domain.repository.AssignmentCheckRepository;
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
+import hello.cluebackend.domain.assignment.presentation.dto.response.AssignmentDuration;
 import hello.cluebackend.domain.assignment.presentation.dto.response.Assignmentfile;
 import hello.cluebackend.domain.assignment.presentation.dto.response.GetAssignmentResponseDto;
 import hello.cluebackend.domain.assignment.presentation.dto.response.StudentAssignmentRemain;
@@ -45,6 +46,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -181,24 +183,19 @@ public class AssignmentService {
     }
   }
 
-//  public MultipartFile downloadAttachment(Long userId, Long attachmentId) {
-//    AssignmentAttachment attachment = assignmentAttachmentRepository.findById(attachmentId)
-//            .orElseThrow(() -> new EntityNotFoundException("파일이 존재하지 않습니다."));
-//
-//    String filePath = attachment.getFilePath();
-//
-//    S3Object s3Object = amazonS3Client.getObject(bucket, filePath);
-//
-//    // S3ObjectInputStream → Spring Resource 로 변환
-//    return new InputStreamResource(s3Object.getObjectContent())
-//            ;
-//  }
+  public List<StudentAssignmentRemain> getUnsubmittedAssignments(Long userId) {
+    UserEntity user = userRepository.findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("해당 학생을 찾을수 없습니다."));
 
+    List<Assignment> assignments = assignmentCheckRepository.findUnsubmittedAssignmentsByUserId(userId);
 
-//  public List<StudentAssignmentRemain> StudentAssignmentRemain(Long userId) {
-//    classRoomUserRepository.findAllByUser
-//  }
-
+    return assignments.stream()
+            .map(a -> new StudentAssignmentRemain(
+                    a.getTitle(),
+                    new AssignmentDuration(a.getStartDate(), a.getDueDate()).toString(),
+                    a.getAssignmentId()
+            )).collect(Collectors.toList());
+  }
 
 //  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto, MultipartFile file) {
 //    UserEntity user = userRepository.findById(userId)
