@@ -40,8 +40,8 @@ public class FileService {
     try {
       amazonS3Client.putObject(new PutObjectRequest(bucket, storedFileName, file.getInputStream(), metadata)); // 공개 권한 설정
 
-      return amazonS3Client.getUrl(bucket, storedFileName).toString();
-
+//      return amazonS3Client.getUrl(bucket, storedFileName).toString();
+      return storedFileName;
     } catch (IOException e) {
       throw new RuntimeException("파일 업로드에 실패했습니다.", e);
     }

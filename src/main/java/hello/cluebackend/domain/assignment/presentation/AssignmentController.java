@@ -76,12 +76,17 @@ public class AssignmentController {
   ){
     Long userId = jwtTokenTaker(request);
 
-    Resource file = fileService.downloadFile(attachmentId, userId);
+    try {
+      Resource file = fileService.downloadFile(attachmentId, userId);
 
-    return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"downloaded-file\"")
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(file);
+      return ResponseEntity.ok()
+              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"downloaded-file\"")
+              .contentType(MediaType.APPLICATION_OCTET_STREAM)
+              .body(file);
+    } catch(Exception e) {
+      log.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
   }
 
 

@@ -11,8 +11,8 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
                 .exposedHeaders("Set-Cookie")
-//                .allowedOrigins("http://localhost:3000")
-                .allowedOrigins("https://clue-frontend-eight.vercel.app")
+                .allowedOrigins("http://10.129.57.136:3000")
+//                .allowedOrigins("https://clue-frontend-eight.vercel.app")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
                 .allowCredentials(true);
