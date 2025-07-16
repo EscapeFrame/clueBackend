@@ -1,9 +1,5 @@
 package hello.cluebackend.domain.assignment.service;
 
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.util.IOUtils;
 import com.zaxxer.hikari.pool.HikariProxyCallableStatement;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
@@ -26,22 +22,12 @@ import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,13 +40,11 @@ public class AssignmentService {
   private final UserRepository userRepository;
   private final ClassRoomUserRepository classRoomUserRepository;
   private final AssignmentRepository assignmentRepository;
-  private final AssignmentContentRepository assignmentContentRepository;
   private final AssignmentAttachmentRepository assignmentAttachmentRepository;
   private final AssignmentCheckRepository assignmentCheckRepository;
   private final ClassRoomRepository classRoomRepository;
 
   private final FileService fileService;
-  private HikariProxyCallableStatement amazonS3;
 
 
   private UserEntity validated(Long userId, Long classId){
