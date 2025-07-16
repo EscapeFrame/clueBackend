@@ -13,10 +13,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_entity")
-@Builder
 public class UserEntity {
 
     @Id
@@ -47,6 +47,7 @@ public class UserEntity {
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
     public UserEntity(int classCode, String username, String email, Role role) {
