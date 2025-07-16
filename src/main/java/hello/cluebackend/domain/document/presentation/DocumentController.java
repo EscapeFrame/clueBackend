@@ -124,6 +124,8 @@ public class DocumentController {
         }
     }
 
+
+//    테스트 용도
     @PostMapping("/test")
     public ResponseEntity<List<FileUpload>> uploadMultipartFileTest(@RequestParam("files") MultipartFile[] files, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
