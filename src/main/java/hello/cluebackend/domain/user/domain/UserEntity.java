@@ -13,10 +13,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_entity")
+@Builder
 public class UserEntity {
 
     @Id
