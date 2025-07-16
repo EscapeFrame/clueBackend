@@ -1,5 +1,10 @@
 package hello.cluebackend.domain.assignment.service;
 
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
+import com.zaxxer.hikari.pool.HikariProxyCallableStatement;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.domain.AssignmentCheck;
@@ -11,6 +16,7 @@ import hello.cluebackend.domain.assignment.domain.repository.AssignmentCheckRepo
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
 import hello.cluebackend.domain.assignment.presentation.dto.response.Assignmentfile;
 import hello.cluebackend.domain.assignment.presentation.dto.response.GetAssignmentResponseDto;
+import hello.cluebackend.domain.assignment.presentation.dto.response.StudentAssignmentRemain;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
@@ -22,14 +28,19 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,6 +58,7 @@ public class AssignmentService {
   private final ClassRoomRepository classRoomRepository;
 
   private final FileService fileService;
+  private HikariProxyCallableStatement amazonS3;
 
 
   private UserEntity validated(Long userId, Long classId){
@@ -123,7 +135,7 @@ public class AssignmentService {
   }
 
   @Transactional
-  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto) {
+  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto, List<MultipartFile> files) {
     UserEntity user = validated(classId, userId);
     ClassRoom classRoom = classRoomRepository.findById(classId)
             .orElseThrow(() -> new EntityNotFoundException("해당 반을 찾을 수 없습니다."));
@@ -139,17 +151,17 @@ public class AssignmentService {
 
     assignmentRepository.save(assignment);
 
-    if (requestDto.getFiles() != null && !requestDto.getFiles().isEmpty()) {
-      for (MultipartFile file : requestDto.getFiles()) {
-        String storedFileName = fileService.storeFile(file); // 실제 저장 구현 필요
+    if (files != null && !files.isEmpty()) {
+      for (MultipartFile file : files) {
+        String storedFileName = fileService.storeFile(file);
         AssignmentAttachment attachment = AssignmentAttachment.builder()
                 .assignment(assignment)
                 .user(user)
                 .originalFileName(file.getOriginalFilename())
                 .storedFileName(storedFileName)
-                .filePath("/uploads/" + storedFileName) // 예시 경로
+                .filePath("/uploads/" + storedFileName)
                 .fileSize((int) file.getSize())
-                .submitType(SubmitType.FILE) // enum 사용 시
+                .submitType(SubmitType.FILE)
                 .updateDate(LocalDateTime.now())
                 .build();
 
@@ -169,6 +181,23 @@ public class AssignmentService {
     }
   }
 
+//  public MultipartFile downloadAttachment(Long userId, Long attachmentId) {
+//    AssignmentAttachment attachment = assignmentAttachmentRepository.findById(attachmentId)
+//            .orElseThrow(() -> new EntityNotFoundException("파일이 존재하지 않습니다."));
+//
+//    String filePath = attachment.getFilePath();
+//
+//    S3Object s3Object = amazonS3Client.getObject(bucket, filePath);
+//
+//    // S3ObjectInputStream → Spring Resource 로 변환
+//    return new InputStreamResource(s3Object.getObjectContent())
+//            ;
+//  }
+
+
+//  public List<StudentAssignmentRemain> StudentAssignmentRemain(Long userId) {
+//    classRoomUserRepository.findAllByUser
+//  }
 
 
 //  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto, MultipartFile file) {

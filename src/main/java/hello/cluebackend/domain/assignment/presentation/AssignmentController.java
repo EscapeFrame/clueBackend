@@ -1,15 +1,21 @@
 package hello.cluebackend.domain.assignment.presentation;
 
+
+import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.exception.AssignmentNotFoundException;
 import hello.cluebackend.domain.assignment.exception.UnauthorizedException;
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
 import hello.cluebackend.domain.assignment.presentation.dto.response.GetAssignmentResponseDto;
+import hello.cluebackend.domain.assignment.presentation.dto.response.StudentAssignmentRemain;
 import hello.cluebackend.domain.assignment.service.AssignmentService;
+import hello.cluebackend.domain.assignment.service.FileService;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +30,7 @@ import java.util.List;
 public class AssignmentController {
   private final AssignmentService assignmentService;
   private final JWTUtil jWTUtil;
+  private final FileService fileService;
 
   private Long jwtTokenTaker(HttpServletRequest request){
     String token = jWTUtil.getToken(request);
@@ -44,28 +51,38 @@ public class AssignmentController {
   public ResponseEntity<?> createAssignment(
           HttpServletRequest request,
           @PathVariable Long classId,
-          @ModelAttribute AssignmentCreateRequestDto requestDto
+          @RequestPart("metadata") AssignmentCreateRequestDto requestDto,
+          @RequestPart("files") List<MultipartFile> files
   ){
     Long userId = jwtTokenTaker(request);
-    assignmentService.createAssignment(userId, classId, requestDto);
+    assignmentService.createAssignment(userId, classId, requestDto, files);
     return ResponseEntity.status(HttpStatus.CREATED).body("과제 생성 완료");
   }
 
+  @GetMapping("/attachment/{attachmentId}")
+  public ResponseEntity<Resource> downloadAttachment(
+          @PathVariable Long attachmentId,
+          HttpServletRequest request
+  ){
+    Long userId = jwtTokenTaker(request);
 
+    Resource file = fileService.downloadFile(attachmentId, userId);
 
-//  @PostMapping(value = "/{classId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//  public ResponseEntity<?> createAssignment(
-//          HttpServletRequest request,
-//          @PathVariable Long classId,
-//          @RequestPart("data") AssignmentCreateRequestDto requestDto,
-//          @RequestPart(value = "file", required = false) MultipartFile file
-//  ) {
-//    String token = jWTUtil.getToken(request);
-//    Long userId = jWTUtil.getUserId(token);
-//
-//    assignmentService.createAssignment(userId, classId, requestDto, file);
-//    return ResponseEntity.status(HttpStatus.CREATED).build();
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"downloaded-file\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(file);
+  }
+
+//  // 학생 메인 페이지 과제 남은 일수
+//  @GetMapping("/check")
+//  public ResponseEntity<List<StudentAssignmentRemain>> getStudentRemainCard (
+//          HttpServletRequest request
+//  ){
+//    Long userId = jwtTokenTaker(request);
+//    return ResponseEntity.ok(assignmentService.StudentAssignmentRemain(userId));
 //  }
+
 //
 //  @DeleteMapping("/{classId}")
 //  public ResponseEntity<Void> deleteAssignment(
