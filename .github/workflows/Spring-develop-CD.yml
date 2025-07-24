@@ -2,6 +2,7 @@ name: Spring Deplot to EC2
 
 on:
   pull_request:
+    types: [closed]
     branches: ["develop"]
 
 jobs:
