@@ -9,6 +9,7 @@ import hello.cluebackend.domain.assignment.domain.repository.AssignmentAttachmen
 import hello.cluebackend.domain.assignment.domain.repository.AssignmentContentRepository;
 import hello.cluebackend.domain.assignment.domain.repository.AssignmentRepository;
 import hello.cluebackend.domain.assignment.domain.repository.AssignmentCheckRepository;
+import hello.cluebackend.domain.assignment.presentation.dto.AssignmentAttachmentDto;
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
 import hello.cluebackend.domain.assignment.presentation.dto.response.AssignmentDuration;
 import hello.cluebackend.domain.assignment.presentation.dto.response.Assignmentfile;
@@ -18,25 +19,35 @@ import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
+import hello.cluebackend.domain.document.presentation.dto.FileUpload;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssignmentService {
+
+  @Value("${upload.local.dir}")
+  private String uploadDir;
+
   private final UserRepository userRepository;
   private final ClassRoomUserRepository classRoomUserRepository;
   private final AssignmentRepository assignmentRepository;
@@ -139,14 +150,14 @@ public class AssignmentService {
 
     if (files != null && !files.isEmpty()) {
       for (MultipartFile file : files) {
-        String storedFileName = fileService.storeFile(file);
+//        String storedFileName = fileService.storeFile(file);
+        FileUpload uploadResult = upload(file);
         AssignmentAttachment attachment = AssignmentAttachment.builder()
                 .assignment(assignment)
                 .user(user)
                 .originalFileName(file.getOriginalFilename())
-                .storedFileName(storedFileName)
-//                .filePath("/uploads/" + storedFileName)
-                .filePath(storedFileName)
+                .storedFileName(uploadResult.getStoredFileName())
+                .filePath(uploadResult.getFullPath())
                 .fileSize((int) file.getSize())
                 .submitType(SubmitType.FILE)
                 .updateDate(LocalDateTime.now())
@@ -155,6 +166,42 @@ public class AssignmentService {
         assignmentAttachmentRepository.save(attachment);
       }
     }
+
+//  @Transactional
+//  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto, List<MultipartFile> files) {
+//    UserEntity user = validated(userId, classId);
+//    ClassRoom classRoom = classRoomRepository.findById(classId)
+//            .orElseThrow(() -> new EntityNotFoundException("해당 반을 찾을 수 없습니다."));
+//
+//    Assignment assignment = Assignment.builder()
+//            .classRoom(classRoom)
+//            .user(user)
+//            .title(requestDto.getTitle())
+//            .content(requestDto.getContent())
+//            .startDate(requestDto.getStartData())
+//            .dueDate(requestDto.getDueDate())
+//            .build();
+//
+//    assignmentRepository.save(assignment);
+//
+//    if (files != null && !files.isEmpty()) {
+//      for (MultipartFile file : files) {
+//        String storedFileName = fileService.storeFile(file);
+//        AssignmentAttachment attachment = AssignmentAttachment.builder()
+//                .assignment(assignment)
+//                .user(user)
+//                .originalFileName(file.getOriginalFilename())
+//                .storedFileName(storedFileName)
+////                .filePath("/uploads/" + storedFileName)
+//                .filePath(storedFileName)
+//                .fileSize((int) file.getSize())
+//                .submitType(SubmitType.FILE)
+//                .updateDate(LocalDateTime.now())
+//                .build();
+//
+//        assignmentAttachmentRepository.save(attachment);
+//      }
+//    }
 
     List<UserEntity> students = classRoomUserRepository.findAllStudentsByClassRoomId(classId);
     for (UserEntity student : students) {
@@ -180,6 +227,49 @@ public class AssignmentService {
                     new AssignmentDuration(a.getStartDate(), a.getDueDate()).toString(),
                     a.getAssignmentId()
             )).collect(Collectors.toList());
+  }
+
+  public FileUpload upload(MultipartFile file) {
+
+    String originalFileName = file.getOriginalFilename();
+    String storedFileName = generateStoredFileName(originalFileName);
+    String fullPath = getFullPath(storedFileName);
+    File dest = new File(fullPath);
+
+    if(!dest.getParentFile().exists()) {
+      boolean created = dest.getParentFile().mkdirs();
+      if(!created) {
+        log.error("Unable to create directory {}", dest.getParentFile().getAbsolutePath());
+        throw new RuntimeException("Directory creation failed");
+      }
+    }
+
+    try {
+      file.transferTo(dest);
+    } catch (IOException e) {
+      log.error("File uploading failed {}", originalFileName, e);
+      throw new RuntimeException("File uploading failed " + originalFileName, e);
+    }
+    log.info("File uploaded {}", originalFileName);
+    return FileUpload.builder()
+            .originalFileName(originalFileName)
+            .storedFileName(storedFileName)
+            .fullPath(fullPath)
+            .build();
+  }
+
+  // uuid_원본파일명
+  private String generateStoredFileName(String originalFileName) {
+    return UUID.randomUUID().toString() + "_" + originalFileName;
+  }
+
+  public String getFullPath(String fileName) {
+    return uploadDir + File.separator + fileName;
+  }
+
+  public AssignmentAttachmentDto findById(Long attachmentId) {
+    AssignmentAttachment findAssignmentAttachment = assignmentAttachmentRepository.findById(attachmentId).orElseThrow(() -> new EntityNotFoundException("해당 과제가 없습니다."));
+    return findAssignmentAttachment.toDto();
   }
 
 //  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto, MultipartFile file) {

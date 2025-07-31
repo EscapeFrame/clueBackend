@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.assignment.domain;
 
+import hello.cluebackend.domain.assignment.presentation.dto.AssignmentAttachmentDto;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,4 +43,18 @@ public class AssignmentAttachment {
 
   @Column(name = "update_date")
   private LocalDateTime updateDate;
+
+  public AssignmentAttachmentDto toDto() {
+    return AssignmentAttachmentDto.builder()
+            .assignmentAttachmentId(assignmentAttachmentId)
+            .assignment(assignment)
+            .user(user)
+            .originalFileName(originalFileName)
+            .storedFileName(storedFileName)
+            .filePath(filePath)
+            .fileSize(fileSize)
+            .submitType(submitType)
+            .updateDate(updateDate)
+            .build();
+  }
 }
