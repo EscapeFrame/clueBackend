@@ -2,10 +2,10 @@ spring:
   application:
     name: CLUE-Backend
   datasource:
-#    url: jdbc:postgresql://my_postgres:5432/clue
-    url: jdbc:postgresql://localhost:5432/clue
-    username: clue1234
-    password: clue52025
+#    url: jdbc:postgresql://localhost:5432/clue
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -49,6 +49,18 @@ spring:
 upload:
   local:
     dir: ${UPLOAD_FILE_DIR}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3:
+      bucket : ${AWS_BUCKET_NAME}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
 
 server:
   address: 0.0.0.0

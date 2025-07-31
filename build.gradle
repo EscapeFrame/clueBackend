@@ -33,6 +33,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testImplementation 'io.projectreactor:reactor-test'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
@@ -62,6 +63,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
 
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+    //AWS S3
+//    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:s3:2.32.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 ext {

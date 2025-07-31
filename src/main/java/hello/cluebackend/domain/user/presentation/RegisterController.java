@@ -39,7 +39,7 @@ public class RegisterController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> processRegistration(@RequestBody DefaultRegisterUserDto defaultRegisterUserDTO) {
-        log.debug("ClassCode 1 : " + defaultRegisterUserDTO.getClassCode());
+        log.info("ClassCode 1 : " + defaultRegisterUserDTO.getClassCode());
         userService.registerUser(defaultRegisterUserDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

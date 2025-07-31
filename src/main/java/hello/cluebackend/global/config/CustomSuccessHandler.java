@@ -37,10 +37,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         int classCode = userDTO.getClassCode();
         if (classCode == -1) {
             request.getSession().setAttribute("firstUser", userDTO);
+//            getRedirectStrategy().sendRedirect(
+//                    request,
+//                    response,
+//                    "http://localhost:3000/register"
+//            );
             getRedirectStrategy().sendRedirect(
                     request,
                     response,
-                    "http://localhost:3000/register"
+                    "https://clue-frontend-eight.vercel.app/register"
             );
         } else {
             String username = customUserDetails.getUsername();
@@ -58,7 +63,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.setHeader("Authorization", "Bearer " + access);
             response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect("http://localhost:3000/");
+//            response.sendRedirect("http://localhost:3000/");
+            response.sendRedirect("https://clue-frontend-eight.vercel.app");
         }
     }
 

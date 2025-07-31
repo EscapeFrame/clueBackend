@@ -18,7 +18,7 @@ public class TestController {
 
     @PostMapping("/test")
     public ResponseEntity<?> issueToken(@RequestParam Long userId, @RequestParam String username, @RequestParam String role, HttpServletResponse response) {
-        String access = jwtUtil.createJwt("access", userId, username, role, 60 * 60 * 1000L);
+        String access = jwtUtil.createJwt("access", userId, username, role, 100 * 60 * 60 * 1000L);
 
         return ResponseEntity.ok()
                 .header("Authorization", "Bearer " + access)

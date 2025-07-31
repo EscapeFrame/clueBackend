@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 @Entity
 @Getter
 @Setter
@@ -47,6 +48,7 @@ public class UserEntity {
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
     public UserEntity(int classCode, String username, String email, Role role) {
@@ -57,7 +59,6 @@ public class UserEntity {
     }
 
     public UserDto toUserDTO() {
-//        return new UserDto(userId, email, role, username, classCode);
         return UserDto.builder()
                 .userId(userId)
                 .classCode(classCode)
