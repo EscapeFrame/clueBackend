@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.assignment.domain;
 
-import hello.cluebackend.domain.assignment.presentation.dto.AssignmentAttachmentDto;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
@@ -11,19 +10,18 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Assignment")
 @Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 @Builder
 public class Assignment {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "assignment_id")
   private Long assignmentId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "classroom_id")
   private ClassRoom classRoom;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "user_id")
   private UserEntity user;
 

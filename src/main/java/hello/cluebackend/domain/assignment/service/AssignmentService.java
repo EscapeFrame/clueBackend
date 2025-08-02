@@ -3,15 +3,10 @@ package hello.cluebackend.domain.assignment.service;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.repository.AssignmentRepository;
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
-import hello.cluebackend.domain.assignmentAttachment.domain.repository.AssignmentAttachmentRepository;
-import hello.cluebackend.domain.assignmentAttachment.service.AssignmentAttachmentService;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
-import hello.cluebackend.domain.submission.domain.Submission;
-import hello.cluebackend.domain.submission.domain.repository.SubmissionRepository;
-import hello.cluebackend.domain.submission.service.SubmissionService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
@@ -19,7 +14,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -32,27 +26,28 @@ public class AssignmentService {
   private final ClassRoomUserRepository classRoomUserRepository;
   private final AssignmentRepository assignmentRepository;
   private final ClassRoomRepository classRoomRepository;
-  private final SubmissionService submissionService;
 
-  public void createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto) {
-    UserEntity user = validated(classId, userId);
+  public Assignment createAssignment(Long userId, Long classId, AssignmentCreateRequestDto requestDto) {
+    UserEntity user = validated(userId, classId);
     ClassRoom classRoom = classRoomRepository.findById(classId)
             .orElseThrow(() -> new EntityNotFoundException("해당 수업은 찾을수 없습니다."));
 
-    validateAssignmentDates(requestDto.getStartData(), requestDto.getEndDate());
+    validateAssignmentDates(requestDto.getStartDate(), requestDto.getEndDate());
 
     Assignment assignment = Assignment.builder()
             .classRoom(classRoom)
             .user(user)
             .title(requestDto.getTitle())
             .content(requestDto.getContent())
-            .startDate(requestDto.getStartData())
+            .startDate(requestDto.getStartDate())
             .endDate(requestDto.getEndDate())
             .build();
     assignmentRepository.save(assignment);
 
-    List<UserEntity> students = classRoomUserRepository.findAllStudentsByClassRoomId(classId);
-    submissionService.createSubmissionsForStudents(assignment, students);
+    return assignment;
+
+//    List<UserEntity> students = classRoomUserRepository.findAllStudentsByClassRoomId(classId);
+//    submissionService.createSubmissionsForStudents(assignment, students);
   }
 
 //

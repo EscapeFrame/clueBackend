@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.assignment.presentation;
 
+import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
 import hello.cluebackend.domain.assignment.service.AssignmentService;
 import hello.cluebackend.global.config.JWTUtil;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class AssignmentController {
 
   // 선생님 과제 생성하기
   @PostMapping("/create/{classId}")
-  public ResponseEntity<?> createAssignment(
+  public ResponseEntity<Assignment> createAssignment(
           HttpServletRequest request,
           @PathVariable Long classId,
           @Valid @RequestBody AssignmentCreateRequestDto requestDto
@@ -29,10 +29,11 @@ public class AssignmentController {
     try{
       String token = jWTUtil.getToken(request);
       Long userId = jWTUtil.getUserId(token);
-      assignmentService.createAssignment(userId, classId, requestDto);
-      return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message","과제가 성공적으로 생성되었습니다."));
+      Assignment createAssignment = assignmentService.createAssignment(userId, classId, requestDto);
+      return new ResponseEntity<>(createAssignment, HttpStatus.CREATED);
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message","과제 생성중 오류가 발했습니다."));
+      e.printStackTrace();
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

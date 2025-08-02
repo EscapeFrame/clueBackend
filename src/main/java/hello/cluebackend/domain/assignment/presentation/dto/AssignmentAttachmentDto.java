@@ -1,16 +1,13 @@
 package hello.cluebackend.domain.assignment.presentation.dto;
 
 import hello.cluebackend.domain.assignment.domain.Assignment;
-import hello.cluebackend.domain.assignment.domain.SubmitType;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
-@Builder
+@Getter @Setter
+@ToString @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentAttachmentDto {
@@ -21,6 +18,5 @@ public class AssignmentAttachmentDto {
     private String storedFileName;
     private String filePath;
     private Integer fileSize;
-    private SubmitType submitType;
     private LocalDateTime updateDate;
 }
