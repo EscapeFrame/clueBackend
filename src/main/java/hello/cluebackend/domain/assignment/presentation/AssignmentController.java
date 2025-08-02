@@ -1,28 +1,16 @@
 package hello.cluebackend.domain.assignment.presentation;
 
-
-import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
-import hello.cluebackend.domain.assignment.exception.AssignmentNotFoundException;
-import hello.cluebackend.domain.assignment.exception.UnauthorizedException;
 import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentCreateRequestDto;
-import hello.cluebackend.domain.assignment.presentation.dto.response.GetAssignmentResponseDto;
-import hello.cluebackend.domain.assignment.presentation.dto.response.StudentAssignmentRemain;
 import hello.cluebackend.domain.assignment.service.AssignmentService;
-import hello.cluebackend.domain.assignment.service.FileService;
-import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.global.config.JWTUtil;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,103 +18,72 @@ import java.util.List;
 public class AssignmentController {
   private final AssignmentService assignmentService;
   private final JWTUtil jWTUtil;
-  private final FileService fileService;
 
-  private Long jwtTokenTaker(HttpServletRequest request){
-    String token = jWTUtil.getToken(request);
-    Long userId = jWTUtil.getUserId(token);
-    return userId;
-  }
-
-  // 교실 전체 과제 조회하기
-  @GetMapping("/{classId}")
-  public ResponseEntity<List<GetAssignmentResponseDto>> getAllAssignment(
-          HttpServletRequest request,
-          @PathVariable Long classId
-  ){
-    Long userId = jwtTokenTaker(request);
-    return ResponseEntity.ok(assignmentService.getAllAssignment(classId, userId));
-  }
-
-  // 과제 생성하기
-  @PostMapping("/{classId}")
+  // 선생님 과제 생성하기
+  @PostMapping("/create/{classId}")
   public ResponseEntity<?> createAssignment(
           HttpServletRequest request,
           @PathVariable Long classId,
-          @RequestPart("metadata") AssignmentCreateRequestDto requestDto,
-          @RequestPart("files") List<MultipartFile> files
+          @Valid @RequestBody AssignmentCreateRequestDto requestDto
   ){
-    Long userId = jwtTokenTaker(request);
-    assignmentService.createAssignment(userId, classId, requestDto, files);
-    return ResponseEntity.status(HttpStatus.CREATED).body("과제 생성 완료");
+    try{
+      String token = jWTUtil.getToken(request);
+      Long userId = jWTUtil.getUserId(token);
+      assignmentService.createAssignment(userId, classId, requestDto);
+      return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message","과제가 성공적으로 생성되었습니다."));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message","과제 생성중 오류가 발했습니다."));
+    }
   }
 
-  // 선생님 첨부 파일 다운 받기
-  @GetMapping("/attachment/{attachmentId}")
-  public ResponseEntity<Resource> downloadAttachment(
-          @PathVariable Long attachmentId,
-          HttpServletRequest request
-  ){
-    Long userId = jwtTokenTaker(request);
-
-    Resource file = fileService.downloadFile(attachmentId, userId);
-
-    return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"downloaded-file\"")
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(file);
-  }
-
-
-  // 학생 메인 페이지 과제 남은 일수
-  @GetMapping("/check")
-  public ResponseEntity<List<StudentAssignmentRemain>> getStudentRemainCard (
-          HttpServletRequest request
-  ){
-    Long userId = jwtTokenTaker(request);
-    List<StudentAssignmentRemain> remains = assignmentService.getUnsubmittedAssignments(userId);
-    return ResponseEntity.ok(remains);
-  }
-
-
-
-//
-//  @DeleteMapping("/{classId}")
-//  public ResponseEntity<Void> deleteAssignment(
-//          HttpServletRequest request,
-//          @PathVariable Long classId,
-//          @RequestParam("assignmentId") Long assignmentId
-//  ) {
+//  // 미제출 과제 전체 조회(학생)
+//  @GetMapping("/")
+//  public ResponseEntity<List<StudentAssignmentRemain>> getStudentRemainCard (HttpServletRequest request){
 //    String token = jWTUtil.getToken(request);
 //    Long userId = jWTUtil.getUserId(token);
 //
-//    try {
-//      assignmentService.deleteAssignment(classId, assignmentId, userId);
-//      return ResponseEntity.noContent().build();
-//    } catch (AssignmentNotFoundException e) {
-//      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//    } catch (UnauthorizedException e) {
-//      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-//    }
+//    return ResponseEntity.ok(assignmentService.getUnsubmittedAssignments(userId));
 //  }
 //
+//  // 교실 전체 과제 조회하기
 //  @GetMapping("/{classId}")
-//  public ResponseEntity<?> getAssignmentList(
-//          HttpServletRequest request,
-//          @PathVariable Long classId
-//  ) {
+//  public ResponseEntity<List<GetAssignmentResponseDto>> getAllAssignment(HttpServletRequest request, @PathVariable Long classId){
 //    String token = jWTUtil.getToken(request);
 //    Long userId = jWTUtil.getUserId(token);
 //
-//    return ResponseEntity.ok(assignmentService.getAssignmentList(classId));
+//    return ResponseEntity.ok(assignmentService.getAllAssignment(classId, userId));
+//  }
+//
+//  // 특정 교실의 학생들의 과제 제출 여부
+//  @GetMapping("/{assignmentId}/submissions")
+//  public ResponseEntity<List<AssignmentSubmissionStatusDto>> getAssignmentSubmissionStatus(HttpServletRequest request, @PathVariable Long assignmentId){
+//    String token = jWTUtil.getToken(request);
+//    Long userId = jWTUtil.getUserId(token);
+//
+//    return ResponseEntity.ok(assignmentService.checkAssignments(assignmentId));
+//  }
+//
+//  // 특정 수업에 학생들의 단일 과제 제출 여부 확인 API
+//  @GetMapping("/assignments/classroom/{assignmentId}/{userId}")
+//  public ResponseEntity<AssignmentSubmissionDto> getAssignmentSubmissionPerson(HttpServletRequest request, @PathVariable Long assignmentId, @PathVariable Long userId) {
+//    String token = jWTUtil.getToken(request);
+//    Long userId = jWTUtil.getUserId(token);
+//
+//    return ResponseEntity.ok(assignmentService.checkAssignment(assignmentId,userId));
 //  }
 
+//  //과제 내용 수정
+//  @PatchMapping("/api/assignments/{assignmentId}")
+//  public ResponseEntity modifyAssignment(HttpServletRequest request, @PathVariable Long assignmentId, @RequestBody AssignmentModifyRequestDto assignmentModifyRequestDto){
+//    jwtTokenTaker(request);
+//
+//    return ResponseEntity.ok(assignmentService.modifyAssignment(assignmentId,assignmentModifyRequestDto));
+//  }
 
-//  @GetMapping("{classId}")
-//  public ResponseEntity<List<AssignmentCardDto>> getAllAssignments(
-//          @PathVariable Long classId,
-//          @RequestParam Long userId
-//  ){
-//    return ResponseEntity.ok(assignmentService.getAssignmentsForStudent(classId, userId));
+//  // 과제 삭제
+//  @DeleteMapping("/api/assignments/{assignmentId}")
+//  public ResponseEntity deleteAssignment(HttpServlet request, @PathVariable Long assignmentId){
+//    jwtTokenTaker(request);
+//    return ResponseEntity.ok(assignmentService.deleteAssignment(assignmentId));
 //  }
 }

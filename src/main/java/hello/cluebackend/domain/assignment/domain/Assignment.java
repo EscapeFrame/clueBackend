@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "assignments")
+@Table(name = "Assignment")
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,11 +19,11 @@ public class Assignment {
   private Long assignmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "class_room_id")
+  @JoinColumn(name = "classroom_id")
   private ClassRoom classRoom;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "creator_id")
+  @JoinColumn(name = "user_id")
   private UserEntity user;
 
   @Column(name = "title")
@@ -35,6 +35,6 @@ public class Assignment {
   @Column(name = "start_date")
   private LocalDateTime startDate;
 
-  @Column(name = "due_date")
-  private LocalDateTime dueDate;
+  @Column(name = "end_date")
+  private LocalDateTime endDate;
 }
