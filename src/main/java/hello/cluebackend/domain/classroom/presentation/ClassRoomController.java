@@ -7,6 +7,7 @@ import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.config.JWTUtil;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,15 @@ public class ClassRoomController {
         return ResponseEntity.ok(classRoomService.findMyClassRoomById(userId));
     }
 
+    @GetMapping("/{classId}/all")
+    public ResponseEntity<?> getAllInfo(HttpServletRequest request, @PathVariable Long classId){
+        String token = jwtUtil.getToken(request);
+//        Long userId = jwtUtil.getUserId(token);
+//        Role role = jwtUtil.getRole(token);
+
+        return ResponseEntity.ok(classRoomService.getAllInfo(classId));
+    }
+
     @PostMapping
     public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
@@ -46,7 +56,8 @@ public class ClassRoomController {
         try {
             classRoomService.createClassRoom(classRoomDTO, userId);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (RuntimeException e){
+        } catch (EntityNotFoundException e){
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -70,9 +81,9 @@ public class ClassRoomController {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
 
-        if(role != Role.TEACHER) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+//        if(role != Role.TEACHER) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
 
         ClassRoomDto findClassRoomDto = classRoomService.findById(classId);
         return ResponseEntity.ok(findClassRoomDto);

@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.assignment.domain;
 
+import hello.cluebackend.domain.assignment.presentation.dto.AssignmentAttachmentDto;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
