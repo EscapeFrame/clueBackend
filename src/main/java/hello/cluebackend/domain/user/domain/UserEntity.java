@@ -47,10 +47,6 @@ public class UserEntity {
         createdAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<ClassRoomUser> classRoomUserList = new ArrayList<>(); // 해당 객체는 해당 table과의 연관성이 없음.
-
     public UserEntity(int classCode, String username, String email, Role role) {
         this.classCode = classCode;
         this.username = username;
