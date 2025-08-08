@@ -1,6 +1,6 @@
 //package hello.cluebackend.global.common.response;
 //
-//import hello.cluebackend.assignment.domain.Assignment;
+//import hello.cluebackend.assignment.management.domain.Assignment;
 //import lombok.*;
 //
 //import java.util.List;
