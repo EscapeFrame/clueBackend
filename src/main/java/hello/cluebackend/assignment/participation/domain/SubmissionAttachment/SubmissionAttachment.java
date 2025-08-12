@@ -14,13 +14,10 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DTYPE")
 @Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
 public abstract class SubmissionAttachment {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="submission_file_id")
-  private Long assignmentContentId;
+  @Column(name="submission_attachment_id")
+  private Long SubmissionAttachmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="user_id")
@@ -28,7 +25,7 @@ public abstract class SubmissionAttachment {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="submission_id")
-  private Submission assignmentCheck;
+  private Submission submission;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="assignment_id")

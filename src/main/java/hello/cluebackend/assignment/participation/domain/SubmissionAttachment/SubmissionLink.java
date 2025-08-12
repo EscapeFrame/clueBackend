@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @DiscriminatorValue("Link")
-@SuperBuilder
 @NoArgsConstructor
 public class SubmissionLink extends SubmissionAttachment {
   private String url;

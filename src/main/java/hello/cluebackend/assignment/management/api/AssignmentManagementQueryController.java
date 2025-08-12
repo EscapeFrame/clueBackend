@@ -10,6 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class AssignmentManagementQueryController {
+
+  // 과제 생성
+
+
+  // 과제 삭제
+
+  // 과제 수정
+
   // TODO : 과제 생성하기, 과제생성/수정
 
   // TODO : 과제 첨부 파일 넣기, 과제생성/수정

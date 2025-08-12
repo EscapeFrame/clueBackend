@@ -1,21 +1,20 @@
 package hello.cluebackend.assignment.management.domain.AssignmentAttachment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hello.cluebackend.assignment.management.domain.Assignment;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "assignment_attachment")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DTYPE")
 @Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
 public abstract class AssignmentAttachment {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "assignment_attachment_id")

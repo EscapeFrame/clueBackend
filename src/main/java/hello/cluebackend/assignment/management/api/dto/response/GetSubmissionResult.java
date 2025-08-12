@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetAllAssignmentResponseResult<T> {
-  private T assignments;
+public class GetSubmissionResult<T> {
+  private T SubmissionAttachments;
 }

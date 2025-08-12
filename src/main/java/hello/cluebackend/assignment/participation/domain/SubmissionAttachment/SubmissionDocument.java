@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @DiscriminatorValue("Document")
-@SuperBuilder
 @NoArgsConstructor
 public class SubmissionDocument extends SubmissionAttachment {
   @JoinColumn(name="original_file_name")

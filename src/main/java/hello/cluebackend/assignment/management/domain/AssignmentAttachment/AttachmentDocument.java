@@ -6,11 +6,9 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
-@SuperBuilder
-@DiscriminatorValue("DOCUMENT")
+@DiscriminatorValue("D")
 @Getter @Setter
 @NoArgsConstructor
 public class AttachmentDocument extends  AssignmentAttachment{
