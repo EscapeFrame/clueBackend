@@ -11,6 +11,7 @@ import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.UserEntity;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,23 +21,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AssignmentCommandService {
+public class AssignmentCommandService{
   private final AssignmentRepository assignmentRepository;
   private final ClassRoomService classRoomService;
   private final ClassRoomRepository classRoomRepository;
   private final SubmissionRepository submissionRepository;
-
-  // 과제 단일 조회
-  public Assignment findById(Long assignmentId) {
-    return assignmentRepository.findById(assignmentId).get();
-  }
-
-  // 과제 전체 조회
-  public List<Assignment> findAll() {
-    return assignmentRepository.findAll();
-  }
-
-  // ---------- 세부 API ----------------- //
 
   // 해당 사용자가 속한 모든 과제 출력 (단, 마감이 된 과제는 반환하지 않는다.)
   public List<GetAllAssignmentResponse> findAllAssignment(UserEntity user) {
@@ -62,5 +51,10 @@ public class AssignmentCommandService {
     return result.stream()
             .map(a -> new GetAllSubmissionCheck(a.getSubmissionId(),a.getUser().getUserId(),a.getUser().getUsername(),a.getUser().getClassCode(),a.getIsSubmitted(),a.getSubmittedAt(),a.getAssignment().getEndDate()))
             .toList();
+  }
+
+  public Assignment findById(Long assignmentId) {
+    return assignmentRepository.findById(assignmentId)
+            .orElseThrow(() -> new EntityNotFoundException("Entity not found : " + assignmentId));
   }
 }

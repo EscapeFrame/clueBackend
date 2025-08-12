@@ -1,6 +1,5 @@
 package hello.cluebackend.assignment.management.api.dto.response;
 
-import hello.cluebackend.domain.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

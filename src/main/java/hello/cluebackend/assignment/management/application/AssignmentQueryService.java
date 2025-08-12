@@ -7,14 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = false)
-public class AssignmentQueryService {
+public class AssignmentQueryService{
   // 과제 생성
-//  public void assignmentCreate()
 
   // 과제 수정
-
-
-  // ------------------- 세부 API ----------------- //
-
 
 }

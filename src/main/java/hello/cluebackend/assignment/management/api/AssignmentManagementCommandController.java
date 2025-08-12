@@ -3,8 +3,6 @@ package hello.cluebackend.assignment.management.api;
 import hello.cluebackend.assignment.management.api.dto.response.*;
 import hello.cluebackend.assignment.management.application.AssignmentCommandService;
 import hello.cluebackend.assignment.management.domain.Assignment;
-import hello.cluebackend.assignment.participation.application.SubmissionCommandService;
-import hello.cluebackend.assignment.participation.domain.Submission;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import hello.cluebackend.global.config.JWTUtil;
@@ -30,10 +28,9 @@ public class AssignmentManagementCommandController {
   private final JWTUtil jwtUtil;
   private final AssignmentCommandService assignmentCommandService;
   private final UserRepository userRepository;
-  private final SubmissionCommandService submissionCommandService;
 
-  // TODO : 메인 페이지 제작한 과제 전체 조회
-  @GetMapping("/getAllAssignments")
+  // TODO : 메인 페이지 제작한 과제 전체 조회(T)
+  @GetMapping("/getAllAssignments/my")
   public ResponseEntity<AssignmentResult> getAllAssignments(HttpServletRequest request) {
     try {
       String token = jwtUtil.getToken(request);
@@ -43,9 +40,8 @@ public class AssignmentManagementCommandController {
       List<GetAllAssignmentResponse> assignments = assignmentCommandService.findAllAssignment(user);
 
       return ResponseEntity.ok(new AssignmentResult(assignments));
-    } catch (JwtException | UsernameNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }catch (Exception e){
+    } catch (Exception e) {
+      log.error("Failed to retrieve assignments for user", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -86,7 +82,7 @@ public class AssignmentManagementCommandController {
     }
   }
 
-//  // TODO : 개인 제출 과제 보기, 학습실 - 과제 - 채점(T)
+  // TODO : 개인 제출 과제 보기, 학습실 - 과제 - 채점(T)
 //  @GetMapping("/getAssignment/{submissionId}")
 //  public ResponseEntity<GetSubmissionResult> getSubmission(HttpServletRequest request, @PathVariable Long submissionId) {
 //    try {
