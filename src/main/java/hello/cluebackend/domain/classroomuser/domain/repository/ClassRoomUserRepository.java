@@ -25,4 +25,6 @@ public interface ClassRoomUserRepository extends JpaRepository<ClassRoomUser, Lo
     List<UserEntity> findAllStudentsByClassRoomId(Long classRoomId);
 
     List<ClassRoomUser> user(UserEntity user);
+
+  List<ClassRoomUser> findAllByClassRoom(ClassRoom classRoom);
 }
