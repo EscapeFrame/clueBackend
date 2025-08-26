@@ -17,9 +17,5 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
           " AND s.isSubmitted = false")
   List<Assignment> getAllByUser(@Param("userId") Long userId);
 
-  Assignment findByAssignmentId(Long assignmentId);
-
-  List<Assignment> findByClassRoom(ClassRoom classRoom);
-
   List<Assignment> findAllByClassRoom(ClassRoom classRoom);
 }

@@ -1,17 +1,22 @@
 package hello.cluebackend.domain.assignment.application;
 
-import hello.cluebackend.domain.assignment.api.dto.response.AssignmentDto;
+import hello.cluebackend.domain.assignment.api.dto.response.AssignmentAttachmentDto;
+import hello.cluebackend.domain.assignment.api.dto.response.AssignmentResponseDto;
 import hello.cluebackend.domain.assignment.api.dto.response.GetAllAssignmentDto;
-import hello.cluebackend.domain.assignment.api.dto.response.GetAllClassRoomAssignmentDto;
 import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.persistence.AssignmentRepository;
-import hello.cluebackend.domain.submission.application.SubmissionCommandService;
+import hello.cluebackend.domain.assignment.persistence.AssignmentAttachmentRepository;
+import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
+import hello.cluebackend.domain.file.service.FileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -19,10 +24,58 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class AssignmentCommandService{
   private final AssignmentRepository assignmentRepository;
-  private final SubmissionCommandService submissionCommandService;
+  private final ClassRoomService classRoomService;
+  private final AssignmentAttachmentRepository assignmentAttachmentRepository;
+  private final FileService fileService;
+
+  // 과제 단일 조회
+  public AssignmentResponseDto findById(Long assignmentId) {
+    Assignment a = findByIdOrThrow(assignmentId);
+    List<AssignmentAttachment> assignmentAttachments = assignmentAttachmentRepository.findAllByAssignment(a);
+
+    List<AssignmentAttachmentDto> assignmentAttachmentDtos = assignmentAttachments.stream()
+            .map(aa -> AssignmentAttachmentDto.builder()
+                    .type(aa.getType())
+                    .value(aa.getValue())
+                    .originalFileName(aa.getOriginalFileName())
+                    .contentType(aa.getContentType())
+                    .size(aa.getSize())
+                    .build())
+            .toList();
+
+    return AssignmentResponseDto.builder()
+            .assignmentId(a.getAssignmentId())
+            .title(a.getTitle())
+            .content(a.getContent())
+            .startDate(a.getStartDate())
+            .endDate(a.getEndDate())
+            .userName(a.getUser().getUsername())
+            .xAssignmentResponseDtos(assignmentAttachmentDtos)
+            .build();
+  }
+
+  // 과제 전체 조회
+  public List<AssignmentResponseDto> findAllById(Long userId, Long classId) {
+    ClassRoom classRoom = classRoomService.findById(classId).toEntity();
+    List<Assignment> assignments = assignmentRepository.findAllByClassRoom(classRoom);
+    return assignments.stream()
+            .map(a -> findById(a.getAssignmentId()))
+            .toList();
+  }
+
+  // 과제 ID를 통한 조회
+  public Assignment findByIdOrThrow(Long assignmentId) {
+    return assignmentRepository.findById(assignmentId)
+            .orElseThrow(() -> new EntityNotFoundException("해당 과제를 찾을수 없습니다."));
+  }
+
+  public AssignmentAttachment findAssignmentAttachmentByIdOrderThrow(Long attachmentId){
+    return assignmentAttachmentRepository.findById(attachmentId)
+            .orElseThrow(() -> new EntityNotFoundException("해당 첨부 파일을 찾을수 없습니다."));
+  }
 
   // 사용자가 속한 모든 수업 과제 조회
-  public List<GetAllAssignmentDto> findAllAssignment(Long userId) {
+  public List<GetAllAssignmentDto> findAllAssignmentMe(Long userId) {
     List<Assignment> assignments = assignmentRepository.getAllByUser(userId);
     return assignments.stream()
             .map(a -> GetAllAssignmentDto.builder()
@@ -35,43 +88,8 @@ public class AssignmentCommandService{
             .toList();
   }
 
-  // 해당 교실에 속한 모든 과제 출력
-  public List<GetAllClassRoomAssignmentDto> findAllClassroomAssignment(ClassRoom classRoom) {
-    List<Assignment> assignments = assignmentRepository.findAllByClassRoom(classRoom);
-    return assignments.stream()
-            .map(a -> GetAllClassRoomAssignmentDto.builder()
-                    .assignmentId(a.getAssignmentId())
-                    .title(a.getTitle())
-                    .startDate(a.getStartDate())
-                    .endDate(a.getEndDate())
-                    .build()
-            )
-            .toList();
+  public Resource downloadAttachment(AssignmentAttachment assignmentAttachment) throws IOException {
+    String path = assignmentAttachment.getValue();
+    return fileService.downloadFile(path);
   }
-
-  // 과제 ID로 조회
-  public AssignmentDto findById(Long assignmentId) {
-     Assignment a = assignmentRepository.findById(assignmentId)
-             .orElseThrow(() -> new EntityNotFoundException("Assignment not found : " + assignmentId));
-     return AssignmentDto.builder()
-             .assignmentId(a.getAssignmentId())
-             .title(a.getTitle())
-             .content(a.getContent())
-             .startDate(a.getStartDate())
-             .endDate(a.getEndDate())
-             .build();
-  }
-
-  //
-//  public List<GetAllSubmissionCheck> checkIsSubmitted(Assignment assignment) {
-//    List<Submission> result = submissionRepository.findByAssignment(assignment);
-//    return result.stream()
-//            .map(a -> new GetAllSubmissionCheck(a.getSubmissionId(),a.getUser().getUserId(),a.getUser().getUsername(),a.getUser().getClassCode(),a.getIsSubmitted(),a.getSubmittedAt(),a.getAssignment().getEndDate()))
-//            .toList();
-//  }
-
-//  public Assignment findById(Long assignmentId) {
-//    return assignmentRepository.findById(assignmentId)
-//            .orElseThrow(() -> new EntityNotFoundException("Entity not found : " + assignmentId));
-//  }
 }

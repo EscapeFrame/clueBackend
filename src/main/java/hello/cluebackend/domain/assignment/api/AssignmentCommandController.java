@@ -1,19 +1,28 @@
 package hello.cluebackend.domain.assignment.api;
 
-import hello.cluebackend.domain.assignment.api.dto.response.AssignmentCheck;
-import hello.cluebackend.domain.assignment.api.dto.response.AssignmentDto;
-import hello.cluebackend.domain.assignment.api.dto.response.GetAllAssignmentDto;
+import hello.cluebackend.domain.assignment.api.dto.response.*;
 import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
+import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
+import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
+import hello.cluebackend.domain.submission.api.dto.response.SubmissionAttachmentDto;
 import hello.cluebackend.domain.submission.application.SubmissionCommandService;
 import hello.cluebackend.global.common.annotation.CurrentUser;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,27 +30,60 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class AssignmentCommandController {
+  private final ClassroomUserService classroomUserService;
   private final AssignmentCommandService assignmentCommandService;
   private final SubmissionCommandService submissionCommandService;
 
-  // 사용자가 속한 모든 수업 과제 조회
+  // 과제 단일 조회
+  @GetMapping("/{assignmentId}")
+  public ResponseEntity<AssignmentResponseDto> getAssignment(
+          @CurrentUser Long userId,
+          @PathVariable Long assignmentId
+  ) {
+    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
+    Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
+    Long classroomId = assignment.getClassRoom().getClassRoomId();
+    if (!classroomUserService.isUserInClassroom(classroomId, userId)) {
+      throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
+    return ResponseEntity.ok(result);
+  }
+
+  // 교실 과제 전체 조회
+  @GetMapping("/{classId}/all")
+  public ResponseEntity<List<AssignmentResponseDto>> getAllClassroomAssignment(
+          @CurrentUser Long userId,
+          @PathVariable Long classId
+  ) {
+    List<AssignmentResponseDto> result = assignmentCommandService.findAllById(userId,classId);
+    return ResponseEntity.ok(result);
+  }
+
+  // 메인 페이지 모든 과제 조회
   @GetMapping("/me")
   public ResponseEntity<List<GetAllAssignmentDto>> getAllAssignments(@CurrentUser Long userId) {
-    List<GetAllAssignmentDto> result = assignmentCommandService.findAllAssignment(userId);
+    List<GetAllAssignmentDto> result = assignmentCommandService.findAllAssignmentMe(userId);
     return ResponseEntity.ok(result);
   }
 
-  // 과제 모든 정보 조회
-  @GetMapping("/{assignmentId}")
-  public ResponseEntity<AssignmentDto> getAssignment(@CurrentUser Long userId, @PathVariable Long assignmentId) {
-    AssignmentDto result = assignmentCommandService.findById(assignmentId);
+  // 첨부 파일 혹은 링크 전체 조회 (선생, 학생)
+  @GetMapping("/{submissionId}/attachment")
+  public ResponseEntity<List<SubmissionAttachmentDto>> findAllAssignments(@CurrentUser Long userId, @PathVariable Long submissionId) {
+    List<SubmissionAttachmentDto> result = submissionCommandService.findAllAssignment(submissionId);
     return ResponseEntity.ok(result);
   }
 
-  // 전체 학생 과제 제출 여부
-  @GetMapping("/{assignmentId}/check")
-  public ResponseEntity<List<AssignmentCheck>> checkAssignment(@CurrentUser Long userId, @PathVariable Long assignmentId){
-    List<AssignmentCheck> assignmentChecks = submissionCommandService.checkAssignment(assignmentId);
-    return ResponseEntity.ok(assignmentChecks);
+  // 첨부 파일 다운로드
+  @GetMapping("/{assignmentAttachmentId}/download")
+  public ResponseEntity<Resource> assignmentAttachmentDownload(
+          @CurrentUser Long userId,
+          @PathVariable Long assignmentAttachmentId
+  ) throws IOException {
+    AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(assignmentAttachmentId);
+    Resource resource = assignmentCommandService.downloadAttachment(assignmentAttachment);
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + assignmentAttachment.getOriginalFileName() + assignmentAttachment.getContentType() + "\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(resource);
   }
 }

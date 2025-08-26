@@ -1,14 +1,17 @@
 package hello.cluebackend.domain.submission.application;
 
 import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.submission.api.dto.request.SubmissionAttachmentUrlDto;
+import hello.cluebackend.domain.submission.domain.fileType;
+import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.submission.domain.Submission;
-import hello.cluebackend.domain.submission.persistence.submissionAttachment.SubmissionAttachmentRepository;
+import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import hello.cluebackend.domain.submission.persistence.SubmissionRepository;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
+import hello.cluebackend.domain.submission.persistence.SubmissionAttachmentRepository;
 import hello.cluebackend.domain.user.domain.UserEntity;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +21,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class SubmissionQueryService {
-  private final SubmissionAttachmentRepository submissionAttachmentRepository;
   private final SubmissionRepository submissionRepository;
+  private final SubmissionAttachmentRepository submissionAttachmentRepository;
   private final ClassroomUserService classroomUserService;
   private final ClassRoomService classRoomService;
+  private final FileService fileService;
+  private final SubmissionCommandService submissionCommandService;
 
-  // 해당 교실 모든 학생에게 과제 부여
+  // 해당 교실 모든 학생에게 과제 부여 & 제출 과제 생성
   @Transactional
   public void assignToAllStudentsInClassroom(Long classroomId, Assignment assignment){
     ClassRoom classRoom = classRoomService.findById(classroomId).toEntity();
@@ -39,37 +43,61 @@ public class SubmissionQueryService {
   // 과제 제출하기
   @Transactional
   public Submission submitSubmission(Long submissionId) {
-    Submission submission = submissionRepository.findById(submissionId)
-            .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
+    Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.submit();
     return submissionRepository.save(submission);
   }
 
+  // 과제 제출 취소하기
   @Transactional
   public Submission cancelSubmission(Long submissionId) {
-    Submission submission = submissionRepository.findById(submissionId)
-            .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
+    Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.cancel();
     return submissionRepository.save(submission);
   }
 
-  // 파일 업로드
+
+  // 첨부 파일 추가
   @Transactional
-  public void fileUpload(Long submissionId, MultipartFile file) {
-    Submission submission = submissionRepository.findById(submissionId)
-            .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
+  public SubmissionAttachment fileUpload(Long submissionId, MultipartFile file) {
+    Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
+
+    String storedFiledName = fileService.storeFile(file);
+
+    SubmissionAttachment result = SubmissionAttachment.builder()
+            .submission(submission)
+            .type(fileType.file)
+            .value(storedFiledName)
+            .originalFileName(file.getOriginalFilename())
+            .contentType(file.getContentType())
+            .size(file.getSize())
+            .build();
+    submissionAttachmentRepository.save(result);
+    return result;
   }
 
-//  @Transactional
-//  public void deletefile(Long submissionAttachmentId) {
-//    SubmissionAttachment submission = submissionAttachmentRepository.findById(submissionAttachmentId)
-//            .orElseThrow(() -> new EntityNotFoundException("해당 첨부파일을 찾을수 없습니다."));
-//  }
+  // 첨부 링크 추가
+  @Transactional
+  public SubmissionAttachment linkUpload(Long submissionId, SubmissionAttachmentUrlDto dto) {
+    Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
 
-//  public void uploadAttachment(UploadAttachment request, MultipartFile file) {
-//    String filePath = "uploads/" + file.getOriginalFilename();
-    // UUID 값으로 이름 변경
-//    file.transferTo(new java.io.File(filePath));
-//    submissionAttachmentRepository.save()
-//  }
+    SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
+            .submission(submission)
+            .type(fileType.url)
+            .value(dto.url())
+            .build();
+
+    submissionAttachmentRepository.save(submissionAttachment);
+    return submissionAttachment;
+  }
+
+  // 첨부 파일 삭제
+  @Transactional
+  public void deleteSubmissionAttachment(Long submissionAttachmentId) {
+    SubmissionAttachment submissionAttachment = submissionCommandService.findAssignmentAttachmentByIdOrThrow(submissionAttachmentId);
+    if(submissionAttachment.getType() == fileType.file){
+      fileService.deleteFile(submissionAttachment.getValue());
+    }
+    submissionAttachmentRepository.delete(submissionAttachment);
+  }
 }

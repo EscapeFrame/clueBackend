@@ -3,9 +3,11 @@ package hello.cluebackend.domain.assignment.api.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record CreateAssignmentDto (
         @NotNull @JsonProperty("class_id") Long classId,
         @NotNull String title,

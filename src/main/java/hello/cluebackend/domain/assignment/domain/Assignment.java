@@ -1,7 +1,6 @@
 package hello.cluebackend.domain.assignment.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import hello.cluebackend.domain.assignment.api.dto.request.ModifyAssignmentDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
@@ -14,54 +13,59 @@ import java.util.List;
 
 @Entity
 @Table(name = "assignment")
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Builder
-public class Assignment {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@AllArgsConstructor
+public class Assignment extends BaseEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "assignment_id")
   private Long assignmentId;
 
-  @JsonIgnore
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "classroom_id")
   private ClassRoom classRoom;
 
-  @JsonIgnore
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private UserEntity user;
 
-  @Column(name = "title")
+  @Column(nullable = false)
   private String title;
 
-  @Column(name = "content")
+  @Column(columnDefinition = "TEXT")
   private String content;
 
-  @Column(name = "start_date")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDate;
 
-  @Column(name = "end_date")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endDate;
 
-  @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "assignment", cascade = CascadeType.REMOVE)
+
+  @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  @Builder.Default
   private List<Submission> submissions = new ArrayList<>();
 
-  public Assignment(ClassRoom classRoom,UserEntity user,String title, String content, LocalDateTime startDate, LocalDateTime endDate){
-    this.classRoom = classRoom;
-    this.user = user;
-    this.title = title;
-    this.content = content;
-    this.startDate = startDate;
-    this.endDate = endDate;
+  // DTO 기반 정적 팩토리 메서드
+  public static Assignment create(ClassRoom classRoom, UserEntity user, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
+    return Assignment.builder()
+            .classRoom(classRoom)
+            .user(user)
+            .title(title)
+            .content(content)
+            .startDate(startDate)
+            .endDate(endDate)
+            .build();
   }
 
-  public void patch(ModifyAssignmentDto dto) {
-    if (dto.getTitle() != null) this.title = dto.getTitle();
-    if (dto.getContent() != null) this.content = dto.getContent();
-    if (dto.getStartDate() != null) this.startDate = dto.getStartDate();
-    if (dto.getEndDate() != null) this.endDate = dto.getEndDate();
+  // patch 메서드 (null 체크 후 업데이트)
+  public void patch(String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
+    if (title != null) this.title = title;
+    if (content != null) this.content = content;
+    if (startDate != null) this.startDate = startDate;
+    if (endDate != null) this.endDate = endDate;
   }
 }

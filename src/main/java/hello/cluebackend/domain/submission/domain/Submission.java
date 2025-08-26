@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "submission")
-@Getter @Setter
+@Getter
 @AllArgsConstructor
-@Builder
+@Builder @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Submission {
+public class Submission extends BaseEntity{
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "submission_id")
   private Long submissionId;
@@ -32,28 +32,31 @@ public class Submission {
   @Column(name = "submitted_at", nullable = true)
   private LocalDateTime submittedAt;
 
-  public Submission(Assignment assignment, UserEntity user, boolean isSubmitted, LocalDateTime submittedAt){
+  public Submission(Assignment assignment, UserEntity user, boolean isSubmitted, LocalDateTime submittedAt) {
     if(assignment != null) { changeAssignment(assignment); }
     this.user = user;
     this.isSubmitted = isSubmitted;
     this.submittedAt = submittedAt;
   }
 
-  public void changeAssignment(Assignment assignment){
+  public void changeAssignment(Assignment assignment) {
     this.assignment = assignment;
     assignment.getSubmissions().add(this);
   }
 
   // 과제 제출 취소
-  public void cancel(){
+  public void cancel() {
     this.isSubmitted = false;
+    this.submittedAt = LocalDateTime.now();
   }
 
   // 과제 제출
-  public void submit(){
+  public void submit() {
     this.isSubmitted = true;
+    this.submittedAt = LocalDateTime.now();
   }
 
+  // getter
   public boolean getIsSubmitted(){
     return this.isSubmitted;
   }
