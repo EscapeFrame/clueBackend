@@ -53,7 +53,8 @@ public class AssignmentQueryController {
           @PathVariable Long assignmentId,
           @Valid @RequestBody ModifyAssignmentDto assignmentDto
   ) {
-    Assignment assignment = assignmentQueryService.patchAssignment(assignmentId, assignmentDto);
+    Long assignment = assignmentQueryService.patchAssignment(assignmentId, assignmentDto);
+
     return ResponseEntity.ok(assignment);
   }
 

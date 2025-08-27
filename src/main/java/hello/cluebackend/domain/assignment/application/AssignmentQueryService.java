@@ -61,10 +61,10 @@ public class AssignmentQueryService{
 
   // 과제 수정
   @Transactional
-  public Assignment patchAssignment(Long assignmentId, ModifyAssignmentDto dto){
+  public Long patchAssignment(Long assignmentId, ModifyAssignmentDto dto){
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     assignment.patch(dto.getTitle(), dto.getContent(), dto.getStartDate(), dto.getEndDate());
-    return assignment;
+    return assignment.getAssignmentId();
   }
 
   // url 업로드
