@@ -56,6 +56,12 @@ public class AssignmentCommandController {
           @PathVariable Long classId
   ) {
     List<AssignmentResponseDto> result = assignmentCommandService.findAllById(userId,classId);
+
+    if (!classroomUserService.isUserInClassroom(classId, userId)) {
+        throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
+//    List<AssignmentResponseDto> result = assignmentCommandService.findAllByClassId(classId); // 서비스 시그니처 정리 시
+
     return ResponseEntity.ok(result);
   }
 
