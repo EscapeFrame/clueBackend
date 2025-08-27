@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -90,12 +92,13 @@ public class AssignmentCommandController {
     String original = assignmentAttachment.getOriginalFileName();
     String contentType = assignmentAttachment.getContentType();
     MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM;
-      return ResponseEntity.ok()
-              .header(HttpHeaders.CONTENT_DISPOSITION,
-                      org.springframework.http.ContentDisposition.attachment()
-                              .filename(original, java.nio.charset.StandardCharsets.UTF_8)
-                              .build().toString())
-              .contentType(mediaType)
-              .body(resource);
+    return ResponseEntity.ok()
+            .contentType(mediaType)
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    ContentDisposition.attachment()
+                            .filename(original, StandardCharsets.UTF_8)
+                            .build()
+                            .toString())
+            .body(resource);
   }
 }

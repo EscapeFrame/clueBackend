@@ -31,7 +31,7 @@ public class AssignmentQueryController {
           @CurrentUser Long userId,
           @Valid @RequestBody CreateAssignmentDto request
   ) {
-    Assignment assignment = assignmentQueryService.save(request.classId(), request);
+    Assignment assignment = assignmentQueryService.save(userId, request);
 
     submissionQueryService.assignToAllStudentsInClassroom(request.classId(), assignment);
     return ResponseEntity.ok(assignment.getAssignmentId());
