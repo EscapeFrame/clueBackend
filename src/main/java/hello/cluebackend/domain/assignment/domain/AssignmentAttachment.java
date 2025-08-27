@@ -21,7 +21,7 @@ public class AssignmentAttachment extends BaseEntity {
   // FILE, URL
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private fileType type;
+  private FileType type;
 
   // 실제 파일이면 S3 Key, URL이면 링크
   @Column(nullable = false)

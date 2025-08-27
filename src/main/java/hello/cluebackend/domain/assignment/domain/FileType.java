@@ -1,5 +1,5 @@
 package hello.cluebackend.domain.assignment.domain;
 
-public enum fileType {
+public enum FileType {
   FILE,URL
 }

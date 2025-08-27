@@ -1,11 +1,11 @@
 package hello.cluebackend.domain.assignment.api.dto.response;
 
-import hello.cluebackend.domain.assignment.domain.fileType;
+import hello.cluebackend.domain.assignment.domain.FileType;
 import lombok.Builder;
 
 @Builder
 public record AssignmentAttachmentDto(
-        fileType type,
+        FileType type,
         String value,
         String originalFileName,
         String contentType,

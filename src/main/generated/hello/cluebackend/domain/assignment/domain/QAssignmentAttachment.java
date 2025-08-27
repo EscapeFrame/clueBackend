@@ -46,7 +46,7 @@ public class QAssignmentAttachment extends EntityPathBase<AssignmentAttachment> 
 
     public final NumberPath<Long> size = createNumber("size", Long.class);
 
-    public final EnumPath<fileType> type = createEnum("type", fileType.class);
+    public final EnumPath<FileType> type = createEnum("type", FileType.class);
 
     public final StringPath value = createString("value");
 

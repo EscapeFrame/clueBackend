@@ -5,7 +5,7 @@ import hello.cluebackend.domain.assignment.api.dto.request.CreateAssignmentDto;
 import hello.cluebackend.domain.assignment.api.dto.request.ModifyAssignmentDto;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
-import hello.cluebackend.domain.assignment.domain.fileType;
+import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.assignment.persistence.AssignmentRepository;
 import hello.cluebackend.domain.assignment.persistence.AssignmentAttachmentRepository;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
@@ -75,7 +75,7 @@ public class AssignmentQueryService{
     List<AssignmentAttachment> result = dtos.stream()
             .map(dto -> AssignmentAttachment.builder()
                     .assignment(assignment)
-                    .type(fileType.URL)
+                    .type(FileType.URL)
                     .value(dto.url())
                     .build())
             .toList();
@@ -91,7 +91,7 @@ public class AssignmentQueryService{
 
     AssignmentAttachment result = AssignmentAttachment.builder()
             .assignment(assignment)
-            .type(fileType.FILE)
+            .type(FileType.FILE)
             .value(storedFileName)
             .originalFileName(file.getOriginalFilename())
             .contentType(file.getContentType())
@@ -104,7 +104,7 @@ public class AssignmentQueryService{
   @Transactional
   public void deleteAttachment(Long attachmentId) {
     AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(attachmentId);
-    if(assignmentAttachment.getType() == fileType.FILE){
+    if(assignmentAttachment.getType() == FileType.FILE){
       fileService.deleteFile(assignmentAttachment.getValue());
     }
     assignmentAttachmentRepository.delete(assignmentAttachment);
