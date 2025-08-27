@@ -60,7 +60,6 @@ public class AssignmentCommandController {
     if (!classroomUserService.isUserInClassroom(classId, userId)) {
         throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
     }
-//    List<AssignmentResponseDto> result = assignmentCommandService.findAllByClassId(classId); // 서비스 시그니처 정리 시
 
     return ResponseEntity.ok(result);
   }
@@ -87,9 +86,16 @@ public class AssignmentCommandController {
   ) throws IOException {
     AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(assignmentAttachmentId);
     Resource resource = assignmentCommandService.downloadAttachment(assignmentAttachment);
-    return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + assignmentAttachment.getOriginalFileName() + assignmentAttachment.getContentType() + "\"")
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(resource);
+
+    String original = assignmentAttachment.getOriginalFileName();
+    String contentType = assignmentAttachment.getContentType();
+    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM;
+      return ResponseEntity.ok()
+              .header(HttpHeaders.CONTENT_DISPOSITION,
+                      org.springframework.http.ContentDisposition.attachment()
+                              .filename(original, java.nio.charset.StandardCharsets.UTF_8)
+                              .build().toString())
+              .contentType(mediaType)
+              .body(resource);
   }
 }
