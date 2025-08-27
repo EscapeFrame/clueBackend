@@ -2,7 +2,7 @@ spring:
   application:
     name: CLUE-Backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/clue
+    url: {POSTGRES_URI}
 #    url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
