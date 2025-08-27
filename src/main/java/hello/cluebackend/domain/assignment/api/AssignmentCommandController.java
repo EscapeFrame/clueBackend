@@ -95,8 +95,7 @@ public class AssignmentCommandController {
 
     return ResponseEntity.ok()
             .contentType(mediaType)
-            .header(HttpHeaders.CONTENT_DISPOSITION,
-                    ContentDisposition.attachment()
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
                             .filename(original, StandardCharsets.UTF_8)
                             .build()
                             .toString())
