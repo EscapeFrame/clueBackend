@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.assignment.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
@@ -47,6 +48,7 @@ public class Assignment extends BaseEntity {
 
   @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
   @Builder.Default
+  @JsonIgnore
   private List<Submission> submissions = new ArrayList<>();
 
   // DTO 기반 정적 팩토리 메서드

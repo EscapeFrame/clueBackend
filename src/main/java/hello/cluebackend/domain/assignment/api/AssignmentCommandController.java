@@ -9,7 +9,6 @@ import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
 import hello.cluebackend.domain.submission.api.dto.response.SubmissionAttachmentDto;
 import hello.cluebackend.domain.submission.application.SubmissionCommandService;
 import hello.cluebackend.global.common.annotation.CurrentUser;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
