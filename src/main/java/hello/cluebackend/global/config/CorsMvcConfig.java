@@ -10,7 +10,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
   @Override
   public void addCorsMappings(CorsRegistry corsRegistry) {
     corsRegistry.addMapping("/**")
-            .allowedOriginPatterns("http://10.150.149.87") // 해당 IP만 허용
+            .allowedOriginPatterns("*") // 해당 IP만 허용
             .allowedMethods("*")         // GET, POST, PUT, DELETE 등 모든 메서드 허용
             .allowedHeaders("*")         // 모든 헤더 허용
             .exposedHeaders("Authorization", "Set-Cookie") // 클라이언트에서 읽을 헤더
