@@ -3,7 +3,6 @@ spring:
     name: CLUE-Backend
   datasource:
     url: ${POSTGRES_URI}
-#    url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
