@@ -1,11 +1,11 @@
 services:
-  spring:
-    build: .
-    container_name: paletto
-    networks:
-      - web-net
-    ports:
-      - 8080:8080
+#  spring:
+#    build: .
+#    container_name: paletto
+#    networks:
+#      - web-net
+#    ports:
+#      - 8080:8080
 
   postgres:
     image: postgres:15
