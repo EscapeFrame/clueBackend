@@ -1,60 +1,34 @@
 package hello.cluebackend.domain.assignment.domain;
 
-import hello.cluebackend.domain.assignment.presentation.dto.AssignmentAttachmentDto;
-import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "assignment_attachment")
 @Getter @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class AssignmentAttachment {
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class AssignmentAttachment extends BaseEntity {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "assignment_attachment_id")
   private Long assignmentAttachmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="assignment_id")
   private Assignment assignment;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private UserEntity user;
-
-  @Column(name = "original_file_name")
-  private String originalFileName;
-
-  @Column(name = "stored_file_name")
-  private String storedFileName;
-
-  @Column(name = "file_path")
-  private String filePath;
-
-  @Column(name = "file_size")
-  private Integer fileSize;
-
+  // FILE, URL
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  @Column(name = "submit_type")
-  private SubmitType submitType;
+  private FileType type;
 
-  @Column(name = "update_date")
-  private LocalDateTime updateDate;
+  // 실제 파일이면 S3 Key, URL이면 링크
+  @Column(nullable = false)
+  private String value;
 
-  public AssignmentAttachmentDto toDto() {
-    return AssignmentAttachmentDto.builder()
-            .assignmentAttachmentId(assignmentAttachmentId)
-            .assignment(assignment)
-            .user(user)
-            .originalFileName(originalFileName)
-            .storedFileName(storedFileName)
-            .filePath(filePath)
-            .fileSize(fileSize)
-            .submitType(submitType)
-            .updateDate(updateDate)
-            .build();
-  }
+  // 파일일 경우 메타데이터
+  private String originalFileName;
+  private String contentType;
+  private Long size;
 }

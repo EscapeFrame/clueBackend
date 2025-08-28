@@ -21,8 +21,12 @@ public interface ClassRoomUserRepository extends JpaRepository<ClassRoomUser, Lo
     @Query("select cu.user from ClassRoomUser cu where cu.classRoom.classRoomId = :classId")
     List<UserEntity> findUsersByClassRoomId(@Param("classId") Long classId);
 
-    @Query("SELECT cru.user FROM ClassRoomUser cru WHERE cru.classRoom.classRoomId = :classRoomId")
+    @Query("SELECT cru.user FROM ClassRoomUser cru WHERE cru.classRoom.classRoomId = :classRoomId AND cru.user.role = hello.cluebackend.domain.user.domain.Role.STUDENT")
     List<UserEntity> findAllStudentsByClassRoomId(Long classRoomId);
 
     List<ClassRoomUser> user(UserEntity user);
+
+  List<ClassRoomUser> findAllByClassRoom(ClassRoom classRoom);
+
+  boolean existsByClassRoomAndUser(ClassRoom classRoom, UserEntity user);
 }

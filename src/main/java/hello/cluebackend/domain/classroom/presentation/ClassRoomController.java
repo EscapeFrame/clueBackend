@@ -1,14 +1,14 @@
 package hello.cluebackend.domain.classroom.presentation;
 
+import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.presentation.dto.UserDto;
-import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +20,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/class")
+@RequiredArgsConstructor
 public class ClassRoomController {
     private final JWTUtil jwtUtil;
     private final ClassRoomService classRoomService;
-
-    public ClassRoomController(JWTUtil jwtUtil, ClassRoomService classRoomService) {
-        this.jwtUtil = jwtUtil;
-        this.classRoomService = classRoomService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(HttpServletRequest request){

@@ -1,0 +1,74 @@
+package hello.cluebackend.domain.submission.api;
+
+import hello.cluebackend.domain.submission.api.dto.request.SubmissionAttachmentUrlDto;
+import hello.cluebackend.domain.submission.application.SubmissionQueryService;
+import hello.cluebackend.domain.submission.domain.Submission;
+import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
+import hello.cluebackend.global.common.annotation.CurrentUser;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("/api/submissions")
+@RequiredArgsConstructor
+@Slf4j
+public class SubmissionQueryController {
+  private final SubmissionQueryService submissionQueryService;
+
+  // 과제 제출 하기
+  @PatchMapping("/{submissionId}/submit")
+  public ResponseEntity<?> submitSubmission(
+          @CurrentUser Long userId,
+          @PathVariable Long submissionId
+    ) {
+    Submission submission = submissionQueryService.submitSubmission(submissionId);
+    return ResponseEntity.ok(submission);
+  }
+
+  // 과제 제출 취소하기
+  @PatchMapping("/{submissionId}/cancel")
+  public ResponseEntity<?> cancelSubmission(
+          @CurrentUser Long userId,
+          @PathVariable Long submissionId
+  ){
+    Submission submission = submissionQueryService.cancelSubmission(submissionId);
+    return ResponseEntity.ok(submission);
+  }
+
+
+  @DeleteMapping("/{submissionAttachmentId}")
+  public ResponseEntity<?> deleteSubmission(
+          @CurrentUser Long userId,
+          @PathVariable Long submissionAttachmentId
+  ){
+    submissionQueryService.deleteSubmissionAttachment(submissionAttachmentId);
+    return ResponseEntity.ok("과제 첨부파일이 성공적으로 삭제되었습니다.");
+  }
+
+  // 과제 제출 첨부 파일 추가
+  @PostMapping("/{submissionId}/file")
+  public ResponseEntity<SubmissionAttachment> fileUpload(
+          @CurrentUser Long userId,
+          @PathVariable Long submissionId,
+          @RequestBody MultipartFile file
+  ) throws IOException {
+    SubmissionAttachment submissionAttachment = submissionQueryService.fileUpload(submissionId, file);
+    return ResponseEntity.ok(submissionAttachment);
+  }
+
+  // 과제 제출 첨부 링크 추가
+  @PostMapping("/{submisisonId}/link")
+  public ResponseEntity<?> deleteFile(
+          @CurrentUser Long userId,
+          @PathVariable Long submissionId,
+          @RequestBody SubmissionAttachmentUrlDto dto
+  ) {
+    submissionQueryService.linkUpload(submissionId, dto);
+    return ResponseEntity.ok("첨부 파일 삭제");
+  }
+}

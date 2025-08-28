@@ -1,5 +1,7 @@
 package hello.cluebackend.domain.user.presentation;
 
+import com.nimbusds.oauth2.sdk.TokenResponse;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.RegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
@@ -43,6 +45,4 @@ public class RegisterController {
         userService.registerUser(defaultRegisterUserDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-
 }

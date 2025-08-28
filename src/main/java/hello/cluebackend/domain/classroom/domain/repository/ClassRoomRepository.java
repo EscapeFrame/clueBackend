@@ -12,4 +12,6 @@ public interface ClassRoomRepository extends JpaRepository<ClassRoom, Long> {
     Boolean existsByCode(String code);
 
     Optional<ClassRoom> findByCode(String code);
+
+  ClassRoom findByClassRoomId(Long classRoomId);
 }
