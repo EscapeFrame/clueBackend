@@ -29,6 +29,9 @@ import java.util.List;
 @RequestMapping("/api/assignments")
 @RequiredArgsConstructor
 @Slf4j
+
+// TODO : 권한 확인 애노테이션 추가 필요"
+
 public class AssignmentCommandController {
   private final ClassroomUserService classroomUserService;
   private final AssignmentCommandService assignmentCommandService;
