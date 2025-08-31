@@ -92,7 +92,7 @@ public class AssignmentCommandController {
 
     String original = assignmentAttachment.getOriginalFileName();
     String contentType = assignmentAttachment.getContentType();
-    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM;
+    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
 
     return ResponseEntity.ok()
             .contentType(mediaType)

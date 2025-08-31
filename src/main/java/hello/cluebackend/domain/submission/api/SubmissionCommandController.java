@@ -67,7 +67,7 @@ public class SubmissionCommandController {
     Resource resource = submissionCommandService.downloadAttachment(submissionAttachment);
     return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + submissionAttachment.getOriginalFileName() + submissionAttachment.getContentType() + "\"")
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .contentType(MediaType.ALL)
             .body(resource);
   }
 }
