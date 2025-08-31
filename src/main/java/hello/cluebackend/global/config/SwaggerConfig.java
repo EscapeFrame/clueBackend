@@ -18,7 +18,7 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("CodeArena Swagger")
+                .title("Clue Swagger")
                 .description("CLUE REST API")
                 .version("1.0.0");
     }
