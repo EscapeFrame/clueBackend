@@ -8,6 +8,7 @@ import hello.cluebackend.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -65,9 +67,17 @@ public class SubmissionCommandController {
   ) throws IOException {
     SubmissionAttachment submissionAttachment = submissionCommandService.findsubmissionAttachmentByIdOrThrow(submissionAttachmentId);
     Resource resource = submissionCommandService.downloadAttachment(submissionAttachment);
+
+    String original = submissionAttachment.getOriginalFileName();
+    String contentType = submissionAttachment.getContentType();
+    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
+
     return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + submissionAttachment.getOriginalFileName() + submissionAttachment.getContentType() + "\"")
-            .contentType(MediaType.ALL)
+            .contentType(mediaType)
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                    .filename(original, StandardCharsets.UTF_8)
+                    .build()
+                    .toString())
             .body(resource);
   }
 }
