@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +20,9 @@ import java.util.Iterator;
 
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    @Value("${front.base-url}")
+    private String baseurl;
 
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
@@ -37,15 +41,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         int classCode = userDTO.getClassCode();
         if (classCode == -1) {
             request.getSession().setAttribute("firstUser", userDTO);
-//            getRedirectStrategy().sendRedirect(
-//                    request,
-//                    response,
-//                    "http://localhost:3000/register"
-//            );
             getRedirectStrategy().sendRedirect(
                     request,
                     response,
-                    "https://clue-frontend-eight.vercel.app/register"
+                    baseurl + "/register"
             );
         } else {
             String username = customUserDetails.getUsername();
@@ -63,8 +62,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.setHeader("Authorization", "Bearer " + access);
             response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
-//            response.sendRedirect("http://localhost:3000/");
-            response.sendRedirect("https://clue-frontend-eight.vercel.app");
+            response.sendRedirect(baseurl);
         }
     }
 
