@@ -114,8 +114,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**", "/test", "/api/document/download/{documentId:\\d+}").permitAll()
-                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**", "/test").permitAll()
+                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**", "/test", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated());
 
 
