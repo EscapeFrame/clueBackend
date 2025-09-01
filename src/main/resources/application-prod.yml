@@ -1,0 +1,13 @@
+# 중간 배포
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: info

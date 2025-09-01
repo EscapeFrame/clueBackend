@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
-
   // Constants
   private static final String TIMETABLE_PATH = "/hisTimetable";
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -46,7 +45,7 @@ public class TimetableService {
   @Value("${spring.neis.api.key}")
   private String neisApiKey;
 
-  @Value("${spring.neis.api.atpt-code:C10}")
+  @Value("${spring.neis.api.atpt-code: C10}")
   private String atptCode;
 
   @Value("${spring.neis.api.school-code:7150658}")
