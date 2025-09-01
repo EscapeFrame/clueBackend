@@ -64,4 +64,4 @@ jobs:
           script: |
             cd clue
             sudo fuser -k -n tcp 8080 || true
-            sudo nohup java -jar cd.jar > ./output.log 2>&1 &
+            sudo nohup java -jar -Dspring.profiles.active=prod cd.jar > ./output.log 2>&1 &
