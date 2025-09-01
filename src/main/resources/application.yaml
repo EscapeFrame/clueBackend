@@ -52,8 +52,6 @@ spring:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth?prompt=consent
 
-  front:
-    base-url: ${FRONT_BASE_URL}
 
 upload:
   local:
@@ -70,6 +68,9 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+
+front:
+  base-url: ${FRONT_BASE_URL}
 
 server:
   address: 0.0.0.0
