@@ -7,10 +7,12 @@ import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "assignment")
@@ -19,11 +21,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class Assignment extends BaseEntity {
-
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "assignment_id")
-  private Long assignmentId;
+  @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
+  @Column(name = "assignment_id", nullable = false, updatable = false)
+  private UUID assignmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "classroom_id")
