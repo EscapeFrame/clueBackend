@@ -35,7 +35,10 @@ class ClassRoomControllerTest {
     void testGetAllClassRooms() {
         // given
         String token = "fake-token";
-        UUID userId = 1L;
+        UUID userId = UUID.randomUUID();
+
+        UUID classRoomId1 = UUID.randomUUID();
+        UUID classRoomId2 = UUID.randomUUID();
 
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         when(jwtUtil.getToken(mockRequest)).thenReturn(token);
@@ -43,14 +46,14 @@ class ClassRoomControllerTest {
 
         List<ClassRoomCardDto> mockList = List.of(
                 ClassRoomCardDto.builder()
-                        .classRoomId(1L)
+                        .classRoomId(classRoomId1)
                         .name("자바를 자바라")
                         .sort("JAVA")
                         .target("2-2")
                         .studentCount(2)
                         .build(),
                 ClassRoomCardDto.builder()
-                        .classRoomId(2L)
+                        .classRoomId(classRoomId2)
                         .name("자바를 자바라")
                         .sort("JAVA")
                         .target("2-1")
