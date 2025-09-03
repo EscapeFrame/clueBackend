@@ -11,6 +11,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -20,7 +22,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
     return parameter.hasParameterAnnotation(CurrentUser.class)
-            && parameter.getParameterType().equals(Long.class);
+            && parameter.getParameterType().equals(UUID.class);
   }
 
   @Override

@@ -7,13 +7,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 public class DirectoryDto {
 
-    private Long directoryId;
+    private UUID directoryId;
     private ClassRoom classRoom;
     private String name;
     private int directoryOrder;

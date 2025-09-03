@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class AssignmentCommandService{
   private final FileService fileService;
 
   // 과제 단일 조회
-  public AssignmentResponseDto findById(Long assignmentId) {
+  public AssignmentResponseDto findById(UUID assignmentId) {
     Assignment a = findByIdOrThrow(assignmentId);
     List<AssignmentAttachment> assignmentAttachments = assignmentAttachmentRepository.findAllByAssignment(a);
 
@@ -55,7 +56,7 @@ public class AssignmentCommandService{
   }
 
   // 과제 전체 조회
-  public List<AssignmentResponseDto> findAllById(Long userId, Long classId) {
+  public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
     ClassRoom classRoom = classRoomService.findById(classId).toEntity();
     List<Assignment> assignments = assignmentRepository.findAllByClassRoom(classRoom);
     return assignments.stream()
@@ -64,18 +65,18 @@ public class AssignmentCommandService{
   }
 
   // 과제 ID를 통한 조회
-  public Assignment findByIdOrThrow(Long assignmentId) {
+  public Assignment findByIdOrThrow(UUID assignmentId) {
     return assignmentRepository.findById(assignmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 과제를 찾을수 없습니다."));
   }
 
-  public AssignmentAttachment findAssignmentAttachmentByIdOrderThrow(Long attachmentId){
+  public AssignmentAttachment findAssignmentAttachmentByIdOrderThrow(UUID attachmentId){
     return assignmentAttachmentRepository.findById(attachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 첨부 파일을 찾을수 없습니다."));
   }
 
   // 사용자가 속한 모든 수업 과제 조회
-  public List<GetAllAssignmentDto> findAllAssignmentMe(Long userId) {
+  public List<GetAllAssignmentDto> findAllAssignmentMe(UUID userId) {
     List<Assignment> assignments = assignmentRepository.getAllByUser(userId);
     return assignments.stream()
             .map(a -> GetAllAssignmentDto.builder()

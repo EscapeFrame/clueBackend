@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ClassRoomRepository extends JpaRepository<ClassRoom, Long> {
+public interface ClassRoomRepository extends JpaRepository<ClassRoom, UUID> {
     Boolean existsByCode(String code);
 
     Optional<ClassRoom> findByCode(String code);
 
-  ClassRoom findByClassRoomId(Long classRoomId);
+  ClassRoom findByClassRoomId(UUID classRoomId);
 }

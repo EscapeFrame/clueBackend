@@ -7,6 +7,8 @@ import hello.cluebackend.domain.directory.domain.repository.DirectoryRepository;
 import hello.cluebackend.domain.directory.presentation.dto.RequestDirectoryDto;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class DirectoryService {
 
@@ -39,7 +41,7 @@ public class DirectoryService {
         directoryRepository.save(directory);
     }
 
-    public void deleteById(Long directoryId) {
+    public void deleteById(UUID directoryId) {
         try {
             directoryRepository.deleteById(directoryId);
         } catch(Exception e) {

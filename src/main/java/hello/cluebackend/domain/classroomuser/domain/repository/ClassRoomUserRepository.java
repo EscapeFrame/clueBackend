@@ -9,20 +9,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface ClassRoomUserRepository extends JpaRepository<ClassRoomUser, Long> {
+public interface ClassRoomUserRepository extends JpaRepository<ClassRoomUser, UUID> {
 
-    List<ClassRoomUser> findByUser_UserId(Long userId);
+    List<ClassRoomUser> findByUser_UserId(UUID userId);
 
     @Query("SELECT cu.classRoom FROM ClassRoomUser cu WHERE cu.user.userId = :userId")
-    List<ClassRoom> findClassRoomsByUserId(@Param("userId") Long userId);
+    List<ClassRoom> findClassRoomsByUserId(@Param("userId") UUID userId);
 
     @Query("select cu.user from ClassRoomUser cu where cu.classRoom.classRoomId = :classId")
-    List<UserEntity> findUsersByClassRoomId(@Param("classId") Long classId);
+    List<UserEntity> findUsersByClassRoomId(@Param("classId") UUID classId);
 
     @Query("SELECT cru.user FROM ClassRoomUser cru WHERE cru.classRoom.classRoomId = :classRoomId AND cru.user.role = hello.cluebackend.domain.user.domain.Role.STUDENT")
-    List<UserEntity> findAllStudentsByClassRoomId(Long classRoomId);
+    List<UserEntity> findAllStudentsByClassRoomId(UUID classRoomId);
 
     List<ClassRoomUser> user(UserEntity user);
 

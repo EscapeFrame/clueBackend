@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.core.io.Resource;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "submission_attachment")
 @Getter
@@ -12,9 +14,10 @@ import org.springframework.core.io.Resource;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubmissionAttachment {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name="submission_attachment_id")
-  private Long SubmissionAttachmentId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name="submission_attachment_id", nullable = false, updatable = false)
+  private UUID SubmissionAttachmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="user_id")

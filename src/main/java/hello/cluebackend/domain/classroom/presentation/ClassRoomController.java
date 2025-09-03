@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -28,12 +29,12 @@ public class ClassRoomController {
     @GetMapping
     public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(HttpServletRequest request){
         String token = jwtUtil.getToken(request);
-        Long userId = jwtUtil.getUserId(token);
+        UUID userId = jwtUtil.getUserId(token);
         return ResponseEntity.ok(classRoomService.findMyClassRoomById(userId));
     }
 
     @GetMapping("/{classId}/all")
-    public ResponseEntity<?> getAllInfo(HttpServletRequest request, @PathVariable Long classId){
+    public ResponseEntity<?> getAllInfo(HttpServletRequest request, @PathVariable UUID classId){
         String token = jwtUtil.getToken(request);
 //        Long userId = jwtUtil.getUserId(token);
 //        Role role = jwtUtil.getRole(token);
@@ -45,7 +46,7 @@ public class ClassRoomController {
     public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
-        Long userId = jwtUtil.getUserId(token);
+        UUID userId = jwtUtil.getUserId(token);
         if(role != Role.TEACHER) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -61,7 +62,7 @@ public class ClassRoomController {
     @PostMapping("/{code}/members")
     public ResponseEntity<?> joinClassRoom(@PathVariable String code, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
-        Long userId = jwtUtil.getUserId(token);
+        UUID userId = jwtUtil.getUserId(token);
 
         try {
             classRoomService.joinClassRoom(userId, code);
@@ -73,7 +74,7 @@ public class ClassRoomController {
     }
 
     @GetMapping("/{classId}")
-    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable Long classId, HttpServletRequest request) {
+    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable UUID classId, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
 
@@ -86,7 +87,7 @@ public class ClassRoomController {
     }
 
     @PatchMapping("/{classId}")
-    public ResponseEntity<?> updateClassRoom(@PathVariable Long classId, @RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
+    public ResponseEntity<?> updateClassRoom(@PathVariable UUID classId, @RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
 

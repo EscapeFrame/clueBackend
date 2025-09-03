@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "assignment")
+@Table(name = "assignments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
 public class Assignment extends BaseEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "assignment_id", nullable = false, updatable = false)
   private UUID assignmentId;
 

@@ -6,17 +6,19 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "submission")
+@Table(name = "submissions")
 @Getter
 @AllArgsConstructor
 @Builder @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Submission extends BaseEntity{
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "submission_id")
-  private Long submissionId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "submission_id", nullable = false, updatable = false)
+  private UUID submissionId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "assignment_id")

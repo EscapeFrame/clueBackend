@@ -27,7 +27,7 @@ public class QUserEntity extends EntityPathBase<UserEntity> {
 
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
-    public final NumberPath<Long> userId = createNumber("userId", Long.class);
+    public final ComparablePath<java.util.UUID> userId = createComparable("userId", java.util.UUID.class);
 
     public final StringPath username = createString("username");
 

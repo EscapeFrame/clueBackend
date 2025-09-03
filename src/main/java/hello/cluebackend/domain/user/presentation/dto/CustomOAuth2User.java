@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 public class CustomOAuth2User implements OAuth2User {
     private final UserDto userDTO;
@@ -47,7 +48,7 @@ public class CustomOAuth2User implements OAuth2User {
         return userDTO.getUsername();
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userDTO.getUserId();
     }
 

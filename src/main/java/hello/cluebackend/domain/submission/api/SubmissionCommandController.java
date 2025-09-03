@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/submissions")
@@ -31,8 +32,8 @@ public class SubmissionCommandController {
   // 할당된 과제 전체 조회
   @GetMapping("/assignment/{assignmentId}")
   public ResponseEntity<List<SubmissionDto>> findAllSubmission(
-          @CurrentUser Long userId,
-          @PathVariable Long assignmentId
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentId
   ) {
     List<SubmissionDto> result = submissionCommandService.findAllByAssignmentId(userId,assignmentId);
     return ResponseEntity.ok(result);
@@ -41,8 +42,8 @@ public class SubmissionCommandController {
   // 할당된 과제 단일 조회
   @GetMapping("/{submissionId}")
   public ResponseEntity<SubmissionDto> findSubmission(
-          @CurrentUser Long userId,
-          @PathVariable Long assignmentId
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentId
   ) {
     SubmissionDto result = submissionCommandService.findByAssignmentId(assignmentId);
 
@@ -52,8 +53,8 @@ public class SubmissionCommandController {
   // 전체 학생 과제 제출 여부
   @GetMapping("/{assignmentId}/check")
   public ResponseEntity<List<SubmissionCheck>> checkAssignment(
-          @CurrentUser Long userId,
-          @PathVariable Long assignmentId
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentId
   ){
     List<SubmissionCheck> assignmentChecks = submissionCommandService.checkAssignment(userId,assignmentId);
     return ResponseEntity.ok(assignmentChecks);
@@ -62,8 +63,8 @@ public class SubmissionCommandController {
   // 첨부파일 다운로드
   @GetMapping("/{submissionAttachmentId}/download")
   public ResponseEntity<Resource> submissionAttachmentDownload(
-          @CurrentUser Long userId,
-          @PathVariable Long submissionAttachmentId
+          @CurrentUser UUID userId,
+          @PathVariable UUID submissionAttachmentId
   ) throws IOException {
     SubmissionAttachment submissionAttachment = submissionCommandService.findsubmissionAttachmentByIdOrThrow(submissionAttachmentId);
     Resource resource = submissionCommandService.downloadAttachment(submissionAttachment);

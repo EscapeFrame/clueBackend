@@ -26,7 +26,7 @@ public class QAssignmentAttachment extends EntityPathBase<AssignmentAttachment> 
 
     public final QAssignment assignment;
 
-    public final NumberPath<Long> assignmentAttachmentId = createNumber("assignmentAttachmentId", Long.class);
+    public final ComparablePath<java.util.UUID> assignmentAttachmentId = createComparable("assignmentAttachmentId", java.util.UUID.class);
 
     public final StringPath contentType = createString("contentType");
 

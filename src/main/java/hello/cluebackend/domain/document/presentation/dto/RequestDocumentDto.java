@@ -2,6 +2,8 @@ package hello.cluebackend.domain.document.presentation.dto;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
@@ -9,8 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class RequestDocumentDto {
-
-    private Long documentId;
+    private UUID documentId;
     private String title;
     private int type;
 

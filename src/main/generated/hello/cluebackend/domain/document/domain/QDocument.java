@@ -30,7 +30,7 @@ public class QDocument extends EntityPathBase<Document> {
 
     public final hello.cluebackend.domain.directory.domain.QDirectory directory;
 
-    public final NumberPath<Long> documentId = createNumber("documentId", Long.class);
+    public final ComparablePath<java.util.UUID> documentId = createComparable("documentId", java.util.UUID.class);
 
     public final StringPath title = createString("title");
 

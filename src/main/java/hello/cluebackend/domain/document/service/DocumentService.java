@@ -38,7 +38,7 @@ public class DocumentService {
         this.directoryRepository = directoryRepository;
     }
 
-    public void storeFiles(Long classRoomId, Long directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+    public void storeFiles(UUID classRoomId, UUID directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
         ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 교실을 찾을 수가 없습니다."));
         Directory findDirectory = directoryRepository.findById(directoryId).orElseThrow(() -> new IllegalArgumentException("해당 디렉토를을 찾을 수가 없습니다."));
 
@@ -102,7 +102,7 @@ public class DocumentService {
         return UUID.randomUUID().toString() + "_" + originalFileName;
     }
 
-    public void deleteById(Long documentId) {
+    public void deleteById(UUID documentId) {
         Document findDocument = documentRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업을 찾지 못했습니다."));
         String fullPath = findDocument.getContent();
 
@@ -124,12 +124,12 @@ public class DocumentService {
 
     }
 
-    public DocumentDto findById(Long documentId) {
+    public DocumentDto findById(UUID documentId) {
         Document findDocument = documentRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업자료가 존재하지 않습니다."));
         return findDocument.toDto();
     }
 
-    public void updateDocument(Long classRoomId, Long directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+    public void updateDocument(UUID classRoomId, UUID directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
         System.out.println("directoryId = " + directoryId);
         ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 교실을 찾을 수가 없습니다."));
         Directory findDirectory = directoryRepository.findById(directoryId).orElseThrow(() -> new IllegalArgumentException("해당 디렉토를을 찾을 수가 없습니다."));

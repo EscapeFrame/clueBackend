@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,7 +35,7 @@ class ClassRoomControllerTest {
     void testGetAllClassRooms() {
         // given
         String token = "fake-token";
-        Long userId = 1L;
+        UUID userId = 1L;
 
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         when(jwtUtil.getToken(mockRequest)).thenReturn(token);

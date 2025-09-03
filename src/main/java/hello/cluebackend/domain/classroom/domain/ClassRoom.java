@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name="class_room")
@@ -19,11 +20,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassRoom {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long classRoomId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "class_room_id", nullable = false, updatable = false)
+    private UUID classRoomId;
 
     @Column(nullable = false, length = 40)
     private String name;

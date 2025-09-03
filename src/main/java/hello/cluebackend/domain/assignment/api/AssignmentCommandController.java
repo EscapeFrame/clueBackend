@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/assignments")
@@ -40,12 +41,12 @@ public class AssignmentCommandController {
   // 과제 단일 조회
   @GetMapping("/{assignmentId}")
   public ResponseEntity<AssignmentResponseDto> getAssignment(
-          @CurrentUser Long userId,
-          @PathVariable Long assignmentId
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentId
   ) {
     AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
-    Long classroomId = assignment.getClassRoom().getClassRoomId();
+    UUID classroomId = assignment.getClassRoom().getClassRoomId();
     if (!classroomUserService.isUserInClassroom(classroomId, userId)) {
       throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
     }
@@ -55,8 +56,8 @@ public class AssignmentCommandController {
   // 교실 과제 전체 조회
   @GetMapping("/{classId}/all")
   public ResponseEntity<List<AssignmentResponseDto>> getAllClassroomAssignment(
-          @CurrentUser Long userId,
-          @PathVariable Long classId
+          @CurrentUser UUID userId,
+          @PathVariable UUID classId
   ) {
     List<AssignmentResponseDto> result = assignmentCommandService.findAllById(userId,classId);
 
@@ -69,14 +70,14 @@ public class AssignmentCommandController {
 
   // 메인 페이지 모든 과제 조회
   @GetMapping("/me")
-  public ResponseEntity<List<GetAllAssignmentDto>> getAllAssignments(@CurrentUser Long userId) {
+  public ResponseEntity<List<GetAllAssignmentDto>> getAllAssignments(@CurrentUser UUID userId) {
     List<GetAllAssignmentDto> result = assignmentCommandService.findAllAssignmentMe(userId);
     return ResponseEntity.ok(result);
   }
 
   // 첨부 파일 혹은 링크 전체 조회 (선생, 학생)
   @GetMapping("/{submissionId}/attachment")
-  public ResponseEntity<List<SubmissionAttachmentDto>> findAllAssignments(@CurrentUser Long userId, @PathVariable Long submissionId) {
+  public ResponseEntity<List<SubmissionAttachmentDto>> findAllAssignments(@CurrentUser UUID userId, @PathVariable UUID submissionId) {
     List<SubmissionAttachmentDto> result = submissionCommandService.findAllAssignment(submissionId);
     return ResponseEntity.ok(result);
   }
@@ -84,8 +85,8 @@ public class AssignmentCommandController {
   // 첨부 파일 다운로드
   @GetMapping("/{assignmentAttachmentId}/download")
   public ResponseEntity<Resource> assignmentAttachmentDownload(
-          @CurrentUser Long userId,
-          @PathVariable Long assignmentAttachmentId
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentAttachmentId
   ) throws IOException {
     AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(assignmentAttachmentId);
     Resource resource = assignmentCommandService.downloadAttachment(assignmentAttachment);
