@@ -2,7 +2,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validation
 
   config:
     activate:
