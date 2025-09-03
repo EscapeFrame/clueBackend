@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -16,9 +17,9 @@ import java.util.List;
 @Setter
 public class Directory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="directory_id", nullable = false)
-    private Long directoryId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name="directory_id", nullable = false, updatable = false)
+    private UUID directoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_room_id",  nullable = false)

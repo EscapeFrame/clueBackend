@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class ClassRoomService {
         this.userRepository = userRepository;
     }
 
-    public List<ClassRoomCardDto> findMyClassRoomById(Long userId) {
+    public List<ClassRoomCardDto> findMyClassRoomById(UUID userId) {
         List<ClassRoomUser> classRoomUsers = classRoomUserRepository.findByUser_UserId(userId);
         return classRoomUsers.stream()
 //                .filter(cu -> cu.getUser().getRole() == Role.STUDENT)
@@ -46,7 +47,7 @@ public class ClassRoomService {
     }
 
     @Transactional
-    public void createClassRoom(ClassRoomDto classRoomDTO, Long userId) {
+    public void createClassRoom(ClassRoomDto classRoomDTO, UUID userId) {
         classRoomDTO.generateCode();
         ClassRoom classRoom = classRoomDTO.toEntity();
         classRoomRepository.save(classRoom);
@@ -60,7 +61,7 @@ public class ClassRoomService {
         classRoomUserRepository.save(classRoomUser);
     }
 
-    public void joinClassRoom(Long userId, String code) {
+    public void joinClassRoom(UUID userId, String code) {
         ClassRoom findClassRoom = classRoomRepository.findByCode(code).orElseThrow(() -> new IllegalArgumentException("classroom not found"));
         UserEntity findUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
         ClassRoomUser classRoomUser = ClassRoomUser.builder()
@@ -70,12 +71,12 @@ public class ClassRoomService {
         classRoomUserRepository.save(classRoomUser);
     }
 
-    public ClassRoomDto findById(Long classRoomId) {
+    public ClassRoomDto findById(UUID classRoomId) {
         ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
         return findClassRoom.toDTO();
     }
 
-    public void updateClassRoom(Long classId, ClassRoomDto classRoomDTO) {
+    public void updateClassRoom(UUID classId, ClassRoomDto classRoomDTO) {
         ClassRoom findClassRoom =  classRoomRepository.findById(classId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
         findClassRoom.setName(classRoomDTO.getName());
         findClassRoom.setSort(classRoomDTO.getSort());
@@ -85,7 +86,7 @@ public class ClassRoomService {
         classRoomRepository.save(findClassRoom);
     }
 
-    public ClassRoomAllInfoDto getAllInfo(Long classId) {
+    public ClassRoomAllInfoDto getAllInfo(UUID classId) {
         ClassRoom classRoom = classRoomRepository.findById(classId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
 

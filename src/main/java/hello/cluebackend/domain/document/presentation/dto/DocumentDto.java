@@ -9,13 +9,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class DocumentDto {
-    private Long documentId;
+    private UUID documentId;
     private ClassRoom classRoom;
     private Directory directory;
     private String title;

@@ -9,6 +9,8 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Transactional
 public class RefreshTokenService {
@@ -65,7 +67,7 @@ public class RefreshTokenService {
 
         String username = jwtUtil.getUsername(refreshToken);
         String role = jwtUtil.getRole(refreshToken).name();
-        Long userId = jwtUtil.getUserId(refreshToken);
+        UUID userId = jwtUtil.getUserId(refreshToken);
 
 
         String newAccessToken = jwtUtil.createJwt("access", userId, username, role, 60 * 10 * 1000L);

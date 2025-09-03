@@ -5,6 +5,7 @@ import hello.cluebackend.domain.user.domain.UserEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,14 +13,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
-    private Long userId;
+    private UUID userId;
     private String email;
     private Role role;
     private String username;
     private int classCode;
     private LocalDateTime createdAt;
 
-    public UserDto(Long userId, String email, Role role, String username, int classCode) {
+    public UserDto(UUID userId, String email, Role role, String username, int classCode) {
         this.userId = userId;
         this.email = email;
         this.role = role;

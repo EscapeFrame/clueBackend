@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -17,9 +18,9 @@ import java.time.LocalDateTime;
 public class Document {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="document_id", nullable = false)
-    private Long documentId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name="document_id", nullable = false, updatable = false)
+    private UUID documentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_room_id",  nullable = false)

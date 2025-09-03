@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class ClassroomUserService {
   }
 
   // 수업실에 해당 유저가 속하는지 확인하는 로직
-  public boolean isUserInClassroom(Long classRoomId, Long userId) {
+  public boolean isUserInClassroom(UUID classRoomId, UUID userId) {
     ClassRoom classRoom = classRoomService.findById(classRoomId).toEntity();
     UserEntity user = userService.findById(userId).toEntity();
 

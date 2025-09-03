@@ -22,6 +22,7 @@ import org.springframework.web.util.UriUtils;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -42,8 +43,8 @@ public class DocumentController {
     public ResponseEntity<?> uploadDocument(
             @RequestPart("metadata") List<RequestDocumentDto> requestDocumentDto,
             @RequestPart("files")  List<MultipartFile> files,
-            @RequestPart("classRoomId") Long classRoomId,
-            @RequestPart("directoryId") Long directoryId,
+            @RequestPart("classRoomId") UUID classRoomId,
+            @RequestPart("directoryId") UUID directoryId,
             HttpServletRequest request) {
         String token = jwtUtil.getToken(request);
         Role role = jwtUtil.getRole(token);
@@ -66,8 +67,8 @@ public class DocumentController {
     public ResponseEntity<?> updateDocument(
             @RequestPart("metadata") List<RequestDocumentDto> requestDocumentDto,
             @RequestPart("files")  List<MultipartFile> files,
-            @RequestPart("classRoomId") Long classRoomId,
-            @RequestPart("directoryId") Long directoryId,
+            @RequestPart("classRoomId") UUID classRoomId,
+            @RequestPart("directoryId") UUID directoryId,
             HttpServletRequest request) {
 
         String token = jwtUtil.getToken(request);
@@ -105,7 +106,7 @@ public class DocumentController {
     }
 
     @GetMapping("/download/{documentId}")
-    public ResponseEntity<UrlResource> downloadDocument(@PathVariable("documentId") Long documentId) {
+    public ResponseEntity<UrlResource> downloadDocument(@PathVariable("documentId") UUID documentId) {
 
         try {
             DocumentDto documentDto = documentService.findById(documentId);

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class SubmissionCommandService {
   private final FileService fileService;
 
   // 과제 제출 여부 확인 API
-  public List<SubmissionCheck> checkAssignment(Long userId, Long assignmentId) {
+  public List<SubmissionCheck> checkAssignment(UUID userId, UUID assignmentId) {
     Assignment assignment = assignmentRepository.findById(assignmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 과제를 찾을수 없습니다."));
     List<Submission> submissions = submissionRepository.findAllByAssignment(assignment);
@@ -46,7 +47,7 @@ public class SubmissionCommandService {
             .toList();
   }
 
-  public List<SubmissionDto> findAllByAssignmentId(Long userId, Long assignmentId) {
+  public List<SubmissionDto> findAllByAssignmentId(UUID userId, UUID assignmentId) {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     List<Submission> submissions = submissionRepository.findAllByAssignment(assignment);
 
@@ -64,7 +65,7 @@ public class SubmissionCommandService {
   }
 
   //
-  public SubmissionDto findByAssignmentId(Long assignmentId) {
+  public SubmissionDto findByAssignmentId(UUID assignmentId) {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
 
     Submission s = submissionRepository.findByAssignment(assignment);
@@ -79,17 +80,17 @@ public class SubmissionCommandService {
             .build();
   }
 
-  public Submission findByIdOrThrow(Long submissionId) {
+  public Submission findByIdOrThrow(UUID submissionId) {
     return submissionRepository.findById(submissionId)
             .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
   }
 
-  public SubmissionAttachment findAssignmentAttachmentByIdOrThrow(Long submissionAttachmentId){
+  public SubmissionAttachment findAssignmentAttachmentByIdOrThrow(UUID submissionAttachmentId){
     return submissionAttachmentRepository.findById(submissionAttachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
   }
 
-  public List<SubmissionAttachmentDto> findAllAssignment(Long submissionId) {
+  public List<SubmissionAttachmentDto> findAllAssignment(UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
     List<SubmissionAttachment> attachments = submissionAttachmentRepository.findAllBySubmission(submission);
     return attachments.stream()
@@ -103,7 +104,7 @@ public class SubmissionCommandService {
     ).toList();
   }
 
-  public SubmissionAttachment findsubmissionAttachmentByIdOrThrow(Long submissionAttachmentId) {
+  public SubmissionAttachment findsubmissionAttachmentByIdOrThrow(UUID submissionAttachmentId) {
     return submissionAttachmentRepository.findById(submissionAttachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 과제 제출 첨부파일을 찾을수 없습니다."));
   }

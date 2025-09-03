@@ -24,7 +24,7 @@ public class QClassRoomUser extends EntityPathBase<ClassRoomUser> {
 
     public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
 
-    public final NumberPath<Long> classRoomUserId = createNumber("classRoomUserId", Long.class);
+    public final ComparablePath<java.util.UUID> classRoomUserId = createComparable("classRoomUserId", java.util.UUID.class);
 
     public final hello.cluebackend.domain.user.domain.QUserEntity user;
 

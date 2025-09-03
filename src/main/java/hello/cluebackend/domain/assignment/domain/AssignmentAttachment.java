@@ -3,6 +3,8 @@ package hello.cluebackend.domain.assignment.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "assignment_attachment")
 @Getter @Setter
@@ -10,9 +12,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AssignmentAttachment extends BaseEntity {
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "assignment_attachment_id")
-  private Long assignmentAttachmentId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "assignment_attachment_id", nullable = false, updatable = false)
+  private UUID assignmentAttachmentId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="assignment_id")

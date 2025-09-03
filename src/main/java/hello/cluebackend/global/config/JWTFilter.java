@@ -14,6 +14,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class JWTFilter extends OncePerRequestFilter {
     private static final AntPathRequestMatcher REFRESH_MATCHER = new AntPathRequestMatcher("/refresh-token", "POST");
@@ -53,7 +54,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String username = jwtUtil.getUsername(accessToken);
         Role role = jwtUtil.getRole(accessToken);
-        Long  userId = jwtUtil.getUserId(accessToken);
+        UUID userId = jwtUtil.getUserId(accessToken);
 
         UserDto userDTO = new UserDto();
         userDTO.setUsername(username);

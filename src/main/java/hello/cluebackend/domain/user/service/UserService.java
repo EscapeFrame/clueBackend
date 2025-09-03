@@ -6,6 +6,8 @@ import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -23,7 +25,7 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    public UserDto findById(Long userId) {
+    public UserDto findById(UUID userId) {
         UserEntity userEntity = userRepository.findById(userId).get();
         return userEntity.toUserDTO();
     }

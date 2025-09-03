@@ -8,12 +8,13 @@ import lombok.Setter;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
 public class ClassRoomDto {
-    private Long classRoomId;
+    private UUID classRoomId;
     private String name;
     private String description;
     private String sort;

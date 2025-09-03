@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class SubmissionQueryService {
 
   // 해당 교실 모든 학생에게 과제 부여 & 제출 과제 생성
   @Transactional
-  public void assignToAllStudentsInClassroom(Long classroomId, Assignment assignment){
+  public void assignToAllStudentsInClassroom(UUID classroomId, Assignment assignment){
     ClassRoom classRoom = classRoomService.findById(classroomId).toEntity();
     List<UserEntity> users = classroomUserService.findAllClassroomUser(classRoom);
     List<Submission> submissions = users.stream()
@@ -42,7 +43,7 @@ public class SubmissionQueryService {
 
   // 과제 제출하기
   @Transactional
-  public Submission submitSubmission(Long submissionId) {
+  public Submission submitSubmission(UUID submissionId) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.submit();
     return submissionRepository.save(submission);
@@ -50,7 +51,7 @@ public class SubmissionQueryService {
 
   // 과제 제출 취소하기
   @Transactional
-  public Submission cancelSubmission(Long submissionId) {
+  public Submission cancelSubmission(UUID submissionId) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.cancel();
     return submissionRepository.save(submission);
@@ -59,7 +60,7 @@ public class SubmissionQueryService {
 
   // 첨부 파일 추가
   @Transactional
-  public SubmissionAttachment fileUpload(Long submissionId, MultipartFile file) {
+  public SubmissionAttachment fileUpload(UUID submissionId, MultipartFile file) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
 
     String storedFiledName = fileService.storeFile(file);
@@ -78,7 +79,7 @@ public class SubmissionQueryService {
 
   // 첨부 링크 추가
   @Transactional
-  public SubmissionAttachment linkUpload(Long submissionId, SubmissionAttachmentUrlDto dto) {
+  public SubmissionAttachment linkUpload(UUID submissionId, SubmissionAttachmentUrlDto dto) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
 
     SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
@@ -93,7 +94,7 @@ public class SubmissionQueryService {
 
   // 첨부 파일 삭제
   @Transactional
-  public void deleteSubmissionAttachment(Long submissionAttachmentId) {
+  public void deleteSubmissionAttachment(UUID submissionAttachmentId) {
     SubmissionAttachment submissionAttachment = submissionCommandService.findAssignmentAttachmentByIdOrThrow(submissionAttachmentId);
     if(submissionAttachment.getType() == fileType.file){
       fileService.deleteFile(submissionAttachment.getValue());

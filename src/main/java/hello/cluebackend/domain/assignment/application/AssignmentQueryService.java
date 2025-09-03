@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class AssignmentQueryService{
 
   // 과제 생성
   @Transactional
-  public Assignment save(Long userId, CreateAssignmentDto request) {
+  public Assignment save(UUID userId, CreateAssignmentDto request) {
     UserEntity user = userService.findById(userId).toEntity();
 
     ClassRoom classRoom = classRoomRepository.findById(request.classId())
@@ -54,14 +55,14 @@ public class AssignmentQueryService{
 
   // 과제 삭제
   @Transactional
-  public void delete(Long assignmentId) {
+  public void delete(UUID assignmentId) {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     assignmentRepository.delete(assignment);
   }
 
   // 과제 수정
   @Transactional
-  public Long patchAssignment(Long assignmentId, ModifyAssignmentDto dto){
+  public UUID patchAssignment(UUID assignmentId, ModifyAssignmentDto dto){
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     assignment.patch(dto.getTitle(), dto.getContent(), dto.getStartDate(), dto.getEndDate());
     return assignment.getAssignmentId();
@@ -69,7 +70,7 @@ public class AssignmentQueryService{
 
   // url 업로드
   @Transactional
-  public void uploadUrlAttachment(Long assignmentId, List<AssignmentAttachmentDto> dtos) {
+  public void uploadUrlAttachment(UUID assignmentId, List<AssignmentAttachmentDto> dtos) {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
 
     List<AssignmentAttachment> result = dtos.stream()
@@ -84,7 +85,7 @@ public class AssignmentQueryService{
   }
 
   // 첨부 파일 추가
-  public void uploadFileAttachment(Long assignmentId, MultipartFile file) {
+  public void uploadFileAttachment(UUID assignmentId, MultipartFile file) {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
 
     String storedFileName = fileService.storeFile(file);
@@ -102,14 +103,11 @@ public class AssignmentQueryService{
 
   // 첨부 파일 업로드 삭제
   @Transactional
-  public void deleteAttachment(Long attachmentId) {
+  public void deleteAttachment(UUID attachmentId) {
     AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(attachmentId);
     if(assignmentAttachment.getType() == FileType.FILE){
       fileService.deleteFile(assignmentAttachment.getValue());
     }
     assignmentAttachmentRepository.delete(assignmentAttachment);
   }
-
-
-
 }

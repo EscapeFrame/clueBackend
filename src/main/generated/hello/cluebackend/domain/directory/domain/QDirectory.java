@@ -24,7 +24,7 @@ public class QDirectory extends EntityPathBase<Directory> {
 
     public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
 
-    public final NumberPath<Long> directoryId = createNumber("directoryId", Long.class);
+    public final ComparablePath<java.util.UUID> directoryId = createComparable("directoryId", java.util.UUID.class);
 
     public final NumberPath<Integer> directoryOrder = createNumber("directoryOrder", Integer.class);
 

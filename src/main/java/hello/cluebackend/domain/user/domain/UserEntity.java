@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @ToString
 @Entity
@@ -16,11 +17,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "user_entity")
 public class UserEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id", nullable = false)
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name="user_id", nullable = false, updatable = false)
+    private UUID userId;
 
     @ColumnDefault("-1")
     @Column(name="class_code")

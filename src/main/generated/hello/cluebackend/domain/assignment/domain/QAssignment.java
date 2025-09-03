@@ -24,7 +24,7 @@ public class QAssignment extends EntityPathBase<Assignment> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final NumberPath<Long> assignmentId = createNumber("assignmentId", Long.class);
+    public final ComparablePath<java.util.UUID> assignmentId = createComparable("assignmentId", java.util.UUID.class);
 
     public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
 

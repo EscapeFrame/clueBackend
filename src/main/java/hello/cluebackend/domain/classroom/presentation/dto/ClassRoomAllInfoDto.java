@@ -4,6 +4,7 @@ import hello.cluebackend.domain.directory.presentation.dto.DirectoryAllInfoDto;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ClassRoomAllInfoDto {
 
-    private Long classRoomId;
+    private UUID classRoomId;
     private String classRoomName;
     private String description;
     private List<DirectoryAllInfoDto> directoryList;

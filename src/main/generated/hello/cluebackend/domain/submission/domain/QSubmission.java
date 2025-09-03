@@ -40,7 +40,7 @@ public class QSubmission extends EntityPathBase<Submission> {
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
-    public final NumberPath<Long> submissionId = createNumber("submissionId", Long.class);
+    public final ComparablePath<java.util.UUID> submissionId = createComparable("submissionId", java.util.UUID.class);
 
     public final DateTimePath<java.time.LocalDateTime> submittedAt = createDateTime("submittedAt", java.time.LocalDateTime.class);
 
