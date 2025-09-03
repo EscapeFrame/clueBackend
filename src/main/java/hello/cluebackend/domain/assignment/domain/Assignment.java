@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "assignments")
+@Table(name = "assignment")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
