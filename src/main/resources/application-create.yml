@@ -1,0 +1,9 @@
+# create 용도
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  config:
+    activate:
+      on-profile: create

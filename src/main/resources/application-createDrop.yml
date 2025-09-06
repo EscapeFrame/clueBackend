@@ -1,0 +1,9 @@
+# createDrop 용도
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  config:
+    activate:
+      on-profile: createDrop
