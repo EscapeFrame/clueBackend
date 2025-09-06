@@ -7,7 +7,3 @@ spring:
   config:
     activate:
       on-profile: createDrop
-
-logging:
-  level:
-    root: debug
