@@ -1,8 +1,8 @@
-# 개발용
+# create 용도
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
 
   config:
     activate:
