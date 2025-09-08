@@ -41,9 +41,9 @@ public class SubmissionQueryController {
     return ResponseEntity.ok(submission);
   }
 
-
+  // 과제 첨부파일 삭제하기
   @DeleteMapping("/{submissionAttachmentId}")
-  public ResponseEntity<?> deleteSubmission(
+  public ResponseEntity<?> deleteSubmissionAttachment(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionAttachmentId
   ){
@@ -64,7 +64,7 @@ public class SubmissionQueryController {
 
   // 과제 제출 첨부 링크 추가
   @PostMapping("/{submisisonId}/link")
-  public ResponseEntity<?> deleteFile(
+  public ResponseEntity<?> linkUpload(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId,
           @RequestBody SubmissionAttachmentUrlDto dto
