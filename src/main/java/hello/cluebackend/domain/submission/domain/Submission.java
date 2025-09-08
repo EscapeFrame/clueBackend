@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Submission extends BaseEntity{
+public class Submission{
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "submission_id", nullable = false, updatable = false)

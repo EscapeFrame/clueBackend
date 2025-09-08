@@ -20,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class Assignment extends BaseEntity {
+public class Assignment {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "assignment_id", nullable = false, updatable = false)
