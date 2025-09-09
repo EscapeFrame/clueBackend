@@ -20,12 +20,7 @@ public class RegisterController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public String processRegistration(RegisterUserDto registerUserDTO) {
-        return "redirect:/";
-    }
-
-    @PostMapping("/first-register")
+    @GetMapping("/first-register")
     public DefaultRegisterUserDto showRegistrationForm(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDto userDto = (UserDto) session.getAttribute("firstUser");
