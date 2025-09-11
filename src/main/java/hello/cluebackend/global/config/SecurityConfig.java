@@ -3,21 +3,17 @@ package hello.cluebackend.global.config;
 import hello.cluebackend.domain.user.service.CustomOAuth2UserService;
 import hello.cluebackend.global.security.jwt.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Collections;
-
 
 @Configuration
 @EnableWebSecurity
@@ -26,34 +22,64 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
+                          CustomSuccessHandler customSuccessHandler,
+                          JWTUtil jwtUtil,
+                          RefreshTokenService refreshTokenService) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, RefreshTokenService refreshTokenService) throws Exception {
-
+    @Order(0)
+    public SecurityFilterChain loginChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/oauth2/**", "/login/oauth2/**", "/first-register", "/register", "/api/timetable/**")
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**", "/first-register", "/register", "/api/timetable/**")
+                        .permitAll()
+                        .anyRequest().permitAll()
+                )
+                .oauth2Login(o -> o
+                        .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler)
+                )
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .addLogoutHandler((request, response, authentication) -> {
                             String refreshToken = null;
                             Cookie[] cookies = request.getCookies();
-                            if (cookies == null) return;
-                            for (Cookie cookie : cookies) {
-                                if (cookie.getName().equals("refresh_token")) {
-                                    refreshToken = cookie.getValue();
+                            if (cookies != null) {
+                                for (Cookie cookie : cookies) {
+                                    if ("refresh_token".equals(cookie.getName())) {
+                                        refreshToken = cookie.getValue();
+                                        break;
+                                    }
                                 }
                             }
                             if (refreshToken == null) {
                                 throw new AuthenticationCredentialsNotFoundException("refresh_token 쿠키가 존재하지 않습니다.");
                             }
                             refreshTokenService.deleteByRefresh(refreshToken);
-                            String accessToken = "";
-                            response.setHeader("Authorization", "Bearer " + accessToken);
+
+                            response.setHeader("Authorization", "Bearer ");
 
                             Cookie refreshTokenCookie = new Cookie("refresh_token", null);
                             refreshTokenCookie.setMaxAge(0);
@@ -63,77 +89,18 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID", "refresh_token")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
-
-                );
-
-        http
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setMaxAge(3600L);
-                        return configuration;
-                    }
-                }));
-
-        // csrf disable
-        http
-                .csrf(auth->auth.disable());
-
-        // Form 로그인 방식 disable
-        http
-                .formLogin(auth->auth.disable());
-
-        // HTTP Basic 인증 방식 disable
-        http
-                .httpBasic(auth->auth.disable());
-
-        // JWTFilter 추가
-        http
-                // JWT 토큰 만료시 다시 로그인을 할 경우 JWT 토큰이 없어서 거절하게 되어 무한루프에 빠지게 됨
-//                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-                .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-//        .addFilterAfter(new JWTFilter(jwtUtil),OAuth2LoginAuthenticationFilter.class);
-
-        // oauth2
-        http
-//                .oauth2Login(Customizer.withDefaults());
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler));
-
-        // 경로별 인가 작업
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/refresh-token", "/register", "/first-register", "/api/timetable/**", "/test",
-                                "/h2-console/**",
-                                "/favicon.ico",
-                                "/error",
-                                "/swagger-ui/**",
-                                "/swagger-resources/**",
-                                "/v3/api-docs/**").permitAll()
-
-                        .anyRequest().authenticated());
-
-
-        http
-                .securityMatcher("/first-register", "/register","api/timetable/**")
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
                 )
-                .securityMatcher("/**")
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers(
+                                "/", "/refresh-token", "/h2-console/**",
+                                "/favicon.ico", "/error",
+                                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
