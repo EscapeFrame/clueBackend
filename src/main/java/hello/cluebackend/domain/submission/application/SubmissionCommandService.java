@@ -1,16 +1,19 @@
 package hello.cluebackend.domain.submission.application;
 
-import hello.cluebackend.domain.assignment.api.dto.response.SubmissionCheck;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
+import hello.cluebackend.domain.classroom.domain.ClassRoom;
+import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.domain.Assignment;
-import hello.cluebackend.domain.assignment.persistence.AssignmentRepository;
 import hello.cluebackend.domain.file.service.FileService;
-import hello.cluebackend.domain.submission.api.dto.response.SubmissionAttachmentDto;
-import hello.cluebackend.domain.submission.api.dto.response.SubmissionDto;
+import hello.cluebackend.domain.submission.api.dto.response.*;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import hello.cluebackend.domain.submission.persistence.SubmissionRepository;
 import hello.cluebackend.domain.submission.persistence.SubmissionAttachmentRepository;
+import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -25,59 +28,78 @@ import java.util.UUID;
 public class SubmissionCommandService {
   private final SubmissionRepository submissionRepository;
   private final SubmissionAttachmentRepository submissionAttachmentRepository;
-  private final AssignmentRepository assignmentRepository;
+  private final ClassRoomService classRoomService;
   private final AssignmentCommandService assignmentCommandService;
   private final FileService fileService;
+  private final UserService userService;
 
-  // 과제 제출 여부 확인 API
+  // 과제 전체 조회 및 과제 첨부 파일 조회
+  public List<SubmissionResponse> findAllByAssignmentId(UUID userId,UUID classId) {
+    UserEntity user = userService.findById(userId).toEntity();
+    ClassRoom classRoom = classRoomService.findById(classId).toEntity();
+
+    List<Submission> submissions = submissionRepository.findAllByClassRoomAndUser(classRoom, user);
+
+    return submissions.stream()
+            .map(submission -> {
+              List<SubmissionAttachmentResponse> submissionAttachmentResponses =
+                      submissionAttachmentRepository.findAllBySubmission(submission).stream()
+                              .map(SubmissionAttachmentResponse::from)
+                              .toList();
+
+              return SubmissionResponse.from(submission, submissionAttachmentResponses);
+            })
+            .toList();
+  }
+
+  // 과제 제출 단일 조회
+  public SubmissionResponse findByAssignmentId(UUID userId, UUID submissionId) {
+    Submission submission = findByIdOrThrow(submissionId);
+
+    if (!submission.getUser().getUserId().equals(userId) && !submission.getUser().getRole().equals(Role.TEACHER)) {
+      throw new AccessDeniedException("사용자가 제출한 과제가 아닙니다.");
+    }
+
+    List<SubmissionAttachment> submissionAttachments = submissionRepository.findAllBySubmissionId(submissionId);
+    List<SubmissionAttachmentResponse> submissionAttachmentResponses = submissionAttachments.stream()
+            .map(SubmissionAttachmentResponse::from)
+            .toList();
+    return SubmissionResponse.from(submission, submissionAttachmentResponses);
+  }
+
+  // 전체 학생 과제 제출 여부 (선생)
   public List<SubmissionCheck> checkAssignment(UUID userId, UUID assignmentId) {
-    Assignment assignment = assignmentRepository.findById(assignmentId)
-            .orElseThrow(() -> new EntityNotFoundException("해당 과제를 찾을수 없습니다."));
+    Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     List<Submission> submissions = submissionRepository.findAllByAssignment(assignment);
     return submissions.stream()
             .filter(s -> s.getUser().getUserId().equals(userId))
-            .map(s -> SubmissionCheck.builder()
-                    .submissionId(s.getSubmissionId())
-                    .userName(s.getUser().getUsername())
-                    .classNumberGrade(s.getUser().getClassCode())
-                    .isSubmitted(s.getIsSubmitted())
-                    .submittedAt(s.getSubmittedAt())
-                    .build()
-            )
+            .map(s -> SubmissionCheck.from(s))
             .toList();
   }
 
-  public List<SubmissionDto> findAllByAssignmentId(UUID userId, UUID assignmentId) {
-    Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
-    List<Submission> submissions = submissionRepository.findAllByAssignment(assignment);
-
-    return submissions.stream()
-            .map(s -> SubmissionDto.builder()
-                    .title(s.getAssignment().getTitle())
-                    .startDate(s.getAssignment().getStartDate())
-                    .endDate(s.getAssignment().getEndDate())
-                    .userName(s.getUser().getUsername())
-                    .isSubmitted(s.getIsSubmitted())
-                    .submittedAt(s.getSubmittedAt())
-                    .build()
-            )
+  // 첨부 파일 혹은 링크 전체 조회 (학생)
+  public List<SubmissionAttachmentResponse> findAllAssignmentStudent(UUID userId, UUID submissionId) {
+    Submission submission = findByIdOrThrow(submissionId);
+    List<SubmissionAttachment> attachments = submissionAttachmentRepository.findAllBySubmission(submission);
+    return attachments.stream()
+            .filter(sa -> sa.getUser().getUserId().equals(userId))
+            .map(sa -> SubmissionAttachmentResponse.from(sa))
             .toList();
   }
 
-  //
-  public SubmissionDto findByAssignmentId(UUID assignmentId) {
-    Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
+  // 첨부 파일 혹은 링크 전체 조회 (선생)
+  public List<SubmissionAttachmentResponse> findAllAssignmentTeacher(UUID submissionId) {
+    Submission submission = findByIdOrThrow(submissionId);
+    List<SubmissionAttachment> attachments = submissionAttachmentRepository.findAllBySubmission(submission);
+    return attachments.stream()
+            .map(sa -> SubmissionAttachmentResponse.from(sa))
+            .toList();
+  }
 
-    Submission s = submissionRepository.findByAssignment(assignment);
-
-    return SubmissionDto.builder()
-            .title(s.getAssignment().getTitle())
-            .startDate(s.getAssignment().getStartDate())
-            .endDate(s.getAssignment().getEndDate())
-            .userName(s.getUser().getUsername())
-            .isSubmitted(s.getIsSubmitted())
-            .submittedAt(s.getSubmittedAt())
-            .build();
+  // 첨부파일 다운로드
+  public Resource downloadAttachment(SubmissionAttachment submissionAttachment) throws IOException {
+    String path = submissionAttachment.getValue();
+    return fileService.downloadFile(path);
   }
 
   public Submission findByIdOrThrow(UUID submissionId) {
@@ -85,32 +107,8 @@ public class SubmissionCommandService {
             .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
   }
 
-  public SubmissionAttachment findAssignmentAttachmentByIdOrThrow(UUID submissionAttachmentId){
-    return submissionAttachmentRepository.findById(submissionAttachmentId)
-            .orElseThrow(() -> new EntityNotFoundException("해당 제출 과제를 찾을수 없습니다."));
-  }
-
-  public List<SubmissionAttachmentDto> findAllAssignment(UUID submissionId) {
-    Submission submission = findByIdOrThrow(submissionId);
-    List<SubmissionAttachment> attachments = submissionAttachmentRepository.findAllBySubmission(submission);
-    return attachments.stream()
-            .map(sa -> SubmissionAttachmentDto.builder()
-            .type(sa.getType())
-            .value(sa.getValue())
-            .originalFileName(sa.getOriginalFileName())
-            .contentType(sa.getContentType())
-            .size(sa.getSize())
-            .build()
-    ).toList();
-  }
-
-  public SubmissionAttachment findsubmissionAttachmentByIdOrThrow(UUID submissionAttachmentId) {
+  public SubmissionAttachment findSubmissionAttachmentByIdOrThrow(UUID submissionAttachmentId) {
     return submissionAttachmentRepository.findById(submissionAttachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 과제 제출 첨부파일을 찾을수 없습니다."));
-  }
-
-  public Resource downloadAttachment(SubmissionAttachment submissionAttachment) throws IOException {
-    String path = submissionAttachment.getValue();
-    return fileService.downloadFile(path);
   }
 }

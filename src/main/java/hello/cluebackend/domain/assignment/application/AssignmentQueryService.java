@@ -64,7 +64,7 @@ public class AssignmentQueryService{
   @Transactional
   public UUID patchAssignment(UUID assignmentId, ModifyAssignmentDto dto){
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
-    assignment.patch(dto.getTitle(), dto.getContent(), dto.getStartDate(), dto.getEndDate());
+    assignment.updateDetails(dto.getTitle(), dto.getContent(), dto.getStartDate(), dto.getEndDate());
     return assignment.getAssignmentId();
   }
 
