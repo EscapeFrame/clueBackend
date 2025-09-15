@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.submission.api.dto.response;
+package hello.cluebackend.domain.submission.presentation.dto.response;
 
 import hello.cluebackend.domain.submission.domain.Submission;
 
@@ -15,7 +15,7 @@ public record SubmissionResponse(
         String userName,
 
         UUID submissionId,
-        boolean Issubmitted,
+        boolean IsSubmitted,
         LocalDateTime submittedAt,
 
         List<SubmissionAttachmentResponse> submissionAttachmentResponses

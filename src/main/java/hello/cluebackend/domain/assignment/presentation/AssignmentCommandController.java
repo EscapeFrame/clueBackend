@@ -1,6 +1,6 @@
-package hello.cluebackend.domain.assignment.api;
+package hello.cluebackend.domain.assignment.presentation;
 
-import hello.cluebackend.domain.assignment.api.dto.response.*;
+import hello.cluebackend.domain.assignment.presentation.dto.response.*;
 import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
@@ -42,12 +42,12 @@ public class AssignmentCommandController {
           @CurrentUser UUID userId,
           @PathVariable UUID assignmentId
   ) {
-    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     UUID classroomId = assignment.getClassRoom().getClassRoomId();
     if (!classroomUserService.isUserInClassroom(classroomId, userId)) {
       throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
     }
+    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
     return ResponseEntity.ok(result);
   }
 

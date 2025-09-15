@@ -6,7 +6,7 @@ import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.file.service.FileService;
-import hello.cluebackend.domain.submission.api.dto.response.*;
+import hello.cluebackend.domain.submission.presentation.dto.response.*;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import hello.cluebackend.domain.submission.persistence.SubmissionRepository;
@@ -60,7 +60,7 @@ public class SubmissionCommandService {
       throw new AccessDeniedException("사용자가 제출한 과제가 아닙니다.");
     }
 
-    List<SubmissionAttachment> submissionAttachments = submissionRepository.findAllBySubmissionId(submissionId);
+    List<SubmissionAttachment> submissionAttachments = submissionAttachmentRepository.findAllBySubmission(submission);
     List<SubmissionAttachmentResponse> submissionAttachmentResponses = submissionAttachments.stream()
             .map(SubmissionAttachmentResponse::from)
             .toList();

@@ -1,12 +1,14 @@
-package hello.cluebackend.domain.submission.api;
+package hello.cluebackend.domain.submission.presentation;
 
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
+import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
 import hello.cluebackend.domain.submission.application.SubmissionCommandService;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import hello.cluebackend.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import hello.cluebackend.domain.submission.api.dto.response.*;
+import hello.cluebackend.domain.submission.presentation.dto.response.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ import java.util.UUID;
 @Slf4j
 public class SubmissionCommandController {
   private final SubmissionCommandService submissionCommandService;
+  private final ClassroomUserService classroomUserService;
 
   // 할당된 과제 전체 조회
   @GetMapping("/{classId}")
@@ -28,6 +31,9 @@ public class SubmissionCommandController {
           @CurrentUser UUID userId,
           @PathVariable UUID classId
   ) {
+    if (!classroomUserService.isUserInClassroom(classId, userId)) {
+      throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
     List<SubmissionResponse> result = submissionCommandService.findAllByAssignmentId(userId,classId);
     return ResponseEntity.ok(result);
   }

@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.assignment.api.dto.request;
+package hello.cluebackend.domain.assignment.presentation.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -15,13 +15,7 @@ import java.util.UUID;
 public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
   List<Submission> findAllByAssignment(Assignment assignment);
 
-  Submission findByAssignment(Assignment assignment);
-
   List<SubmissionAttachment> findAllBySubmissionId(UUID submissionId);
-
-  boolean findByAssignmentAndUser(Assignment assignment, UserEntity user);
-
-  Object findByUser(UserEntity user);
 
   List<Submission> findAllByClassRoomAndUser(ClassRoom classRoom, UserEntity user);
 }

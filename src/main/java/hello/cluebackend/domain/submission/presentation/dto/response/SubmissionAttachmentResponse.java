@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.submission.api.dto.response;
+package hello.cluebackend.domain.submission.presentation.dto.response;
 
 import hello.cluebackend.domain.submission.domain.FileType;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;

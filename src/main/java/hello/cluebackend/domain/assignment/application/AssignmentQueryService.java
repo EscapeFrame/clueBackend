@@ -1,8 +1,8 @@
 package hello.cluebackend.domain.assignment.application;
 
-import hello.cluebackend.domain.assignment.api.dto.request.AssignmentAttachmentDto;
-import hello.cluebackend.domain.assignment.api.dto.request.CreateAssignmentDto;
-import hello.cluebackend.domain.assignment.api.dto.request.ModifyAssignmentDto;
+import hello.cluebackend.domain.assignment.presentation.dto.request.AssignmentAttachmentDto;
+import hello.cluebackend.domain.assignment.presentation.dto.request.CreateAssignmentDto;
+import hello.cluebackend.domain.assignment.presentation.dto.request.ModifyAssignmentDto;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.domain.FileType;

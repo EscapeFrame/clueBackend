@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.assignment.application;
 
-import hello.cluebackend.domain.assignment.api.dto.response.AssignmentResponseDto;
-import hello.cluebackend.domain.assignment.api.dto.response.GetAllAssignmentDto;
+import hello.cluebackend.domain.assignment.presentation.dto.response.AssignmentResponseDto;
+import hello.cluebackend.domain.assignment.presentation.dto.response.GetAllAssignmentDto;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.persistence.AssignmentRepository;
