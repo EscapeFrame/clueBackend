@@ -95,7 +95,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/refresh-token", "/h2-console/**",
                                 "/favicon.ico", "/error",
-                                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
+                                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
+                                "/test"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
