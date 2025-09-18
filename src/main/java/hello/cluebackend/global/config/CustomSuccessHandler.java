@@ -60,9 +60,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String refresh = jwtUtil.createJwt("refresh", userId, username, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
+
+            String body = "{"
+                    + "\"access_token\":\"Bearer " + access + "\","
+                    + "\"refresh_token\":\"" + refresh + "\""
+                    + "}";
+
+
             response.setHeader("Authorization", "Bearer " + access);
             response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
+            response.getWriter().write(body);
             response.sendRedirect(baseurl);
         }
     }
