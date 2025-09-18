@@ -6,6 +6,7 @@ import hello.cluebackend.domain.user.presentation.dto.RegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.config.JWTUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
@@ -49,6 +50,16 @@ public class RegisterController {
 
     @GetMapping("/me")
     public ResponseEntity<userData> getCurrentUser(HttpServletRequest request) {
+
+        System.out.println("###########memememe###########");
+        System.out.println(request.getHeader("Authorization"));
+        for(Cookie cookie : request.getCookies()) {
+            if(cookie.getName().equals("refresh_token")) {
+                System.out.println(cookie.getValue());
+            }
+        }
+        System.out.println("###########endend###########");
+
         String token = jwtUtil.getToken(request);
         UUID userId = jwtUtil.getUserId(token);
         Role role = jwtUtil.getRole(token);
