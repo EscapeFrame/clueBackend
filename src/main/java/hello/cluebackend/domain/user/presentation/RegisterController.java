@@ -48,7 +48,7 @@ public class RegisterController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/api/user/me")
     public ResponseEntity<userData> getCurrentUser(HttpServletRequest request) {
 
         System.out.println("###########memememe###########");
