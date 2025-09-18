@@ -1,7 +1,10 @@
 package hello.cluebackend.domain.submission.persistence;
 
 import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.submission.domain.Submission;
+import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +15,7 @@ import java.util.UUID;
 public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
   List<Submission> findAllByAssignment(Assignment assignment);
 
-  Submission findByAssignment(Assignment assignment);
+  List<SubmissionAttachment> findAllBySubmissionId(UUID submissionId);
+
+  List<Submission> findAllByClassRoomAndUser(ClassRoom classRoom, UserEntity user);
 }

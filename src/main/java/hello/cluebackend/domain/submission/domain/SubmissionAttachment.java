@@ -3,7 +3,6 @@ package hello.cluebackend.domain.submission.domain;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.core.io.Resource;
 
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class SubmissionAttachment {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private fileType type;
+  private FileType type;
 
   @Column(nullable = false)
   private String value;

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AssignmentAttachment extends BaseEntity {
+public class AssignmentAttachment {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "assignment_attachment_id", nullable = false, updatable = false)

@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.submission.persistence;
 
-import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import org.springframework.data.jpa.repository.JpaRepository;

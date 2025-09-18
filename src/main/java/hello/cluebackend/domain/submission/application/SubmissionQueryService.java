@@ -1,8 +1,8 @@
 package hello.cluebackend.domain.submission.application;
 
 import hello.cluebackend.domain.assignment.domain.Assignment;
-import hello.cluebackend.domain.submission.api.dto.request.SubmissionAttachmentUrlDto;
-import hello.cluebackend.domain.submission.domain.fileType;
+import hello.cluebackend.domain.submission.presentation.dto.request.SubmissionAttachmentUrlDto;
+import hello.cluebackend.domain.submission.domain.FileType;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
@@ -36,7 +36,7 @@ public class SubmissionQueryService {
     ClassRoom classRoom = classRoomService.findById(classroomId).toEntity();
     List<UserEntity> users = classroomUserService.findAllClassroomUser(classRoom);
     List<Submission> submissions = users.stream()
-            .map(u -> new Submission(assignment, u, false, null))
+            .map(u -> new Submission(assignment, u,assignment.getClassRoom(), false, null))
             .toList();
     submissionRepository.saveAll(submissions);
   }
@@ -46,7 +46,7 @@ public class SubmissionQueryService {
   public Submission submitSubmission(UUID submissionId) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.submit();
-    return submissionRepository.save(submission);
+    return submission;
   }
 
   // 과제 제출 취소하기
@@ -54,9 +54,8 @@ public class SubmissionQueryService {
   public Submission cancelSubmission(UUID submissionId) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.cancel();
-    return submissionRepository.save(submission);
+    return submission;
   }
-
 
   // 첨부 파일 추가
   @Transactional
@@ -67,7 +66,7 @@ public class SubmissionQueryService {
 
     SubmissionAttachment result = SubmissionAttachment.builder()
             .submission(submission)
-            .type(fileType.file)
+            .type(FileType.FILE)
             .value(storedFiledName)
             .originalFileName(file.getOriginalFilename())
             .contentType(file.getContentType())
@@ -84,7 +83,7 @@ public class SubmissionQueryService {
 
     SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
             .submission(submission)
-            .type(fileType.url)
+            .type(FileType.URL)
             .value(dto.url())
             .build();
 
@@ -95,8 +94,8 @@ public class SubmissionQueryService {
   // 첨부 파일 삭제
   @Transactional
   public void deleteSubmissionAttachment(UUID submissionAttachmentId) {
-    SubmissionAttachment submissionAttachment = submissionCommandService.findAssignmentAttachmentByIdOrThrow(submissionAttachmentId);
-    if(submissionAttachment.getType() == fileType.file){
+    SubmissionAttachment submissionAttachment = submissionCommandService.findSubmissionAttachmentByIdOrThrow(submissionAttachmentId);
+    if(submissionAttachment.getType() == FileType.FILE){
       fileService.deleteFile(submissionAttachment.getValue());
     }
     submissionAttachmentRepository.delete(submissionAttachment);

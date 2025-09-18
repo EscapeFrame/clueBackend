@@ -2,12 +2,12 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
   config:
     activate:
       on-profile: dev
 
-logging:
-  level:
-    root: debug
+#logging:
+#  level:
+#    root: debug
