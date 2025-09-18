@@ -1,13 +1,13 @@
-package hello.cluebackend.domain.assignment.api;
+package hello.cluebackend.domain.assignment.presentation;
 
-import hello.cluebackend.domain.assignment.api.dto.response.*;
+import hello.cluebackend.domain.assignment.presentation.dto.response.*;
 import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
-import hello.cluebackend.domain.submission.api.dto.response.SubmissionAttachmentDto;
 import hello.cluebackend.domain.submission.application.SubmissionCommandService;
+import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +30,11 @@ import java.util.UUID;
 @RequestMapping("/api/assignments")
 @RequiredArgsConstructor
 @Slf4j
-
-// TODO : 권한 확인 애노테이션 추가 필요"
-
 public class AssignmentCommandController {
   private final ClassroomUserService classroomUserService;
   private final AssignmentCommandService assignmentCommandService;
   private final SubmissionCommandService submissionCommandService;
+  private final UserService userService;
 
   // 과제 단일 조회
   @GetMapping("/{assignmentId}")
@@ -44,12 +42,12 @@ public class AssignmentCommandController {
           @CurrentUser UUID userId,
           @PathVariable UUID assignmentId
   ) {
-    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     UUID classroomId = assignment.getClassRoom().getClassRoomId();
     if (!classroomUserService.isUserInClassroom(classroomId, userId)) {
       throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
     }
+    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
     return ResponseEntity.ok(result);
   }
 
@@ -72,13 +70,6 @@ public class AssignmentCommandController {
   @GetMapping("/me")
   public ResponseEntity<List<GetAllAssignmentDto>> getAllAssignments(@CurrentUser UUID userId) {
     List<GetAllAssignmentDto> result = assignmentCommandService.findAllAssignmentMe(userId);
-    return ResponseEntity.ok(result);
-  }
-
-  // 첨부 파일 혹은 링크 전체 조회 (선생, 학생)
-  @GetMapping("/{submissionId}/attachment")
-  public ResponseEntity<List<SubmissionAttachmentDto>> findAllAssignments(@CurrentUser UUID userId, @PathVariable UUID submissionId) {
-    List<SubmissionAttachmentDto> result = submissionCommandService.findAllAssignment(submissionId);
     return ResponseEntity.ok(result);
   }
 

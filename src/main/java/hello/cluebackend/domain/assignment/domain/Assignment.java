@@ -18,9 +18,9 @@ import java.util.UUID;
 @Table(name = "assignment")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @AllArgsConstructor
-public class Assignment extends BaseEntity {
+@Builder
+public class Assignment {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "assignment_id", nullable = false, updatable = false)
@@ -46,7 +46,6 @@ public class Assignment extends BaseEntity {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endDate;
 
-
   @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
   @Builder.Default
   @JsonIgnore
@@ -63,12 +62,32 @@ public class Assignment extends BaseEntity {
             .endDate(endDate)
             .build();
   }
+  public static Assignment of(ClassRoom classRoom, UserEntity user, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
+    return Assignment.builder()
+            .classRoom(classRoom)
+            .user(user)
+            .title(title)
+            .content(content)
+            .startDate(startDate)
+            .endDate(endDate)
+            .build();
+  }
 
-  // patch 메서드 (null 체크 후 업데이트)
-  public void patch(String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
+
+  public void updateDetails(String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
     if (title != null) this.title = title;
     if (content != null) this.content = content;
     if (startDate != null) this.startDate = startDate;
     if (endDate != null) this.endDate = endDate;
+  }
+
+  public void addSubmission(Submission submission){
+    submissions.add(submission);
+    submission.setAssignment(this);
+  }
+
+  public void removeSubmission(Submission submission){
+    submissions.remove(submission);
+    submission.setAssignment(null);
   }
 }

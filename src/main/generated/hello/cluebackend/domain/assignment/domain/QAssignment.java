@@ -22,27 +22,13 @@ public class QAssignment extends EntityPathBase<Assignment> {
 
     public static final QAssignment assignment = new QAssignment("assignment");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
-
     public final ComparablePath<java.util.UUID> assignmentId = createComparable("assignmentId", java.util.UUID.class);
 
     public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
 
     public final StringPath content = createString("content");
 
-    //inherited
-    public final StringPath createdBy = _super.createdBy;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
-
     public final DateTimePath<java.time.LocalDateTime> endDate = createDateTime("endDate", java.time.LocalDateTime.class);
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> lastModified = _super.lastModified;
-
-    //inherited
-    public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     public final DateTimePath<java.time.LocalDateTime> startDate = createDateTime("startDate", java.time.LocalDateTime.class);
 

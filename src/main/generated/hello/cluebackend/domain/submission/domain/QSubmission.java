@@ -22,23 +22,11 @@ public class QSubmission extends EntityPathBase<Submission> {
 
     public static final QSubmission submission = new QSubmission("submission");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
-
     public final hello.cluebackend.domain.assignment.domain.QAssignment assignment;
 
-    //inherited
-    public final StringPath createdBy = _super.createdBy;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
+    public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
 
     public final BooleanPath isSubmitted = createBoolean("isSubmitted");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> lastModified = _super.lastModified;
-
-    //inherited
-    public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     public final ComparablePath<java.util.UUID> submissionId = createComparable("submissionId", java.util.UUID.class);
 
@@ -65,6 +53,7 @@ public class QSubmission extends EntityPathBase<Submission> {
     public QSubmission(Class<? extends Submission> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.assignment = inits.isInitialized("assignment") ? new hello.cluebackend.domain.assignment.domain.QAssignment(forProperty("assignment"), inits.get("assignment")) : null;
+        this.classRoom = inits.isInitialized("classRoom") ? new hello.cluebackend.domain.classroom.domain.QClassRoom(forProperty("classRoom")) : null;
         this.user = inits.isInitialized("user") ? new hello.cluebackend.domain.user.domain.QUserEntity(forProperty("user")) : null;
     }
 

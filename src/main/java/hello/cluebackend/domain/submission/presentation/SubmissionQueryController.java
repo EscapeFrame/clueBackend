@@ -1,6 +1,7 @@
-package hello.cluebackend.domain.submission.api;
+package hello.cluebackend.domain.submission.presentation;
 
-import hello.cluebackend.domain.submission.api.dto.request.SubmissionAttachmentUrlDto;
+import hello.cluebackend.domain.submission.presentation.dto.request.SubmissionAttachmentUrlDto;
+import hello.cluebackend.domain.submission.presentation.dto.response.SubmissionDto;
 import hello.cluebackend.domain.submission.application.SubmissionQueryService;
 import hello.cluebackend.domain.submission.domain.Submission;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
@@ -23,27 +24,27 @@ public class SubmissionQueryController {
 
   // 과제 제출 하기
   @PatchMapping("/{submissionId}/submit")
-  public ResponseEntity<?> submitSubmission(
+  public ResponseEntity<SubmissionDto> submitSubmission(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId
     ) {
     Submission submission = submissionQueryService.submitSubmission(submissionId);
-    return ResponseEntity.ok(submission);
+    return ResponseEntity.ok(SubmissionDto.from(submission));
   }
 
   // 과제 제출 취소하기
   @PatchMapping("/{submissionId}/cancel")
-  public ResponseEntity<?> cancelSubmission(
+  public ResponseEntity<SubmissionDto> cancelSubmission(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId
   ){
     Submission submission = submissionQueryService.cancelSubmission(submissionId);
-    return ResponseEntity.ok(submission);
+    return ResponseEntity.ok(SubmissionDto.from(submission));
   }
 
-
+  // 과제 첨부파일 삭제하기
   @DeleteMapping("/{submissionAttachmentId}")
-  public ResponseEntity<?> deleteSubmission(
+  public ResponseEntity<?> deleteSubmissionAttachment(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionAttachmentId
   ){
@@ -64,7 +65,7 @@ public class SubmissionQueryController {
 
   // 과제 제출 첨부 링크 추가
   @PostMapping("/{submisisonId}/link")
-  public ResponseEntity<?> deleteFile(
+  public ResponseEntity<?> linkUpload(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId,
           @RequestBody SubmissionAttachmentUrlDto dto

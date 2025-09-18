@@ -16,8 +16,8 @@ public class ClueBackendApplication {
     SpringApplication.run(ClueBackendApplication.class, args);
   }
 
-  @Bean
-  public AuditorAware<String> auditorProvider(){
-    return () -> Optional.of(UUID.randomUUID().toString());
-  }
+//  @Bean
+//  public AuditorAware<String> auditorProvider(){
+//    return () -> Optional.of(UUID.randomUUID().toString());
+//  } baseEntity의 필요성을 느끼지 못해서 잠시 정지
 }

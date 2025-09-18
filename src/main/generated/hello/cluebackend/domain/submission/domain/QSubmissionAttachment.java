@@ -32,7 +32,7 @@ public class QSubmissionAttachment extends EntityPathBase<SubmissionAttachment> 
 
     public final ComparablePath<java.util.UUID> SubmissionAttachmentId = createComparable("SubmissionAttachmentId", java.util.UUID.class);
 
-    public final EnumPath<fileType> type = createEnum("type", fileType.class);
+    public final EnumPath<FileType> type = createEnum("type", FileType.class);
 
     public final hello.cluebackend.domain.user.domain.QUserEntity user;
 

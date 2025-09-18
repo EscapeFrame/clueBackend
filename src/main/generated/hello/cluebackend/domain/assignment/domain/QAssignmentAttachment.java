@@ -22,25 +22,11 @@ public class QAssignmentAttachment extends EntityPathBase<AssignmentAttachment> 
 
     public static final QAssignmentAttachment assignmentAttachment = new QAssignmentAttachment("assignmentAttachment");
 
-    public final QBaseEntity _super = new QBaseEntity(this);
-
     public final QAssignment assignment;
 
     public final ComparablePath<java.util.UUID> assignmentAttachmentId = createComparable("assignmentAttachmentId", java.util.UUID.class);
 
     public final StringPath contentType = createString("contentType");
-
-    //inherited
-    public final StringPath createdBy = _super.createdBy;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> lastModified = _super.lastModified;
-
-    //inherited
-    public final StringPath lastModifiedBy = _super.lastModifiedBy;
 
     public final StringPath originalFileName = createString("originalFileName");
 

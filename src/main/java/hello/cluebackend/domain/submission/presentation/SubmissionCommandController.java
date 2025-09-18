@@ -1,21 +1,16 @@
-package hello.cluebackend.domain.submission.api;
+package hello.cluebackend.domain.submission.presentation;
 
-import hello.cluebackend.domain.assignment.api.dto.response.SubmissionCheck;
-import hello.cluebackend.domain.submission.api.dto.response.SubmissionDto;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
+import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
 import hello.cluebackend.domain.submission.application.SubmissionCommandService;
 import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import hello.cluebackend.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import hello.cluebackend.domain.submission.presentation.dto.response.*;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,25 +23,28 @@ import java.util.UUID;
 @Slf4j
 public class SubmissionCommandController {
   private final SubmissionCommandService submissionCommandService;
+  private final ClassroomUserService classroomUserService;
 
   // 할당된 과제 전체 조회
-  @GetMapping("/assignment/{assignmentId}")
-  public ResponseEntity<List<SubmissionDto>> findAllSubmission(
+  @GetMapping("/{classId}")
+  public ResponseEntity<List<SubmissionResponse>> findSubmission(
           @CurrentUser UUID userId,
-          @PathVariable UUID assignmentId
+          @PathVariable UUID classId
   ) {
-    List<SubmissionDto> result = submissionCommandService.findAllByAssignmentId(userId,assignmentId);
+    if (!classroomUserService.isUserInClassroom(classId, userId)) {
+      throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
+    List<SubmissionResponse> result = submissionCommandService.findAllByAssignmentId(userId,classId);
     return ResponseEntity.ok(result);
   }
 
-  // 할당된 과제 단일 조회
-  @GetMapping("/{submissionId}")
-  public ResponseEntity<SubmissionDto> findSubmission(
+  // 할당된 과제 조회
+  @GetMapping("/assignment/{submissionId}")
+  public ResponseEntity<SubmissionResponse> findAllSubmission(
           @CurrentUser UUID userId,
-          @PathVariable UUID assignmentId
+          @PathVariable UUID submissionId
   ) {
-    SubmissionDto result = submissionCommandService.findByAssignmentId(assignmentId);
-
+    SubmissionResponse result = submissionCommandService.findByAssignmentId(userId, submissionId);
     return ResponseEntity.ok(result);
   }
 
@@ -66,7 +64,7 @@ public class SubmissionCommandController {
           @CurrentUser UUID userId,
           @PathVariable UUID submissionAttachmentId
   ) throws IOException {
-    SubmissionAttachment submissionAttachment = submissionCommandService.findsubmissionAttachmentByIdOrThrow(submissionAttachmentId);
+    SubmissionAttachment submissionAttachment = submissionCommandService.findSubmissionAttachmentByIdOrThrow(submissionAttachmentId);
     Resource resource = submissionCommandService.downloadAttachment(submissionAttachment);
 
     String original = submissionAttachment.getOriginalFileName();

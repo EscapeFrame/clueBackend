@@ -20,8 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassRoom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "class_room_id", nullable = false, updatable = false)
     private UUID classRoomId;
 
