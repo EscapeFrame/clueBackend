@@ -61,17 +61,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             refreshTokenService.saveRefreshToken(refresh, username);
 
-            String body = "{"
-                    + "\"access_token\":\"Bearer " + access + "\","
-                    + "\"refresh_token\":\"" + refresh + "\""
-                    + "}";
-
-
-            response.setHeader("Authorization", "Bearer " + access);
-            response.addCookie(createCookie("refresh_token", refresh));
+//            response.setHeader("Authorization", "Bearer " + access);
+//            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
-            response.getWriter().write(body);
-            response.sendRedirect(baseurl+"/login");
+            response.sendRedirect(baseurl+"/login?access_token=" + access + "&refresh_token=" + refresh);
         }
     }
 
