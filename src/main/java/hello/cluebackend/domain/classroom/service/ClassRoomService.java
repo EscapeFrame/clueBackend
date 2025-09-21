@@ -72,6 +72,7 @@ public class ClassRoomService {
     }
 
     public ClassRoomDto findById(UUID classRoomId) {
+        System.out.println("classRoomId = " + classRoomId);
         ClassRoom findClassRoom = classRoomRepository.findByIdWithTeachers(classRoomId);
         return findClassRoom.toDTO();
     }
