@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.user.presentation;
 
 import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.RegisterUserDto;
 import hello.cluebackend.domain.user.presentation.dto.UserDto;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -49,23 +51,13 @@ public class RegisterController {
     }
 
     @GetMapping("/api/user/me")
-    public ResponseEntity<userData> getCurrentUser(HttpServletRequest request) {
+    public ResponseEntity<userData> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
+        UUID userId = customUser.getUserDTO().getUserId();
+        Role role = customUser.getUserDTO().getRole();
+        String username = customUser.getUserDTO().getUsername();
+        int classCode = customUser.getUserDTO().getClassCode();
 
-        System.out.println("###########memememe###########");
-        System.out.println(request.getHeader("Authorization"));
-        for(Cookie cookie : request.getCookies()) {
-            if(cookie.getName().equals("refresh_token")) {
-                System.out.println(cookie.getValue());
-            }
-        }
-        System.out.println("###########endend###########");
-
-        String token = jwtUtil.getToken(request);
-        UUID userId = jwtUtil.getUserId(token);
-        Role role = jwtUtil.getRole(token);
-        String username = jwtUtil.getUsername(token);
-
-        return ResponseEntity.status(HttpStatus.OK).body(new userData(userId, username, role));
+        return ResponseEntity.status(HttpStatus.OK).body(new userData(userId, username, role, classCode));
     }
 
     @Getter
@@ -76,5 +68,6 @@ public class RegisterController {
         private UUID userId;
         private String username;
         private Role role;
+        private Integer classCode;
     }
 }
