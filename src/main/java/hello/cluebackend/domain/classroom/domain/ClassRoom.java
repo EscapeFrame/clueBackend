@@ -11,6 +11,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="class_room")
@@ -60,6 +61,10 @@ public class ClassRoom {
     private List<Document> documentList;
 
     public ClassRoomDto toDTO() {
+        List<String> teacherNames = classRoomUserList.stream()
+                .map(cu -> cu.getUser().getUsername())
+                .toList();
+
         return ClassRoomDto.builder()
                 .classRoomId(classRoomId)
                 .name(name)
@@ -69,6 +74,7 @@ public class ClassRoom {
                 .code(code)
                 .createdAt(createdAt)
                 .isActivation(isActivation)
+                .teacherNames(teacherNames)
                 .build();
     }
 

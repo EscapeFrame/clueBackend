@@ -72,7 +72,7 @@ public class ClassRoomService {
     }
 
     public ClassRoomDto findById(UUID classRoomId) {
-        ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+        ClassRoom findClassRoom = classRoomRepository.findByIdWithTeachers(classRoomId);
         return findClassRoom.toDTO();
     }
 
