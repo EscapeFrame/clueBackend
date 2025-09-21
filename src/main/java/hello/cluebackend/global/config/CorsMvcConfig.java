@@ -16,7 +16,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     registry.addMapping("/**") // 모든 API 경로 허용
 //            .allowedOriginPatterns("http://10.150.149.87:7789") // 프론트 IP + 포트
             .allowedOriginPatterns(frontBaseUrl)
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 허용할 HTTP 메서드
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH") // 허용할 HTTP 메서드
             .allowedHeaders("*") // 모든 요청 헤더 허용
             .exposedHeaders("Authorization", "Set-Cookie") // 클라이언트가 접근 가능한 헤더
             .allowCredentials(true); // 쿠키, 인증 정보 허용
