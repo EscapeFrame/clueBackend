@@ -40,10 +40,10 @@ public class DocumentController {
 
     @PostMapping(value = "/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Void> uploadDocument(
-            @RequestPart("metadata") List<RequestDocumentDto> requestDocumentDto,
-            @RequestPart("files")  List<MultipartFile> files,
-            @RequestPart("classRoomId") UUID classRoomId,
-            @RequestPart("directoryId") UUID directoryId,
+            @RequestPart(value = "metadata") List<RequestDocumentDto> requestDocumentDto,
+            @RequestPart(value = "files")  List<MultipartFile> files,
+            @RequestPart(value = "classRoomId") UUID classRoomId,
+            @RequestPart(value = "directoryId") UUID directoryId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         Role role = customOAuth2User.getUserDTO().getRole();
 
