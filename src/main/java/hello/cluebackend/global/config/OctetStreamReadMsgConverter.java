@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
 
-//@Component
+@Component
 public class OctetStreamReadMsgConverter extends AbstractJackson2HttpMessageConverter {
-//    @Autowired
+    @Autowired
     public OctetStreamReadMsgConverter(ObjectMapper objectMapper) {
         super(objectMapper, MediaType.APPLICATION_OCTET_STREAM);
     }

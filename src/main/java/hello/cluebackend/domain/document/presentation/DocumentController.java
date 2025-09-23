@@ -42,8 +42,8 @@ public class DocumentController {
     public ResponseEntity<Void> uploadDocument(
             @RequestPart(value = "metadata") List<RequestDocumentDto> requestDocumentDto,
             @RequestPart(value = "files")  List<MultipartFile> files,
-            @RequestPart(value = "classRoomId") UUID classRoomId,
-            @RequestPart(value = "directoryId") UUID directoryId,
+            @RequestParam(value = "classRoomId") UUID classRoomId,
+            @RequestParam(value = "directoryId") UUID directoryId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         Role role = customOAuth2User.getUserDTO().getRole();
 
@@ -52,6 +52,12 @@ public class DocumentController {
         }
 
         try {
+//            for (RequestDocumentDto requestDocumentDto1 : requestDocumentDto) {
+//                System.out.println("requestDocumentDto1 = " + requestDocumentDto1);
+//            }
+//            for (MultipartFile file : files) {
+//                System.out.println("file = " + file.getOriginalFilename());
+//            }
             documentService.uploadFileDocument(classRoomId, directoryId, requestDocumentDto, files);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
