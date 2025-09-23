@@ -7,10 +7,7 @@ import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.directory.domain.repository.DirectoryRepository;
 import hello.cluebackend.domain.document.domain.Document;
 import hello.cluebackend.domain.document.domain.repository.DocumentRepository;
-import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
-import hello.cluebackend.domain.document.presentation.dto.FileUpload;
-import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
-import hello.cluebackend.domain.document.presentation.dto.UpdateFileDto;
+import hello.cluebackend.domain.document.presentation.dto.*;
 import hello.cluebackend.domain.file.service.FileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -132,5 +128,15 @@ public class DocumentService {
     public DocumentDto findById(UUID documentId) {
         Document findDocument = documentRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업자료가 존재하지 않습니다."));
         return findDocument.toDto();
+    }
+
+    public DownloadDto downloadDocument(UUID documentId) throws IOException {
+        Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
+        Resource resource = fileService.downloadFile(document.getValue());
+        return DownloadDto.builder()
+                .original(document.getOriginalFileName())
+                .contentType(document.getContentType())
+                .resource(resource)
+                .build();
     }
 }

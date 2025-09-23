@@ -1,9 +1,6 @@
 package hello.cluebackend.domain.document.presentation;
 
-import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
-import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
-import hello.cluebackend.domain.document.presentation.dto.UpdateFileDto;
-import hello.cluebackend.domain.document.presentation.dto.DeleteDocumentDto;
+import hello.cluebackend.domain.document.presentation.dto.*;
 import hello.cluebackend.domain.document.service.DocumentService;
 import hello.cluebackend.domain.document.service.LocalStorageService;
 import hello.cluebackend.domain.user.domain.Role;
@@ -12,17 +9,16 @@ import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -52,12 +48,6 @@ public class DocumentController {
         }
 
         try {
-//            for (RequestDocumentDto requestDocumentDto1 : requestDocumentDto) {
-//                System.out.println("requestDocumentDto1 = " + requestDocumentDto1);
-//            }
-//            for (MultipartFile file : files) {
-//                System.out.println("file = " + file.getOriginalFilename());
-//            }
             documentService.uploadFileDocument(classRoomId, directoryId, requestDocumentDto, files);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -104,23 +94,21 @@ public class DocumentController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/download/{documentId}")
-    public ResponseEntity<UrlResource> downloadDocument(@PathVariable("documentId") UUID documentId) {
+    @GetMapping("/{documentId}/download")
+    public ResponseEntity<Resource> downloadDocument(@PathVariable("documentId") UUID documentId) throws IOException {
 
-        try {
-            DocumentDto documentDto = documentService.findById(documentId);
-            String fullPath = documentDto.getContent();
-            UrlResource resource = new UrlResource("file:" + fullPath);
+        DownloadDto dto = documentService.downloadDocument(documentId);
 
-            String encodedFileName = UriUtils.encode(fullPath.split("_")[1], StandardCharsets.UTF_8);
-            String contentDisposition = "attachment; filename=\"" + encodedFileName + "\"";
+        String original = dto.getOriginal();
+        String contentType = dto.getContentType();
+        MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                    .body(resource);
-        } catch (MalformedURLException | IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename(original, StandardCharsets.UTF_8)
+                        .build()
+                        .toString())
+                .body(dto.getResource());
     }
 }
