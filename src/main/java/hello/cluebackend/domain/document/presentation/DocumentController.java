@@ -38,7 +38,7 @@ public class DocumentController {
     private final LocalStorageService localStorageService;
     private final DocumentService documentService;
 
-    @PostMapping(value = "/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/file")
     public ResponseEntity<Void> uploadDocument(
             @RequestPart(value = "metadata") List<RequestDocumentDto> requestDocumentDto,
             @RequestPart(value = "files")  List<MultipartFile> files,
