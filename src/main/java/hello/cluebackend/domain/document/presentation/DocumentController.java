@@ -1,19 +1,23 @@
 package hello.cluebackend.domain.document.presentation;
 
 import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
-import hello.cluebackend.domain.document.presentation.dto.FileUpload;
 import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
+import hello.cluebackend.domain.document.presentation.dto.UpdateFileDto;
+import hello.cluebackend.domain.document.presentation.dto.DeleteDocumentDto;
 import hello.cluebackend.domain.document.service.DocumentService;
 import hello.cluebackend.domain.document.service.LocalStorageService;
 import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,37 +31,29 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/api/document")
+@RequiredArgsConstructor
 public class DocumentController {
 
     private final JWTUtil jwtUtil;
     private final LocalStorageService localStorageService;
     private final DocumentService documentService;
 
-    public DocumentController(JWTUtil jwtUtil, LocalStorageService localStorageService,  DocumentService documentService) {
-        this.jwtUtil = jwtUtil;
-        this.localStorageService = localStorageService;
-        this.documentService = documentService;
-    }
-
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> uploadDocument(
+    @PostMapping(value = "/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> uploadDocument(
             @RequestPart("metadata") List<RequestDocumentDto> requestDocumentDto,
             @RequestPart("files")  List<MultipartFile> files,
             @RequestPart("classRoomId") UUID classRoomId,
             @RequestPart("directoryId") UUID directoryId,
-            HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Role role = customOAuth2User.getUserDTO().getRole();
 
         if(role != Role.TEACHER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         try {
-            System.out.println("requestDocumentDto = " + requestDocumentDto);
-            documentService.storeFiles(classRoomId, directoryId, requestDocumentDto, files);
+            documentService.uploadFileDocument(classRoomId, directoryId, requestDocumentDto, files);
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponseEntity.ok().build();
@@ -65,10 +61,7 @@ public class DocumentController {
 
     @PatchMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateDocument(
-            @RequestPart("metadata") List<RequestDocumentDto> requestDocumentDto,
-            @RequestPart("files")  List<MultipartFile> files,
-            @RequestPart("classRoomId") UUID classRoomId,
-            @RequestPart("directoryId") UUID directoryId,
+            @RequestPart("metadata") List<UpdateFileDto> fileDto,
             HttpServletRequest request) {
 
         String token = jwtUtil.getToken(request);
@@ -79,7 +72,8 @@ public class DocumentController {
         }
 
         try {
-            documentService.updateDocument(classRoomId, directoryId, requestDocumentDto, files);
+//            UUID documentId, RequestDocumentDto requestDocumentDto
+            documentService.updateDocument(fileDto);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
@@ -88,16 +82,15 @@ public class DocumentController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteDocument(@RequestBody RequestDocumentDto requestDocumentDto, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
+    public ResponseEntity<?> deleteDocument(DeleteDocumentDto deleteDto, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Role role = customOAuth2User.getUserDTO().getRole();
 
         if(role != Role.TEACHER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         try {
-            documentService.deleteById(requestDocumentDto.getDocumentId());
+            documentService.deleteDocument(deleteDto.getDocumentId());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -124,20 +117,4 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-
-
-//    테스트 용도
-    @PostMapping("/test")
-    public ResponseEntity<List<FileUpload>> uploadMultipartFileTest(@RequestParam("files") MultipartFile[] files, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
-
-        if(role != Role.TEACHER) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        List<FileUpload> fileUploads = localStorageService.storeFiles(files);
-        return ResponseEntity.ok(fileUploads);
-    }
-
 }

@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.document.presentation.dto;
 
+import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.document.domain.Document;
@@ -20,7 +21,7 @@ public class DocumentDto {
     private ClassRoom classRoom;
     private Directory directory;
     private String title;
-    private int type;
+    private FileType type;
     private String content;
     private LocalDateTime createdAt;
 
@@ -31,7 +32,6 @@ public class DocumentDto {
                 .directory(directory)
                 .title(title)
                 .type(type)
-                .content(content)
                 .createdAt(createdAt)
                 .build();
     }

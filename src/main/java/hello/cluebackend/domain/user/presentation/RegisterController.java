@@ -1,10 +1,7 @@
 package hello.cluebackend.domain.user.presentation;
 
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
-import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
-import hello.cluebackend.domain.user.presentation.dto.RegisterUserDto;
-import hello.cluebackend.domain.user.presentation.dto.UserDto;
+import hello.cluebackend.domain.user.presentation.dto.*;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.config.JWTUtil;
 import jakarta.servlet.http.Cookie;
@@ -51,23 +48,18 @@ public class RegisterController {
     }
 
     @GetMapping("/api/user/me")
-    public ResponseEntity<userData> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
+    public ResponseEntity<UserDataDto> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
         UUID userId = customUser.getUserDTO().getUserId();
         Role role = customUser.getUserDTO().getRole();
         String username = customUser.getUserDTO().getUsername();
         int classCode = customUser.getUserDTO().getClassCode();
 
-        return ResponseEntity.status(HttpStatus.OK).body(new userData(userId, username, role, classCode));
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class userData {
-        private UUID userId;
-        private String username;
-        private Role role;
-        private Integer classCode;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(UserDataDto.builder()
+                        .userId(userId)
+                        .username(username)
+                        .role(role)
+                        .classCode(classCode)
+                        .build());
     }
 }
