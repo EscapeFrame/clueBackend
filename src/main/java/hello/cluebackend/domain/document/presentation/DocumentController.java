@@ -77,8 +77,8 @@ public class DocumentController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteDocument(DeleteDocumentDto deleteDto, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    @DeleteMapping("/{documentId}")
+    public ResponseEntity<?> deleteDocument(@PathVariable("documentId") UUID documentId, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         Role role = customOAuth2User.getUserDTO().getRole();
 
         if(role != Role.TEACHER) {
@@ -86,7 +86,7 @@ public class DocumentController {
         }
 
         try {
-            documentService.deleteDocument(deleteDto.getDocumentId());
+            documentService.deleteDocument(documentId);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
