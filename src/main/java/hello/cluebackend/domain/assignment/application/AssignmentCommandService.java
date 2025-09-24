@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.assignment.application;
 
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.assignment.presentation.dto.response.AssignmentResponseDto;
 import hello.cluebackend.domain.assignment.presentation.dto.response.GetAllAssignmentDto;
 import hello.cluebackend.domain.assignment.domain.Assignment;
@@ -9,6 +10,9 @@ import hello.cluebackend.domain.assignment.persistence.AssignmentAttachmentRepos
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.file.service.FileService;
+import hello.cluebackend.domain.user.domain.Role;
+import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -27,6 +31,7 @@ public class AssignmentCommandService{
   private final AssignmentAttachmentRepository assignmentAttachmentRepository;
   private final ClassRoomService classRoomService;
   private final FileService fileService;
+  private final UserService userService;
 
   // 과제 단일 조회
   public AssignmentResponseDto findById(UUID assignmentId) {
@@ -39,6 +44,12 @@ public class AssignmentCommandService{
   // 과제 전체 조회
   public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
     ClassRoom classRoom = classRoomService.findById(classId).toEntity();
+    UserEntity user = userService.findById(userId).toEntity();
+
+    if(!(user.getRole() == Role.TEACHER)) {
+      throw new AccessDeniedException("해당 사용자의 권한이 존재 하지 않습니다.");
+    }
+
     List<Assignment> assignments = assignmentRepository.findAllByClassRoom(classRoom);
     return assignments.stream()
             .map(a -> findById(a.getAssignmentId()))

@@ -16,7 +16,7 @@ import java.time.Duration;
 
 @Configuration
 public class WebClientConfig {
-  private static final int TIMEOUT_MS = 60000;
+  private static final int TIMEOUT = 10;
 
   @Bean
   public WebClient webClient() {
@@ -30,17 +30,18 @@ public class WebClientConfig {
   @Bean
   public WebClient advancedWebClient() {
     HttpClient httpClient = HttpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT_MS)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT)
             .doOnConnected(conn -> conn
-                    .addHandlerLast(new ReadTimeoutHandler(TIMEOUT_MS))
-                    .addHandlerLast(new WriteTimeoutHandler(TIMEOUT_MS)
-                    )
+                    .addHandlerLast(new ReadTimeoutHandler(TIMEOUT))
+                    .addHandlerLast(new WriteTimeoutHandler(TIMEOUT))
             )
-            .responseTimeout(Duration.ofSeconds(TIMEOUT_MS));
+            .responseTimeout(Duration.ofMillis(TIMEOUT));
 
     return WebClient.builder()
             .clientConnector(new ReactorClientHttpConnector(httpClient))
-            .baseUrl("https://api.example.com")
+            .baseUrl("")
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
             .build();
   }
 }

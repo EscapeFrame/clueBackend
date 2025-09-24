@@ -2,6 +2,7 @@ package hello.cluebackend.global.config;
 
 import hello.cluebackend.domain.user.service.CustomOAuth2UserService;
 import hello.cluebackend.global.security.jwt.RefreshTokenService;
+import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
