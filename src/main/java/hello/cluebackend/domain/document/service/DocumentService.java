@@ -83,11 +83,9 @@ public class DocumentService {
         }
     }
 
-    public void updateDocument(List<UpdateFileDto> fileDtos) {
-        for(UpdateFileDto updateFileDto : fileDtos) {
-            Document document = documentRepository.findById(updateFileDto.getDocumentId()).orElseThrow(() -> new EntityNotFoundException("해당 자료가 존재하지 않음"));
-            document.updateDetails(updateFileDto.getTitle());
-        }
+    public void updateDocument(UpdateFileDto fileDto) {
+        Document document = documentRepository.findById(fileDto.getDocumentId()).orElseThrow(() -> new EntityNotFoundException("해당 자료가 존재하지 않음"));
+        document.updateDetails(fileDto.getTitle());
     }
 
     public void deleteDocument(UUID documentId) {

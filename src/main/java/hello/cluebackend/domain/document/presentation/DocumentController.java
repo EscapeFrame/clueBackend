@@ -55,9 +55,9 @@ public class DocumentController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PatchMapping
     public ResponseEntity<?> updateDocument(
-            List<UpdateFileDto> fileDto,
+            UpdateFileDto fileDto,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
         Role role = customOAuth2User.getUserDTO().getRole();
@@ -66,14 +66,8 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        try {
-//            UUID documentId, RequestDocumentDto requestDocumentDto
-            documentService.updateDocument(fileDto);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        documentService.updateDocument(fileDto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{documentId}")
