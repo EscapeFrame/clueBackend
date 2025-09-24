@@ -2,15 +2,14 @@ package hello.cluebackend.domain.document.presentation;
 
 import hello.cluebackend.domain.document.presentation.dto.*;
 import hello.cluebackend.domain.document.service.DocumentService;
-import hello.cluebackend.domain.document.service.LocalStorageService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 
-import hello.cluebackend.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +26,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DocumentController {
 
-    private final JWTUtil jwtUtil;
-    private final LocalStorageService localStorageService;
     private final DocumentService documentService;
 
     @PostMapping(value = "/file")
@@ -60,7 +57,7 @@ public class DocumentController {
         Role role = customOAuth2User.getUserDTO().getRole();
 
         if(role != Role.TEACHER) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new AuthorizationDeniedException("권한이 부족합니다.");
         }
 
         documentService.updateDocument(fileDto);

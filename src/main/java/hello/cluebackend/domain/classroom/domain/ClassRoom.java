@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name="class_room")
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -87,5 +86,13 @@ public class ClassRoom {
                 .studentCount(classRoomUserList.size())
                 .isActivation(isActivation)
                 .build();
+    }
+
+    public void update(ClassRoomDto classRoomDTO) {
+        this.name = classRoomDTO.getName();
+        this.description = classRoomDTO.getDescription();
+        this.sort = classRoomDTO.getSort();
+        this.target = classRoomDTO.getTarget();
+        this.isActivation = classRoomDTO.getIsActivation();
     }
 }
