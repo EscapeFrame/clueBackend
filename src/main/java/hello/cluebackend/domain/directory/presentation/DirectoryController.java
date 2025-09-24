@@ -3,12 +3,11 @@ package hello.cluebackend.domain.directory.presentation;
 import hello.cluebackend.domain.directory.presentation.dto.RequestDirectoryDto;
 import hello.cluebackend.domain.directory.service.DirectoryService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.global.config.JWTUtil;
+import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 

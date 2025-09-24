@@ -6,7 +6,7 @@ import hello.cluebackend.domain.document.presentation.dto.RequestDocumentDto;
 import hello.cluebackend.domain.document.service.DocumentService;
 import hello.cluebackend.domain.document.service.LocalStorageService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.global.config.JWTUtil;
+import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.UrlResource;

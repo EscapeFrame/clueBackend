@@ -1,11 +1,10 @@
 package hello.cluebackend.domain.classroom.presentation;
 
-import hello.cluebackend.domain.assignment.application.AssignmentCommandService;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.global.config.JWTUtil;
+import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
