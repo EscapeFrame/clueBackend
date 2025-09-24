@@ -1,4 +1,4 @@
-package hello.cluebackend.global.config;
+package hello.cluebackend.global.utils;
 
 import hello.cluebackend.domain.user.domain.Role;
 import io.jsonwebtoken.Jwts;

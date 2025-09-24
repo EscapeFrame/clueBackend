@@ -1,6 +1,6 @@
 package hello.cluebackend.global.security.jwt;
 
-import hello.cluebackend.global.config.JWTUtil;
+import hello.cluebackend.global.utils.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

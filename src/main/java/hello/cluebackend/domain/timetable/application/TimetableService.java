@@ -1,7 +1,7 @@
-package hello.cluebackend.domain.timetable.service;
+package hello.cluebackend.domain.timetable.application;
 
-import hello.cluebackend.domain.timetable.presentation.dto.request.TimetableRequestDto;
-import hello.cluebackend.domain.timetable.presentation.dto.response.TimetableResponseDto;
+import hello.cluebackend.domain.timetable.presentation.dto.request.TimetableRequest;
+import hello.cluebackend.domain.timetable.presentation.dto.response.TimetableResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,7 +34,7 @@ public class TimetableService {
   private static final int FIRST_SEMESTER_END_MONTH = 8;
   private static final String FIRST_SEMESTER = "1";
   private static final String SECOND_SEMESTER = "2";
-  private static final int API_TIMEOUT_SECONDS = 10;
+  private static final int API_TIMEOUT_SECONDS = 20;
   private static final int RETRY_ATTEMPTS = 2;
   private static final Duration RETRY_DELAY = Duration.ofSeconds(1);
 
@@ -45,15 +44,15 @@ public class TimetableService {
   @Value("${spring.neis.api.key}")
   private String neisApiKey;
 
-  @Value("${spring.neis.api.atpt-code: C10}")
+  @Value("${spring.neis.api.atpt-code}")
   private String atptCode;
 
-  @Value("${spring.neis.api.school-code:7150658}")
+  @Value("${spring.neis.api.school-code}")
   private String schoolCode;
 
   private final WebClient webClient;
 
-  public Mono<List<TimetableResponseDto>> getTodayTimetable(TimetableRequestDto request) {
+  public Mono<List<TimetableResponse>> getTodayTimetable(TimetableRequest request) {
     LocalDate today = LocalDate.now(KOREA_TIMEZONE);
     String todayStr = today.format(DATE_FORMATTER);
 
@@ -63,7 +62,7 @@ public class TimetableService {
     return fetchTimetable(request, todayStr, todayStr);
   }
 
-  public Mono<List<TimetableResponseDto>> getWeeklyTimetable(TimetableRequestDto request) {
+  public Mono<List<TimetableResponse>> getWeeklyTimetable(TimetableRequest request) {
     LocalDate now = LocalDate.now(KOREA_TIMEZONE);
     String from = now.with(java.time.DayOfWeek.MONDAY).format(DATE_FORMATTER);
     String to = now.with(java.time.DayOfWeek.FRIDAY).format(DATE_FORMATTER);
@@ -74,16 +73,15 @@ public class TimetableService {
     return fetchTimetable(request, from, to);
   }
 
-  private Mono<List<TimetableResponseDto>>  fetchTimetable(TimetableRequestDto request, String from, String to) {
+  private Mono<List<TimetableResponse>>  fetchTimetable(TimetableRequest request, String from, String to) {
     LocalDate now = LocalDate.now(KOREA_TIMEZONE);
     String year = now.format(YEAR_FORMATTER);
     String semester = determineSemester(now);
 
-    log.debug("NEIS API 호출 파라미터 - Year: {}, Semester: {}, From: {}, To: {}",
-            year, semester, from, to);
+    log.debug("NEIS API 호출 파라미터 - Year: {}, Semester: {}, From: {}, To: {}", year, semester, from, to);
 
     return webClient.get()
-            .uri("https://" + neisApiHost + TIMETABLE_PATH +
+            .uri("https://open.neis.go.kr/hub" + TIMETABLE_PATH +
                     "?KEY=" + neisApiKey +
                     "&Type=json" +
                     "&pIndex=1" +
@@ -95,30 +93,13 @@ public class TimetableService {
                     "&GRADE=" + request.getGrade() +
                     "&CLASS_NM=" + request.getClassNumber() +
                     "&TI_FROM_YMD=" + from +
-                    "&TI_TO_YMD=" + to)
-//            .uri(uriBuilder -> uriBuilder
-//                    .scheme("https")
-//                    .host(neisApiHost)
-//                    .path(TIMETABLE_PATH)
-//                    .queryParam("KEY", neisApiKey)
-//                    .queryParam("Type", "json")
-//                    .queryParam("pIndex", "1")
-//                    .queryParam("pSize", "100")
-//                    .queryParam("ATPT_OFCDC_SC_CODE", atptCode)
-//                    .queryParam("SD_SCHUL_CODE", schoolCode)
-//                    .queryParam("AY", year)
-//                    .queryParam("SEM", semester)
-//                    .queryParam("GRADE", request.getGrade())
-//                    .queryParam("CLASS_NM", request.getClassNumber())
-//                    .queryParam("TI_FROM_YMD", from)
-//                    .queryParam("TI_TO_YMD", to)
-//                    .build())
+                    "&TI_TO_YMD=" + to
+            )
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError,
                     response -> response.bodyToMono(String.class)
                             .flatMap(body -> {
-                              log.error("NEIS API 클라이언트 오류 - Status: {}, Body: {}",
-                                      response.statusCode(), body);
+                              log.error("NEIS API 클라이언트 오류 - Status: {}, Body: {}", response.statusCode(), body);
                               return Mono.error(new IllegalArgumentException("잘못된 요청: " + body));
                             }))
             .onStatus(HttpStatusCode::is5xxServerError,
@@ -141,23 +122,18 @@ public class TimetableService {
 
   private String determineSemester(LocalDate date) {
     int month = Integer.parseInt(date.format(MONTH_FORMATTER));
-    return (month <= FIRST_SEMESTER_END_MONTH) ? FIRST_SEMESTER : SECOND_SEMESTER;
+    return (month < FIRST_SEMESTER_END_MONTH) ? FIRST_SEMESTER : SECOND_SEMESTER;
   }
 
-  private List<TimetableResponseDto> parseTimetableResponse(Map<String, Object> response) {
+  private List<TimetableResponse> parseTimetableResponse(Map<String, Object> response) {
     try {
-      return Optional.ofNullable(response.get("hisTimetable"))
-              .filter(List.class::isInstance)
-              .map(obj -> (List<?>) obj)
-              .filter(list -> list.size() >= 2)
-              .map(list -> list.get(1))
-              .filter(Map.class::isInstance)
-              .map(obj -> (Map<?, ?>) obj)
-              .map(map -> map.get("row"))
-              .filter(List.class::isInstance)
-              .map(obj -> (List<?>) obj)
-              .map(this::convertToTimetableResponseList)
-              .orElse(List.of());
+      List<?> timetableList = (List<?>) response.get("hisTimetable");
+      if (timetableList == null || timetableList.size() < 2) return List.of();
+
+      Map<?, ?> timetableMap = (Map<?, ?>) timetableList.get(1);
+      List<?> rowList = (List<?>) timetableMap.get("row");
+
+      return convertToTimetableResponseList(rowList);
     } catch (Exception e) {
       log.error("시간표 파싱 오류", e);
       return List.of();
@@ -165,11 +141,11 @@ public class TimetableService {
   }
 
   @SuppressWarnings("unchecked")
-  private List<TimetableResponseDto> convertToTimetableResponseList(List<?> rowList) {
+  private List<TimetableResponse> convertToTimetableResponseList(List<?> rowList) {
     return rowList.stream()
             .filter(Map.class::isInstance)
             .map(item -> (Map<String, Object>) item)
-            .map(TimetableResponseDto::fromMap)
+            .map(TimetableResponse::fromMap)
             .collect(Collectors.toList());
   }
 }

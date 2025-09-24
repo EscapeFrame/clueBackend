@@ -5,21 +5,18 @@ import hello.cluebackend.domain.document.service.DocumentService;
 import hello.cluebackend.domain.document.service.LocalStorageService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
-import hello.cluebackend.global.config.JWTUtil;
-import jakarta.servlet.http.HttpServletRequest;
+
+import hello.cluebackend.global.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;

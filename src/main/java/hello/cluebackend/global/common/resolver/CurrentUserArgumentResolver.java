@@ -1,7 +1,7 @@
 package hello.cluebackend.global.common.resolver;
 
 import hello.cluebackend.global.common.annotation.CurrentUser;
-import hello.cluebackend.global.config.JWTUtil;
+import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

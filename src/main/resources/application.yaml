@@ -34,6 +34,8 @@ spring:
     api:
       host: open.neis.go.kr/hub
       key: ${NEIS_API_KEY}
+      atpt-code: C10
+      school-code: 7150658
 
   security:
     oauth2:
