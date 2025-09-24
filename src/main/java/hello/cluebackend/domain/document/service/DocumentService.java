@@ -37,13 +37,24 @@ public class DocumentService {
     private final DirectoryRepository directoryRepository;
     private final FileService fileService;
 
-    public void uploadUrlDocument(UUID documentId) {
-
+    public void uploadUrlDocument(InfoDto urlDto) {
+        ClassRoom classRoom = classRoomRepository.findById(urlDto.getClassRoomId()).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
+        Directory directory = directoryRepository.findById(urlDto.getDirectoryId()).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
+        for (UrlDto dto : urlDto.getUrls()) {
+            Document document = Document.builder()
+                    .title(dto.getTitle())
+                    .classRoom(classRoom)
+                    .directory(directory)
+                    .type(FileType.URL)
+                    .value(dto.getValue())
+                    .build();
+            documentRepository.save(document);
+        }
     }
 
     public void uploadFileDocument(UUID classRoomId, UUID directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
         ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
-        Directory findDirectory = directoryRepository.findById(directoryId).orElseThrow(() -> new EntityNotFoundException("해당 디렉토를을 찾을 수가 없습니다."));
+        Directory findDirectory = directoryRepository.findById(directoryId).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
 
         log.info("requestDocumentDto size: {}", requestDocumentDto.size());
         log.info("files size: {}", files.size());
@@ -138,5 +149,16 @@ public class DocumentService {
                 .contentType(document.getContentType())
                 .resource(resource)
                 .build();
+    }
+
+    public UrlDto getLink(UUID documentId) {
+        Document document = documentRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
+        if(document.getType() == FileType.URL) {
+            return UrlDto.builder()
+                    .value(document.getValue())
+                    .title(document.getTitle())
+                    .build();
+        }
+        return null;
     }
 }

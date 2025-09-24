@@ -57,11 +57,10 @@ public class DocumentController {
 
     @PatchMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateDocument(
-            @RequestPart("metadata") List<UpdateFileDto> fileDto,
-            HttpServletRequest request) {
+            List<UpdateFileDto> fileDto,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
+        Role role = customOAuth2User.getUserDTO().getRole();
 
         if(role != Role.TEACHER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -110,5 +109,18 @@ public class DocumentController {
                         .build()
                         .toString())
                 .body(dto.getResource());
+    }
+
+    @PostMapping("/link")
+    public ResponseEntity<Void> urlUpload(@RequestBody InfoDto urlDto, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        System.out.println("urlDto = " + urlDto);
+        documentService.uploadUrlDocument(urlDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{documentId}/link")
+    public ResponseEntity<UrlDto> linkDocument(@PathVariable("documentId") UUID documentId) {
+        UrlDto urlDto = documentService.getLink(documentId);
+        return ResponseEntity.status(HttpStatus.OK).body(urlDto);
     }
 }
