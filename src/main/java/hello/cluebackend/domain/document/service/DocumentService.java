@@ -96,44 +96,6 @@ public class DocumentService {
         documentRepository.delete(document);
     }
 
-    public String getFullPath(String fileName) {
-        return uploadDir + File.separator + fileName;
-    }
-
-    public FileUpload upload(MultipartFile file) {
-
-        String originalFileName = file.getOriginalFilename();
-        String storedFileName = generateStoredFileName(originalFileName);
-        String fullPath = getFullPath(storedFileName);
-        File dest = new File(fullPath);
-
-        if(!dest.getParentFile().exists()) {
-            boolean created = dest.getParentFile().mkdirs();
-            if(!created) {
-                log.error("Unable to create directory {}", dest.getParentFile().getAbsolutePath());
-                throw new RuntimeException("Directory creation failed");
-            }
-        }
-
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            log.error("File uploading failed {}", originalFileName, e);
-            throw new RuntimeException("File uploading failed " + originalFileName, e);
-        }
-        log.info("File uploaded {}", originalFileName);
-        return FileUpload.builder()
-                .originalFileName(originalFileName)
-                .storedFileName(storedFileName)
-                .fullPath(fullPath)
-                .build();
-    }
-
-    // uuid_원본파일명
-    private String generateStoredFileName(String originalFileName) {
-        return UUID.randomUUID().toString() + "_" + originalFileName;
-    }
-
     public DocumentDto findById(UUID documentId) {
         Document findDocument = documentRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업자료가 존재하지 않습니다."));
         return findDocument.toDto();

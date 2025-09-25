@@ -37,31 +37,30 @@ public class DocumentController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         Role role = customOAuth2User.getUserDTO().getRole();
 
-        if(role != Role.TEACHER) {
+        if(role == Role.TEACHER) {
+            documentService.uploadFileDocument(classRoomId, directoryId, requestDocumentDto, files);
+            return ResponseEntity.ok().build();
+        }
+        else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        try {
-            documentService.uploadFileDocument(classRoomId, directoryId, requestDocumentDto, files);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        return ResponseEntity.ok().build();
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateDocument(
-            UpdateFileDto fileDto,
+    public ResponseEntity<Void> updateDocument(
+            @RequestBody UpdateFileDto fileDto,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
         Role role = customOAuth2User.getUserDTO().getRole();
 
-        if(role != Role.TEACHER) {
+        if(role == Role.TEACHER) {
+            documentService.updateDocument(fileDto);
+            return ResponseEntity.ok().build();
+        }
+        else {
             throw new AuthorizationDeniedException("권한이 부족합니다.");
         }
-
-        documentService.updateDocument(fileDto);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{documentId}")
@@ -101,7 +100,6 @@ public class DocumentController {
 
     @PostMapping("/link")
     public ResponseEntity<Void> urlUpload(@RequestBody InfoDto urlDto, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        System.out.println("urlDto = " + urlDto);
         documentService.uploadUrlDocument(urlDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
