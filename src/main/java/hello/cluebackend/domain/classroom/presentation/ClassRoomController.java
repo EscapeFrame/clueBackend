@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.classroom.presentation;
 
+import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomAllInfoDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
@@ -33,11 +34,7 @@ public class ClassRoomController {
     }
 
     @GetMapping("/{classId}/all")
-    public ResponseEntity<?> getAllInfo(HttpServletRequest request, @PathVariable UUID classId){
-        String token = jwtUtil.getToken(request);
-//        Long userId = jwtUtil.getUserId(token);
-//        Role role = jwtUtil.getRole(token);
-
+    public ResponseEntity<ClassRoomAllInfoDto> getAllInfo(@PathVariable UUID classId){
         return ResponseEntity.ok(classRoomService.getAllInfo(classId));
     }
 

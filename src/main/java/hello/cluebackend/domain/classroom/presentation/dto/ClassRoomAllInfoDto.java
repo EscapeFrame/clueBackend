@@ -18,4 +18,5 @@ public class ClassRoomAllInfoDto {
     private String description;
     private List<DirectoryAllInfoDto> directoryList;
     private List<String> teacherNames;
+    private String code;
 }
