@@ -5,7 +5,6 @@ import hello.cluebackend.domain.subject.presentation.dto.request.SubjectRequest;
 import hello.cluebackend.domain.subject.presentation.dto.response.SubjectResponse;
 import hello.cluebackend.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,7 @@ public class SubjectController {
 
   @GetMapping("/")
   public ResponseEntity<List<SubjectResponse>> findAllByGrade(
-          @Param("grade") int grade,
+          @RequestParam("grade") int grade,
           @CurrentUser UUID userId
   ) {
     List<SubjectResponse> responses = subjectService.findAllSubject(grade);
