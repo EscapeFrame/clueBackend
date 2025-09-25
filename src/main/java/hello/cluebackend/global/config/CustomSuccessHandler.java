@@ -55,7 +55,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
-            String role = auth.getAuthority();
+            String role = String.valueOf(customUserDetails.getUserDTO().getRole());
 
             String access = jwtUtil.createJwt("access", userId, username, role, 60*60*1000L);
             String refresh = jwtUtil.createJwt("refresh", userId, username, role,7 * 24  * 60 * 60 * 1000L);
