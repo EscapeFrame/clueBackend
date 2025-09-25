@@ -116,6 +116,7 @@ public class ClassRoomService {
                 .description(classRoom.getDescription())
                 .directoryList(directoryDtoList)
                 .teacherNames(teacherNames)
+                .code(classRoom.getCode())
                 .build();
     }
 }
