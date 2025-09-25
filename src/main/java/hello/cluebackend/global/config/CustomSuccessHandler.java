@@ -55,23 +55,24 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
-            String role = auth.getAuthority();
+            String role = String.valueOf(customUserDetails.getUserDTO().getRole());
 
             String access = jwtUtil.createJwt("access", userId, username, role, 60*60*1000L);
             String refresh = jwtUtil.createJwt("refresh", userId, username, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
-            response.setHeader("Authorization", "Bearer " + access);
-            response.addCookie(createCookie("refresh_token", refresh));
+
+//            response.setHeader("Authorization", "Bearer " + access);
+//            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect(baseurl);
+            response.sendRedirect(baseurl+"/login?access_token=" + access + "&refresh_token=" + refresh);
         }
     }
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(7 * 24  * 60 * 60);
-         cookie.setSecure(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 

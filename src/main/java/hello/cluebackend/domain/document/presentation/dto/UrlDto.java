@@ -1,9 +1,6 @@
 package hello.cluebackend.domain.document.presentation.dto;
 
-import hello.cluebackend.domain.assignment.domain.FileType;
 import lombok.*;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,6 +8,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class RequestDocumentDto {
+public class UrlDto {
+    private String value;
     private String title;
 }

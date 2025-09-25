@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.document.domain;
 
+import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
@@ -14,7 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 public class Document {
 
     @Id
@@ -34,13 +34,21 @@ public class Document {
     private String title;
 
     @Column(nullable = false)
-    private int type;
-
-    @Column(nullable = false)
-    private String content;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    // FILE, URL
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FileType type;
+
+    // 실제 파일이면 S3 Key, URL이면 링크
+    @Column(nullable = false)
+    private String value;
+
+    // 파일일 경우 메타데이터
+    private String originalFileName;
+    private String contentType;
+    private Long size;
 
     @PrePersist
     protected void onCreate() {
@@ -54,8 +62,11 @@ public class Document {
                 .directory(directory)
                 .title(title)
                 .type(type)
-                .content(content)
                 .createdAt(createdAt)
                 .build();
+    }
+
+    public void updateDetails(String title) {
+        if (title != null) this.title = title;
     }
 }

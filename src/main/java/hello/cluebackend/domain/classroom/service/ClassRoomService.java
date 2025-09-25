@@ -9,10 +9,8 @@ import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.classroomuser.domain.repository.ClassRoomUserRepository;
 import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.directory.presentation.dto.DirectoryAllInfoDto;
-import hello.cluebackend.domain.directory.presentation.dto.DirectoryDto;
 import hello.cluebackend.domain.document.domain.Document;
 import hello.cluebackend.domain.document.presentation.dto.DocumentAllInfoDto;
-import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
@@ -72,17 +70,13 @@ public class ClassRoomService {
     }
 
     public ClassRoomDto findById(UUID classRoomId) {
-        ClassRoom findClassRoom = classRoomRepository.findById(classRoomId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+        ClassRoom findClassRoom = classRoomRepository.findByIdWithTeachers(classRoomId);
         return findClassRoom.toDTO();
     }
 
     public void updateClassRoom(UUID classId, ClassRoomDto classRoomDTO) {
         ClassRoom findClassRoom =  classRoomRepository.findById(classId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
-        findClassRoom.setName(classRoomDTO.getName());
-        findClassRoom.setSort(classRoomDTO.getSort());
-        findClassRoom.setDescription(classRoomDTO.getDescription());
-        findClassRoom.setTarget(classRoomDTO.getTarget());
-        findClassRoom.setIsActivation(classRoomDTO.getIsActivation());
+        findClassRoom.update(classRoomDTO);
         classRoomRepository.save(findClassRoom);
     }
 

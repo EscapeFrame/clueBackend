@@ -80,7 +80,6 @@ public class AssignmentQueryService{
                     .value(dto.url())
                     .build())
             .toList();
-
     assignmentAttachmentRepository.saveAll(result);
   }
 

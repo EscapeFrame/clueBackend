@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +24,7 @@ public class ClassRoomDto {
     @JsonIgnore
     private String code;
     private Boolean isActivation;
+    private List<String> teacherNames = new ArrayList<>();
     private LocalDateTime createdAt;
 
     public void generateCode() {
