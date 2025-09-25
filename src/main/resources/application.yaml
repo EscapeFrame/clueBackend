@@ -80,6 +80,7 @@ server:
       cookie:
         same-site: none
         secure: true
+        http-only: true
 
   address: 0.0.0.0
   port: 8080

@@ -24,7 +24,7 @@ public class QDocument extends EntityPathBase<Document> {
 
     public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
 
-    public final StringPath content = createString("content");
+    public final StringPath contentType = createString("contentType");
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
@@ -32,9 +32,15 @@ public class QDocument extends EntityPathBase<Document> {
 
     public final ComparablePath<java.util.UUID> documentId = createComparable("documentId", java.util.UUID.class);
 
+    public final StringPath originalFileName = createString("originalFileName");
+
+    public final NumberPath<Long> size = createNumber("size", Long.class);
+
     public final StringPath title = createString("title");
 
-    public final NumberPath<Integer> type = createNumber("type", Integer.class);
+    public final EnumPath<hello.cluebackend.domain.assignment.domain.FileType> type = createEnum("type", hello.cluebackend.domain.assignment.domain.FileType.class);
+
+    public final StringPath value = createString("value");
 
     public QDocument(String variable) {
         this(Document.class, forVariable(variable), INITS);

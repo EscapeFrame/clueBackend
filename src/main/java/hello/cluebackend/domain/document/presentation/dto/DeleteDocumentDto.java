@@ -1,6 +1,5 @@
 package hello.cluebackend.domain.document.presentation.dto;
 
-import hello.cluebackend.domain.assignment.domain.FileType;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,7 +9,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class RequestDocumentDto {
-    private String title;
+public class DeleteDocumentDto {
+    private UUID  documentId;
 }
