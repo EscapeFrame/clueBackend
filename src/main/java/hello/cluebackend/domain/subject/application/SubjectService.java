@@ -52,7 +52,7 @@ public class SubjectService {
   public SubjectResponse updateSubject(Long subjectId, SubjectRequest request) {
     Subject subject = findByIdOrElseThrow(subjectId);
 
-    subject.updateDetails(request);
+    subject.updateDetails(request.subjectName(),request.subjectCategory(),request.subjectType(),request.weeklyHours(),request.grade());
 
     return SubjectResponse.from(subject);
   }
