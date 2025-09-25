@@ -40,11 +40,11 @@ public class Subject {
   @Column(nullable = false)
   private int grade;
 
-  public void updateDetails(SubjectRequest request) {
-    this.subjectName = request.subjectName();
-    this.subjectType = request.subjectType();
-    this.subjectCategory = request.subjectCategory();
-    this.weeklyHours = request.weeklyHours();
-    this.grade = request.grade();
+  public void updateDetails(String subjectName, SubjectCategory subjectCategory, SubjectType subjectType, int weeklyHours, int grade) {
+    this.subjectName = subjectName;
+    this.subjectType = subjectType;
+    this.subjectCategory = subjectCategory;
+    this.weeklyHours = weeklyHours;
+    this.grade = grade;
   }
 }
