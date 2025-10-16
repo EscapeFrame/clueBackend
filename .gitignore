@@ -42,6 +42,8 @@ postgres-data/
 
 src/main/resources/files
 
+### grafana ###
 ./grafana-volume
 
+### prometheus ###
 ./prometheus.yml
