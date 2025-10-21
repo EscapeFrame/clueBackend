@@ -1,8 +1,8 @@
 package hello.cluebackend.domain.classroom.presentation;
 
-import hello.cluebackend.domain.student.classroom.controller.ClassRoomController;
-import hello.cluebackend.domain.student.classroom.controller.dto.ClassRoomCardDto;
-import hello.cluebackend.domain.student.classroom.service.ClassRoomService;
+import hello.cluebackend.domain.classroom.controller.ClassRoomController;
+import hello.cluebackend.domain.classroom.controller.dto.ClassRoomCardDto;
+import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;

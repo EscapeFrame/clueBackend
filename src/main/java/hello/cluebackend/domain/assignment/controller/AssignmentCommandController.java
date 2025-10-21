@@ -1,0 +1,98 @@
+package hello.cluebackend.domain.assignment.controller;
+
+import hello.cluebackend.domain.assignment.service.AssignmentCommandService;
+import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
+import hello.cluebackend.domain.assignment.controller.dto.response.AssignmentResponseDto;
+import hello.cluebackend.domain.assignment.controller.dto.response.GetAllAssignmentDto;
+import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
+import hello.cluebackend.domain.submission.service.SubmissionCommandService;
+import hello.cluebackend.domain.user.service.UserService;
+import hello.cluebackend.global.common.annotation.CurrentUser;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/assignments")
+@RequiredArgsConstructor
+@Slf4j
+public class AssignmentCommandController {
+  private final ClassroomUserService classroomUserService;
+  private final AssignmentCommandService assignmentCommandService;
+  private final SubmissionCommandService submissionCommandService;
+  private final UserService userService;
+
+  // 과제 단일 조회
+  @GetMapping("/{assignmentId}")
+  public ResponseEntity<AssignmentResponseDto> getAssignment(
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentId
+  ) {
+    Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
+    UUID classroomId = assignment.getClassRoom().getClassRoomId();
+    if (!classroomUserService.isUserInClassroom(classroomId, userId)) {
+      throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
+    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
+    return ResponseEntity.ok(result);
+  }
+
+  // 교실 과제 전체 조회
+  @GetMapping("/{classId}/all")
+  public ResponseEntity<List<AssignmentResponseDto>> getAllClassroomAssignment(
+          @CurrentUser UUID userId,
+          @PathVariable UUID classId
+  ) {
+    List<AssignmentResponseDto> result = assignmentCommandService.findAllById(userId,classId);
+
+    if (!classroomUserService.isUserInClassroom(classId, userId)) {
+        throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
+
+    return ResponseEntity.ok(result);
+  }
+
+  // 메인 페이지 모든 과제 조회
+  @GetMapping("/me")
+  public ResponseEntity<List<GetAllAssignmentDto>> getAllAssignments(@CurrentUser UUID userId) {
+    List<GetAllAssignmentDto> result = assignmentCommandService.findAllAssignmentMe(userId);
+    return ResponseEntity.ok(result);
+  }
+
+  // 첨부 파일 다운로드
+  @GetMapping("/{assignmentAttachmentId}/download")
+  public ResponseEntity<Resource> assignmentAttachmentDownload(
+          @CurrentUser UUID userId,
+          @PathVariable UUID assignmentAttachmentId
+  ) throws IOException {
+    AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(assignmentAttachmentId);
+    Resource resource = assignmentCommandService.downloadAttachment(assignmentAttachment);
+
+    String original = assignmentAttachment.getOriginalFileName();
+    String contentType = assignmentAttachment.getContentType();
+    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
+
+    return ResponseEntity.ok()
+            .contentType(mediaType)
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                            .filename(original, StandardCharsets.UTF_8)
+                            .build()
+                            .toString())
+            .body(resource);
+  }
+}
