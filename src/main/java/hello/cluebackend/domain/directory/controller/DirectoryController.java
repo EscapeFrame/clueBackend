@@ -3,33 +3,31 @@ package hello.cluebackend.domain.directory.controller;
 import hello.cluebackend.domain.directory.controller.dto.RequestDirectoryDto;
 import hello.cluebackend.domain.directory.service.DirectoryService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.global.utils.JWTUtil;
-import jakarta.servlet.http.HttpServletRequest;
+import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
+import hello.cluebackend.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/api/directory")
+@RequiredArgsConstructor
 public class DirectoryController {
-
     private final DirectoryService directoryService;
-    private final JWTUtil jwtUtil;
-
-    public DirectoryController(DirectoryService directoryService, JWTUtil jwtUtil) {
-        this.directoryService = directoryService;
-        this.jwtUtil = jwtUtil;
-    }
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto, HttpServletRequest request){
-        String token = jwtUtil.getToken(request);
-        if(!jwtUtil.getRole(token).equals(Role.TEACHER)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> createDirectory(
+            @RequestBody RequestDirectoryDto requestDirectoryDto,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ){
+        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+        if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try {
             directoryService.createDirectory(requestDirectoryDto);
         } catch (IllegalArgumentException e){
@@ -40,33 +38,33 @@ public class DirectoryController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto, HttpServletRequest request){
-        String token = jwtUtil.getToken(request);
-        if(!jwtUtil.getRole(token).equals(Role.TEACHER)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            directoryService.updateDirectory(requestDirectoryDto);
-        } catch (IllegalArgumentException e) {
-            log.debug(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> updateDirectory(
+            @RequestBody RequestDirectoryDto requestDirectoryDto,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ){
+      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+      if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      try {
+          directoryService.updateDirectory(requestDirectoryDto);
+      } catch (IllegalArgumentException e) {
+          log.debug(e.getMessage());
+          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
+      return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
-        if(!role.equals(Role.TEACHER)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            directoryService.deleteById(requestDirectoryDto.getDirectoryId());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> deleteDirectory(
+            @RequestBody RequestDirectoryDto requestDirectoryDto,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+      if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      try {
+          directoryService.deleteById(requestDirectoryDto.getDirectoryId());
+          return new ResponseEntity<>(HttpStatus.OK);
+      } catch (Exception e) {
+          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
     }
 }
