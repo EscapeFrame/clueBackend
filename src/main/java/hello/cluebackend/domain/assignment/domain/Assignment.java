@@ -80,14 +80,4 @@ public class Assignment {
     if (startDate != null) this.startDate = startDate;
     if (endDate != null) this.endDate = endDate;
   }
-
-  public void addSubmission(Submission submission){
-    submissions.add(submission);
-    submission.setAssignment(this);
-  }
-
-  public void removeSubmission(Submission submission){
-    submissions.remove(submission);
-    submission.setAssignment(null);
-  }
 }
