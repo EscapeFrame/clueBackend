@@ -28,7 +28,9 @@ public class QNotice extends EntityPathBase<Notice> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final NumberPath<Long> noticeId = createNumber("noticeId", Long.class);
+    public final ListPath<hello.cluebackend.domain.noticedocument.domain.NoticeDocument, hello.cluebackend.domain.noticedocument.domain.QNoticeDocument> documents = this.<hello.cluebackend.domain.noticedocument.domain.NoticeDocument, hello.cluebackend.domain.noticedocument.domain.QNoticeDocument>createList("documents", hello.cluebackend.domain.noticedocument.domain.NoticeDocument.class, hello.cluebackend.domain.noticedocument.domain.QNoticeDocument.class, PathInits.DIRECT2);
+
+    public final ComparablePath<java.util.UUID> noticeId = createComparable("noticeId", java.util.UUID.class);
 
     public final StringPath title = createString("title");
 

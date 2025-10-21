@@ -28,7 +28,7 @@ public class QNoticeDocument extends EntityPathBase<NoticeDocument> {
 
     public final hello.cluebackend.domain.notice.domain.QNotice notice;
 
-    public final NumberPath<Long> noticeFileId = createNumber("noticeFileId", Long.class);
+    public final ComparablePath<java.util.UUID> noticeFileId = createComparable("noticeFileId", java.util.UUID.class);
 
     public final StringPath originalFileName = createString("originalFileName");
 

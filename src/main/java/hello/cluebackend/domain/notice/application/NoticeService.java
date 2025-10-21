@@ -13,9 +13,12 @@ import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.persistence.NoticeDocumentRepository;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
@@ -30,6 +34,9 @@ public class NoticeService {
     private final ClassRoomRepository classRoomRepository;
     private final UserRepository userRepository;
     private final FileService fileService;
+
+    @PersistenceContext
+    private EntityManager em;
 
     public void save(UUID userId, CreateNoticeDto dto, List<MultipartFile> files) {
         // Notice
@@ -44,6 +51,9 @@ public class NoticeService {
                 .build();
 
         noticeRepository.save(notice);
+
+        em.flush();
+        em.clear();
 
         if(dto.getFileInfo().size() != files.size()){
             throw new RuntimeException("한쪽 요소 부족");
@@ -77,5 +87,15 @@ public class NoticeService {
                     .build();
             noticeDocumentRepository.save(noticeDocument);
         }
+    }
+
+    public void remove(UUID noticeId) {
+        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
+        List<NoticeDocument> noticeDocuments = noticeDocumentRepository.findByNotice_NoticeId(noticeId);
+        for(NoticeDocument noticeDocument : noticeDocuments){
+            fileService.deleteFile(noticeDocument.getValue());
+            noticeDocumentRepository.delete(noticeDocument);
+        }
+        noticeRepository.delete(notice);
     }
 }

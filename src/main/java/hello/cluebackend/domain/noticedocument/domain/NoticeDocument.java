@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notice_document")
@@ -16,9 +17,9 @@ import java.time.LocalDateTime;
 @Builder
 public class NoticeDocument {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="notice_document_id", nullable = false, updatable = false)
-    private Long noticeFileId;
+    private UUID noticeFileId;
 
     @Column(nullable = false)
     private String title;

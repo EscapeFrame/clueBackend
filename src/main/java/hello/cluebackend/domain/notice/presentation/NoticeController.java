@@ -24,7 +24,7 @@ public class NoticeController {
 
 
     @PostMapping
-    public ResponseEntity<?> createNotice(
+    public ResponseEntity<Void> createNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestPart(value = "metadata") CreateNoticeDto createNoticeDto,
             @RequestPart(value = "files") List<MultipartFile> files
@@ -34,7 +34,22 @@ public class NoticeController {
 
         if(role == Role.TEACHER) {
             noticeService.save(userId, createNoticeDto, files);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @DeleteMapping("/{noticeId}")
+    public ResponseEntity<?> deleteNotice(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @PathVariable("noticeId") UUID noticeId) {
+        Role role = customOAuth2User.getUserDTO().getRole();
+
+        if(role == Role.TEACHER) {
+            noticeService.remove(noticeId);
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
         else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

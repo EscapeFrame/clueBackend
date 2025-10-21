@@ -2,11 +2,15 @@ package hello.cluebackend.domain.notice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
+import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notice")
@@ -17,8 +21,10 @@ import java.time.LocalDateTime;
 public class Notice {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long noticeId;
+    @GeneratedValue
+    @org.hibernate.annotations.UuidGenerator
+    @Column(name="notice_id", nullable = false, updatable = false)
+    private UUID noticeId;
 
     @Column(nullable = false)
     private String title;
@@ -41,4 +47,7 @@ public class Notice {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_room_id")
     private ClassRoom classRoom;
+
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<NoticeDocument> documents = new ArrayList<>();
 }
