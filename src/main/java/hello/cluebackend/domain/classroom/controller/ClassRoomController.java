@@ -5,13 +5,15 @@ import hello.cluebackend.domain.classroom.controller.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.controller.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.global.utils.JWTUtil;
+import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
+import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,14 +25,13 @@ import java.util.UUID;
 @RequestMapping("/api/class")
 @RequiredArgsConstructor
 public class ClassRoomController {
-    private final JWTUtil jwtUtil;
     private final ClassRoomService classRoomService;
+    private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(HttpServletRequest request){
-        String token = jwtUtil.getToken(request);
-        UUID userId = jwtUtil.getUserId(token);
-        return ResponseEntity.ok(classRoomService.findMyClassRoomById(userId));
+    public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+        return ResponseEntity.ok(classRoomService.findMyClassRoomById(user.getUserId()));
     }
 
     @GetMapping("/{classId}/all")
@@ -39,42 +40,45 @@ public class ClassRoomController {
     }
 
     @PostMapping
-    public ResponseEntity<HashMap<?,?>> createClassRoom(@RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
-        UUID userId = jwtUtil.getUserId(token);
-        if(role != Role.TEACHER) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            classRoomService.createClassRoom(classRoomDTO, userId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EntityNotFoundException e){
-            log.error(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<HashMap<?,?>> createClassRoom(
+            @RequestBody ClassRoomDto classRoomDTO,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+      if(user.getRole() != Role.TEACHER) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      try {
+          classRoomService.createClassRoom(classRoomDTO, user.getUserId());
+          return new ResponseEntity<>(HttpStatus.OK);
+      } catch (EntityNotFoundException e){
+          log.error(e.getMessage());
+          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
     }
 
     @PostMapping("/{code}/members")
-    public ResponseEntity<?> joinClassRoom(@PathVariable String code, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        UUID userId = jwtUtil.getUserId(token);
+    public ResponseEntity<?> joinClassRoom(
+            @PathVariable String code,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
 
-        try {
-            classRoomService.joinClassRoom(userId, code);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e){
-            log.debug(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+      try {
+          classRoomService.joinClassRoom(user.getUserId(), code);
+          return ResponseEntity.ok().build();
+      } catch (IllegalArgumentException e){
+          log.debug(e.getMessage());
+          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
     }
 
     @GetMapping("/{classId}")
-    public ResponseEntity<ClassRoomDto> findClassRoom(@PathVariable UUID classId, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
+    public ResponseEntity<ClassRoomDto> findClassRoom(
+            @PathVariable UUID classId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
 
-//        if(role != Role.TEACHER) {
+//        if(user.getRole != Role.TEACHER) {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
 
@@ -83,11 +87,14 @@ public class ClassRoomController {
     }
 
     @PatchMapping("/{classId}")
-    public ResponseEntity<?> updateClassRoom(@PathVariable UUID classId, @RequestBody ClassRoomDto classRoomDTO, HttpServletRequest request) {
-        String token = jwtUtil.getToken(request);
-        Role role = jwtUtil.getRole(token);
+    public ResponseEntity<?> updateClassRoom(
+            @PathVariable UUID classId,
+            @RequestBody ClassRoomDto classRoomDTO,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
 
-        if(role != Role.TEACHER) {
+        if(user.getRole() != Role.TEACHER) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
