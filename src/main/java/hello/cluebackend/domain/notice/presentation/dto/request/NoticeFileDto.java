@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.document.presentation.dto;
+package hello.cluebackend.domain.notice.presentation.dto.request;
 
 import lombok.*;
 
@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class RequestDocumentDto {
+public class NoticeFileDto {
     private String title;
 }

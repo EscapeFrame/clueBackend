@@ -2,6 +2,7 @@ package hello.cluebackend.domain.notice.presentation;
 
 import hello.cluebackend.domain.notice.application.NoticeService;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
+import hello.cluebackend.domain.notice.presentation.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class NoticeController {
     @PostMapping
     public ResponseEntity<?> createNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @RequestPart(value = "createNotice") CreateNoticeDto createNoticeDto,
+            @RequestPart(value = "metadata") CreateNoticeDto createNoticeDto,
             @RequestPart(value = "files") List<MultipartFile> files
             ) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();

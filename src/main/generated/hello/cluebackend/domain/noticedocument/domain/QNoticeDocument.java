@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.noticefile.domain;
+package hello.cluebackend.domain.noticedocument.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -11,16 +11,16 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QNoticeFile is a Querydsl query type for NoticeFile
+ * QNoticeDocument is a Querydsl query type for NoticeDocument
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QNoticeFile extends EntityPathBase<NoticeFile> {
+public class QNoticeDocument extends EntityPathBase<NoticeDocument> {
 
-    private static final long serialVersionUID = -825016321L;
+    private static final long serialVersionUID = -455640323L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QNoticeFile noticeFile = new QNoticeFile("noticeFile");
+    public static final QNoticeDocument noticeDocument = new QNoticeDocument("noticeDocument");
 
     public final StringPath contentType = createString("contentType");
 
@@ -40,23 +40,23 @@ public class QNoticeFile extends EntityPathBase<NoticeFile> {
 
     public final StringPath value = createString("value");
 
-    public QNoticeFile(String variable) {
-        this(NoticeFile.class, forVariable(variable), INITS);
+    public QNoticeDocument(String variable) {
+        this(NoticeDocument.class, forVariable(variable), INITS);
     }
 
-    public QNoticeFile(Path<? extends NoticeFile> path) {
+    public QNoticeDocument(Path<? extends NoticeDocument> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QNoticeFile(PathMetadata metadata) {
+    public QNoticeDocument(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QNoticeFile(PathMetadata metadata, PathInits inits) {
-        this(NoticeFile.class, metadata, inits);
+    public QNoticeDocument(PathMetadata metadata, PathInits inits) {
+        this(NoticeDocument.class, metadata, inits);
     }
 
-    public QNoticeFile(Class<? extends NoticeFile> type, PathMetadata metadata, PathInits inits) {
+    public QNoticeDocument(Class<? extends NoticeDocument> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.notice = inits.isInitialized("notice") ? new hello.cluebackend.domain.notice.domain.QNotice(forProperty("notice"), inits.get("notice")) : null;
     }

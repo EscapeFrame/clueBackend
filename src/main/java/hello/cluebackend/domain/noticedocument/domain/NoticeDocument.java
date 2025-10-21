@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.noticefile.domain;
+package hello.cluebackend.domain.noticedocument.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.assignment.domain.FileType;
@@ -9,15 +9,15 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "notice_file")
+@Table(name = "notice_document")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class NoticeFile {
+public class NoticeDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="notice_file_id", nullable = false, updatable = false)
+    @Column(name="notice_document_id", nullable = false, updatable = false)
     private Long noticeFileId;
 
     @Column(nullable = false)
