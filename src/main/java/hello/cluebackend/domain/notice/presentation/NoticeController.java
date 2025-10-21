@@ -2,7 +2,7 @@ package hello.cluebackend.domain.notice.presentation;
 
 import hello.cluebackend.domain.notice.application.NoticeService;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
-import hello.cluebackend.domain.notice.presentation.dto.request.NoticeFileDto;
+import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class NoticeController {
     }
 
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity<?> deleteNotice(
+    public ResponseEntity<Void> deleteNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable("noticeId") UUID noticeId) {
         Role role = customOAuth2User.getUserDTO().getRole();
@@ -54,5 +54,12 @@ public class NoticeController {
         else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<NoticeDto>> getAllNotices(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        UUID userId = customOAuth2User.getUserDTO().getUserId();
+
+        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findAllById(userId));
     }
 }
