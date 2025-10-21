@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.document.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.directory.domain.Directory;
@@ -34,6 +35,7 @@ public class Document {
     private String title;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
 
     // FILE, URL
