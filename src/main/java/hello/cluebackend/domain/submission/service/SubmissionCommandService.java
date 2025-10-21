@@ -1,9 +1,9 @@
 package hello.cluebackend.domain.submission.service;
 
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
+import hello.cluebackend.domain.assignment.service.AssignmentCommandService;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
-import hello.cluebackend.domain.assignment.service.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.submission.controller.dto.response.SubmissionAttachmentResponse;
@@ -30,8 +30,8 @@ import java.util.UUID;
 public class SubmissionCommandService {
   private final SubmissionRepository submissionRepository;
   private final SubmissionAttachmentRepository submissionAttachmentRepository;
-  private final ClassRoomService classRoomService;
   private final AssignmentCommandService assignmentCommandService;
+  private final ClassRoomService classRoomService;
   private final FileService fileService;
   private final UserService userService;
 

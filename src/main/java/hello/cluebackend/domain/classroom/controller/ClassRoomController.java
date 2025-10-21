@@ -5,7 +5,6 @@ import hello.cluebackend.domain.classroom.controller.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.controller.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,8 +29,7 @@ public class ClassRoomController {
 
     @GetMapping
     public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
-        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
-        return ResponseEntity.ok(classRoomService.findMyClassRoomById(user.getUserId()));
+        return ResponseEntity.ok(classRoomService.findMyClassRoomById(customOAuth2User.getUserId()));
     }
 
     @GetMapping("/{classId}/all")
@@ -44,10 +42,9 @@ public class ClassRoomController {
             @RequestBody ClassRoomDto classRoomDTO,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
-      if(user.getRole() != Role.TEACHER) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      if(customOAuth2User.getUserDTO().getRole() != Role.TEACHER) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       try {
-          classRoomService.createClassRoom(classRoomDTO, user.getUserId());
+          classRoomService.createClassRoom(classRoomDTO, customOAuth2User.getUserId());
           return new ResponseEntity<>(HttpStatus.OK);
       } catch (EntityNotFoundException e){
           log.error(e.getMessage());
@@ -60,10 +57,8 @@ public class ClassRoomController {
             @PathVariable String code,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
-
       try {
-          classRoomService.joinClassRoom(user.getUserId(), code);
+          classRoomService.joinClassRoom(customOAuth2User.getUserId(), code);
           return ResponseEntity.ok().build();
       } catch (IllegalArgumentException e){
           log.debug(e.getMessage());
@@ -76,9 +71,7 @@ public class ClassRoomController {
             @PathVariable UUID classId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
-
-//        if(user.getRole != Role.TEACHER) {
+//        if(customOAuth2User.getUserDTO().getRole != Role.TEACHER) {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
 
@@ -92,9 +85,7 @@ public class ClassRoomController {
             @RequestBody ClassRoomDto classRoomDTO,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
-
-        if(user.getRole() != Role.TEACHER) {
+        if(customOAuth2User.getUserDTO().getRole() != Role.TEACHER) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
