@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.submission.application;
 
 import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.submission.presentation.dto.request.SubmissionAttachmentUrlDto;
 import hello.cluebackend.domain.submission.domain.FileType;
 import hello.cluebackend.domain.file.service.FileService;
@@ -12,6 +13,7 @@ import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.classroomuser.application.ClassroomUserService;
 import hello.cluebackend.domain.submission.persistence.SubmissionAttachmentRepository;
 import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ public class SubmissionQueryService {
   private final ClassRoomService classRoomService;
   private final FileService fileService;
   private final SubmissionCommandService submissionCommandService;
+  private final UserService userService;
 
   // 해당 교실 모든 학생에게 과제 부여 & 제출 과제 생성
   @Transactional
@@ -43,24 +46,31 @@ public class SubmissionQueryService {
 
   // 과제 제출하기
   @Transactional
-  public Submission submitSubmission(UUID submissionId) {
+  public Submission submitSubmission(UUID userId, UUID submissionId) {
+    UserEntity user = userService.findById(userId).toEntity();
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
+    submission.submissionValidator(user);
     submission.submit();
     return submission;
   }
 
   // 과제 제출 취소하기
   @Transactional
-  public Submission cancelSubmission(UUID submissionId) {
+  public Submission cancelSubmission(UUID userId, UUID submissionId) {
+    UserEntity user = userService.findById(userId).toEntity();
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
+    submission.submissionValidator(user);
     submission.cancel();
     return submission;
   }
 
   // 첨부 파일 추가
   @Transactional
-  public SubmissionAttachment fileUpload(UUID submissionId, MultipartFile file) {
+  public SubmissionAttachment fileUpload(UUID userId, UUID submissionId, MultipartFile file) {
+    UserEntity user = userService.findById(userId).toEntity();
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
+
+    submission.submissionValidator(user);
 
     String storedFiledName = fileService.storeFile(file);
 
@@ -78,23 +88,25 @@ public class SubmissionQueryService {
 
   // 첨부 링크 추가
   @Transactional
-  public SubmissionAttachment linkUpload(UUID submissionId, SubmissionAttachmentUrlDto dto) {
+  public SubmissionAttachment linkUpload(UUID userId, UUID submissionId, SubmissionAttachmentUrlDto dto) {
+    UserEntity user = userService.findById(userId).toEntity();
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
-
+    submission.submissionValidator(user);
     SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
             .submission(submission)
             .type(FileType.URL)
             .value(dto.url())
             .build();
-
     submissionAttachmentRepository.save(submissionAttachment);
     return submissionAttachment;
   }
 
   // 첨부 파일 삭제
   @Transactional
-  public void deleteSubmissionAttachment(UUID submissionAttachmentId) {
+  public void deleteSubmissionAttachment(UUID userId, UUID submissionAttachmentId) {
+    UserEntity user = userService.findById(userId).toEntity();
     SubmissionAttachment submissionAttachment = submissionCommandService.findSubmissionAttachmentByIdOrThrow(submissionAttachmentId);
+    submissionAttachment.submissionAttachmentValidator(user);
     if(submissionAttachment.getType() == FileType.FILE){
       fileService.deleteFile(submissionAttachment.getValue());
     }

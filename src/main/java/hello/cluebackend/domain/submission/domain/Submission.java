@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.submission.domain;
 
 import hello.cluebackend.domain.assignment.domain.Assignment;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
@@ -12,12 +13,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "submission")
 @Getter
+@Builder
 @AllArgsConstructor
-@Builder @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Submission {
   @Id  @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(name = "submission_id", nullable = false, updatable = false)
   private UUID submissionId;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -60,5 +60,11 @@ public class Submission {
   // getter
   public boolean getIsSubmitted(){
     return this.isSubmitted;
+  }
+
+  public void submissionValidator(UserEntity user){
+    if(!this.user.getUserId().equals(user.getUserId())){
+      throw new AccessDeniedException("삭제 권한이 없습니다.");
+    }
   }
 }
