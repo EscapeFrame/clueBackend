@@ -41,3 +41,5 @@ out/
 postgres-data/
 
 src/main/resources/files
+
+/grafana-volume
