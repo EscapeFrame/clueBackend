@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.submission.domain;
 
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,4 +37,10 @@ public class SubmissionAttachment {
   private String originalFileName;
   private String contentType;
   private Long size;
+
+  public void submissionAttachmentValidator(UserEntity user){
+    if(!this.user.getUserId().equals(user.getUserId())){
+      throw new AccessDeniedException("삭제 권한이 없습니다.");
+    }
+  }
 }

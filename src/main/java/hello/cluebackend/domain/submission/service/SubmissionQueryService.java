@@ -43,7 +43,7 @@ public class SubmissionQueryService {
 
   // 과제 제출하기
   @Transactional
-  public Submission submitSubmission(UUID submissionId) {
+  public Submission submitSubmission(UUID userId, UUID submissionId) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.submit();
     return submission;
@@ -51,7 +51,7 @@ public class SubmissionQueryService {
 
   // 과제 제출 취소하기
   @Transactional
-  public Submission cancelSubmission(UUID submissionId) {
+  public Submission cancelSubmission(UUID userId, UUID submissionId) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
     submission.cancel();
     return submission;
@@ -59,7 +59,7 @@ public class SubmissionQueryService {
 
   // 첨부 파일 추가
   @Transactional
-  public SubmissionAttachment fileUpload(UUID submissionId, MultipartFile file) {
+  public SubmissionAttachment fileUpload(UUID userId, UUID submissionId, MultipartFile file) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
 
     String storedFiledName = fileService.storeFile(file);
@@ -78,7 +78,7 @@ public class SubmissionQueryService {
 
   // 첨부 링크 추가
   @Transactional
-  public SubmissionAttachment linkUpload(UUID submissionId, SubmissionAttachmentUrlDto dto) {
+  public SubmissionAttachment linkUpload(UUID userId, UUID submissionId, SubmissionAttachmentUrlDto dto) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
 
     SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
@@ -93,7 +93,7 @@ public class SubmissionQueryService {
 
   // 첨부 파일 삭제
   @Transactional
-  public void deleteSubmissionAttachment(UUID submissionAttachmentId) {
+  public void deleteSubmissionAttachment(UUID userId, UUID submissionAttachmentId) {
     SubmissionAttachment submissionAttachment = submissionCommandService.findSubmissionAttachmentByIdOrThrow(submissionAttachmentId);
     if(submissionAttachment.getType() == FileType.FILE){
       fileService.deleteFile(submissionAttachment.getValue());

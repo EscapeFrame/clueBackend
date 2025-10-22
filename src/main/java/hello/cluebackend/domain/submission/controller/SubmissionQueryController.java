@@ -4,7 +4,6 @@ import hello.cluebackend.domain.submission.controller.dto.request.SubmissionAtta
 import hello.cluebackend.domain.submission.controller.dto.response.SubmissionDto;
 import hello.cluebackend.domain.submission.service.SubmissionQueryService;
 import hello.cluebackend.domain.submission.domain.Submission;
-import hello.cluebackend.domain.submission.domain.SubmissionAttachment;
 import hello.cluebackend.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,7 @@ public class SubmissionQueryController {
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId
     ) {
-    Submission submission = submissionQueryService.submitSubmission(submissionId);
+    Submission submission = submissionQueryService.submitSubmission(userId, submissionId);
     return ResponseEntity.ok(SubmissionDto.from(submission));
   }
 
@@ -38,7 +37,7 @@ public class SubmissionQueryController {
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId
   ){
-    Submission submission = submissionQueryService.cancelSubmission(submissionId);
+    Submission submission = submissionQueryService.cancelSubmission(userId,submissionId);
     return ResponseEntity.ok(SubmissionDto.from(submission));
   }
 
@@ -48,19 +47,22 @@ public class SubmissionQueryController {
           @CurrentUser UUID userId,
           @PathVariable UUID submissionAttachmentId
   ){
-    submissionQueryService.deleteSubmissionAttachment(submissionAttachmentId);
+    submissionQueryService.deleteSubmissionAttachment(userId, submissionAttachmentId);
     return ResponseEntity.ok("과제 첨부파일이 성공적으로 삭제되었습니다.");
   }
 
   // 과제 제출 첨부 파일 추가
   @PostMapping("/{submissionId}/file")
-  public ResponseEntity<SubmissionAttachment> fileUpload(
+  public ResponseEntity<?> fileUpload(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId,
-          @RequestBody MultipartFile file
+          @RequestParam("files") MultipartFile[] files
   ) throws IOException {
-    SubmissionAttachment submissionAttachment = submissionQueryService.fileUpload(submissionId, file);
-    return ResponseEntity.ok(submissionAttachment);
+
+    for (MultipartFile file : files) {
+      submissionQueryService.fileUpload(userId, submissionId, file);
+    }
+    return ResponseEntity.ok("과제 업로드가 성공했습니다.");
   }
 
   // 과제 제출 첨부 링크 추가
@@ -70,7 +72,7 @@ public class SubmissionQueryController {
           @PathVariable UUID submissionId,
           @RequestBody SubmissionAttachmentUrlDto dto
   ) {
-    submissionQueryService.linkUpload(submissionId, dto);
+    submissionQueryService.linkUpload(userId, submissionId, dto);
     return ResponseEntity.ok("첨부 파일 삭제");
   }
 }

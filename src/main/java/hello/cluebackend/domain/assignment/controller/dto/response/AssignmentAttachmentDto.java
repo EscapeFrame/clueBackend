@@ -3,7 +3,10 @@ package hello.cluebackend.domain.assignment.controller.dto.response;
 import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.domain.FileType;
 
+import java.util.UUID;
+
 public record AssignmentAttachmentDto(
+        UUID assignmentAttachmentId,
         FileType type,
         String value,
         String originalFileName,
@@ -12,6 +15,7 @@ public record AssignmentAttachmentDto(
 ) {
   public static AssignmentAttachmentDto from(AssignmentAttachment assignmentAttachment){
     return new AssignmentAttachmentDto(
+      assignmentAttachment.getAssignmentAttachmentId(),
       assignmentAttachment.getType(),
       assignmentAttachment.getValue(),
       assignmentAttachment.getOriginalFileName(),

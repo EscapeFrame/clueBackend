@@ -110,6 +110,7 @@ public class SubmissionCommandService {
   }
 
   public SubmissionAttachment findSubmissionAttachmentByIdOrThrow(UUID submissionAttachmentId) {
+
     return submissionAttachmentRepository.findById(submissionAttachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 과제 제출 첨부파일을 찾을수 없습니다."));
   }
