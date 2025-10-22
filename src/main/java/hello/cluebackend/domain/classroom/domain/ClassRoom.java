@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.classroom.domain;
 
-import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomCardDto;
-import hello.cluebackend.domain.classroom.presentation.dto.ClassRoomDto;
+import hello.cluebackend.domain.classroom.controller.dto.ClassRoomCardDto;
+import hello.cluebackend.domain.classroom.controller.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.document.domain.Document;
@@ -11,7 +11,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name="class_room")

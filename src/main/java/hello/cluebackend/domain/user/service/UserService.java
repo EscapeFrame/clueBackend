@@ -2,19 +2,17 @@ package hello.cluebackend.domain.user.service;
 
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
-import hello.cluebackend.domain.user.presentation.dto.DefaultRegisterUserDto;
-import hello.cluebackend.domain.user.presentation.dto.UserDto;
+import hello.cluebackend.domain.user.controller.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public void registerUser(UserDto userDto, int classCode) {
         UserEntity userEntity = new UserEntity(
