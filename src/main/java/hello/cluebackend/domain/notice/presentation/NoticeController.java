@@ -4,7 +4,8 @@ import hello.cluebackend.domain.notice.application.NoticeService;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
-import hello.cluebackend.domain.noticedocument.presentation.dto.response.DownloadDto;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.NoticeDownloadDto;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.NoticeUrlDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class NoticeController {
     @GetMapping("/download/{noticeDocumentId}")
     public ResponseEntity<Resource> downloadNoticeDocument(
             @PathVariable("noticeDocumentId")  UUID noticeDocumentId) throws IOException {
-        DownloadDto dto = noticeService.downloadNoticeDocument(noticeDocumentId);
+        NoticeDownloadDto dto = noticeService.downloadNoticeDocument(noticeDocumentId);
 
         String original = dto.getOriginal();
         String contentType = dto.getContentType();
@@ -91,5 +92,11 @@ public class NoticeController {
                         .build()
                         .toString())
                 .body(dto.getResource());
+    }
+
+    @GetMapping("/link/{noticeDocumentId}")
+    public ResponseEntity<NoticeUrlDto> getNoticeLink(
+            @PathVariable("noticeDocumentId") UUID noticeDocumentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(noticeService.getLink(noticeDocumentId));
     }
 }

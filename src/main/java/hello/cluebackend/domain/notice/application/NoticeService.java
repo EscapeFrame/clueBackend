@@ -13,7 +13,8 @@ import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.persistence.NoticeDocumentRepository;
-import hello.cluebackend.domain.noticedocument.presentation.dto.response.DownloadDto;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.NoticeDownloadDto;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.NoticeUrlDto;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -117,16 +118,27 @@ public class NoticeService {
         return noticeInfoDto;
     }
 
-    public DownloadDto downloadNoticeDocument(UUID noticeDocumentId) throws IOException {
+    public NoticeDownloadDto downloadNoticeDocument(UUID noticeDocumentId) throws IOException {
         NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 파일을 찾을 수가 없습니다."));
         if(noticeDocument.getType() == FileType.FILE){
             Resource resource = fileService.downloadFile(noticeDocument.getValue());
-            return DownloadDto.builder()
+            return NoticeDownloadDto.builder()
                     .original(noticeDocument.getValue())
                     .contentType(noticeDocument.getContentType())
                     .resource(resource)
                     .build();
         }
         else return null;
+    }
+
+    public NoticeUrlDto getLink(UUID noticeDocumentId) {
+        NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 링크를 찾을 수가 없습니다."));
+        if(noticeDocument.getType() == FileType.URL) {
+            return NoticeUrlDto.builder()
+                    .value(noticeDocument.getValue())
+                    .title(noticeDocument.getTitle())
+                    .build();
+        }
+        return null;
     }
 }

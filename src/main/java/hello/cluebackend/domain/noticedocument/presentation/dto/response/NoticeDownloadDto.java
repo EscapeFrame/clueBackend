@@ -3,12 +3,12 @@ package hello.cluebackend.domain.noticedocument.presentation.dto.response;
 import lombok.*;
 import org.springframework.core.io.Resource;
 
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class DownloadDto {
+@AllArgsConstructor
+@Builder
+public class NoticeDownloadDto {
     private Resource resource;
     private String original;
     private String contentType;
