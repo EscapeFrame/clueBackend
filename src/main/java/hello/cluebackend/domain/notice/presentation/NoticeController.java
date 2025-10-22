@@ -4,15 +4,18 @@ import hello.cluebackend.domain.notice.application.NoticeService;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.DownloadDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,5 +72,24 @@ public class NoticeController {
             @PathVariable UUID noticeId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return ResponseEntity.status(HttpStatus.OK).body(noticeService.findById(noticeId));
+    }
+
+    @GetMapping("/download/{noticeDocumentId}")
+    public ResponseEntity<Resource> downloadNoticeDocument(
+            @PathVariable("noticeDocumentId")  UUID noticeDocumentId) throws IOException {
+        DownloadDto dto = noticeService.downloadNoticeDocument(noticeDocumentId);
+
+        String original = dto.getOriginal();
+        String contentType = dto.getContentType();
+        MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(mediaType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename(original, StandardCharsets.UTF_8)
+                        .build()
+                        .toString())
+                .body(dto.getResource());
     }
 }

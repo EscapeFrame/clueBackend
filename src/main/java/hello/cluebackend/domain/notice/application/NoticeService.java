@@ -13,16 +13,19 @@ import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.persistence.NoticeDocumentRepository;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.DownloadDto;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import hello.cluebackend.domain.user.domain.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -112,5 +115,18 @@ public class NoticeService {
         NoticeInfoDto noticeInfoDto = notice.toInfoDto();
         noticeInfoDto.setNoticeDocuments(noticeDocument.stream().map(NoticeDocument::toDto).toList());
         return noticeInfoDto;
+    }
+
+    public DownloadDto downloadNoticeDocument(UUID noticeDocumentId) throws IOException {
+        NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 파일을 찾을 수가 없습니다."));
+        if(noticeDocument.getType() == FileType.FILE){
+            Resource resource = fileService.downloadFile(noticeDocument.getValue());
+            return DownloadDto.builder()
+                    .original(noticeDocument.getValue())
+                    .contentType(noticeDocument.getContentType())
+                    .resource(resource)
+                    .build();
+        }
+        else return null;
     }
 }
