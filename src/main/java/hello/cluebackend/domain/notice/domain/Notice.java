@@ -2,6 +2,7 @@ package hello.cluebackend.domain.notice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
+import hello.cluebackend.domain.notice.presentation.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
@@ -71,5 +72,10 @@ public class Notice {
                 .content(content)
                 .createdAt(createdAt)
                 .build();
+    }
+
+    public void modify(ModifyNoticeDto modifyNoticeDto) {
+        this.title = modifyNoticeDto.getTitle();
+        this.content = modifyNoticeDto.getContent();
     }
 }

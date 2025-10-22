@@ -8,6 +8,7 @@ import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.notice.domain.Notice;
 import hello.cluebackend.domain.notice.persistence.NoticeRepository;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
+import hello.cluebackend.domain.notice.presentation.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
@@ -148,5 +149,10 @@ public class NoticeService {
             fileService.deleteFile(noticeDocument.getValue());
         }
         noticeDocumentRepository.delete(noticeDocument);
+    }
+
+    public void modifyNotice(UUID noticeId, ModifyNoticeDto modifyNoticeDto) {
+        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
+        notice.modify(modifyNoticeDto);
     }
 }

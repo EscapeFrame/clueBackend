@@ -2,6 +2,7 @@ package hello.cluebackend.domain.notice.presentation;
 
 import hello.cluebackend.domain.notice.application.NoticeService;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
+import hello.cluebackend.domain.notice.presentation.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.presentation.dto.response.NoticeDownloadDto;
@@ -44,6 +45,14 @@ public class NoticeController {
         else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @PatchMapping("/{noticeId}")
+    public ResponseEntity<Void> updateNotice(
+            @PathVariable("noticeId") UUID noticeId,
+            @RequestBody ModifyNoticeDto modifyNoticeDto) {
+        noticeService.modifyNotice(noticeId, modifyNoticeDto);
+        return  ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{noticeId}")
