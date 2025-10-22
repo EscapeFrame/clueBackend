@@ -141,4 +141,12 @@ public class NoticeService {
         }
         return null;
     }
+
+    public void removeNoticeDocument(UUID noticeDocumentId) {
+        NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 문서를 찾을 수가 없습니다."));
+        if(noticeDocument.getType() == FileType.FILE) {
+            fileService.deleteFile(noticeDocument.getValue());
+        }
+        noticeDocumentRepository.delete(noticeDocument);
+    }
 }

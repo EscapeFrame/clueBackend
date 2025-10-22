@@ -99,4 +99,17 @@ public class NoticeController {
             @PathVariable("noticeDocumentId") UUID noticeDocumentId) {
         return ResponseEntity.status(HttpStatus.OK).body(noticeService.getLink(noticeDocumentId));
     }
+
+    @DeleteMapping("/document/{noticeDocumentId}")
+    public ResponseEntity<Void> deleteNoticeDocument(
+            @PathVariable("noticeDocumentId") UUID noticeDocumentId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Role role = customOAuth2User.getUserDTO().getRole();
+        if(role == Role.TEACHER) {
+            noticeService.removeNoticeDocument(noticeDocumentId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 }
