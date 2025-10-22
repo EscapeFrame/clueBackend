@@ -7,6 +7,7 @@ import hello.cluebackend.domain.document.presentation.dto.UrlDto;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.notice.domain.Notice;
 import hello.cluebackend.domain.notice.persistence.NoticeRepository;
+import hello.cluebackend.domain.notice.presentation.dto.request.AddNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.NoticeFileDto;
@@ -154,5 +155,40 @@ public class NoticeService {
     public void modifyNotice(UUID noticeId, ModifyNoticeDto modifyNoticeDto) {
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
         notice.modify(modifyNoticeDto);
+    }
+
+    public void addNoticeDocument(UUID noticeId, AddNoticeDto dto, List<MultipartFile> files) {
+        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
+        if(dto.getFileInfo().size() != files.size()){
+            throw new RuntimeException("한쪽 요소 부족");
+        }
+        for(int i = 0; i < dto.getFileInfo().size(); i++){
+            try {
+                MultipartFile file = files.get(i);
+                NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
+                String storedFileName = fileService.storeFile(file);
+                NoticeDocument noticeDocument = NoticeDocument.builder()
+                        .notice(notice)
+                        .title(noticeFileDto.getTitle())
+                        .type(FileType.FILE)
+                        .value(storedFileName)
+                        .originalFileName(file.getOriginalFilename())
+                        .contentType(file.getContentType())
+                        .size(file.getSize())
+                        .build();
+                noticeDocumentRepository.save(noticeDocument);
+            } catch(Exception e) {
+                throw new RuntimeException("파일 저장 중 에러 발생");
+            }
+        }
+        for(UrlDto urlDto : dto.getUrls()){
+            NoticeDocument noticeDocument = NoticeDocument.builder()
+                    .title(urlDto.getTitle())
+                    .type(FileType.URL)
+                    .value(urlDto.getValue())
+                    .notice(notice)
+                    .build();
+            noticeDocumentRepository.save(noticeDocument);
+        }
     }
 }

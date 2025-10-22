@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.notice.presentation;
 
 import hello.cluebackend.domain.notice.application.NoticeService;
+import hello.cluebackend.domain.notice.presentation.dto.request.AddNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
@@ -44,6 +45,21 @@ public class NoticeController {
         }
         else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/{noticeId}")
+    public ResponseEntity<Void> addNoticeDocument(
+            @PathVariable("noticeId") UUID noticeId,
+            @RequestPart(value = "metadata") AddNoticeDto addNoticeDto,
+            @RequestPart(value = "files") List<MultipartFile> files,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        Role role = customOAuth2User.getUserDTO().getRole();
+        if(role == Role.TEACHER) {
+            noticeService.addNoticeDocument(noticeId, addNoticeDto, files);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
