@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.user.presentation;
+package hello.cluebackend.domain.user.controller;
 
 import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletResponse;

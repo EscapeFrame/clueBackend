@@ -1,7 +1,7 @@
-package hello.cluebackend.domain.user.presentation;
+package hello.cluebackend.domain.user.controller;
 
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.presentation.dto.*;
+import hello.cluebackend.domain.user.controller.dto.*;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.global.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;

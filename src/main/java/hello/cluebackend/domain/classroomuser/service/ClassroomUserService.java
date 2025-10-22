@@ -30,7 +30,7 @@ public class ClassroomUserService {
 
   // 수업실에 해당 유저가 속하는지 확인하는 로직
   public boolean isUserInClassroom(UUID classRoomId, UUID userId) {
-    ClassRoom classRoom = classRoomService.findById(classRoomId).toEntity();
+    ClassRoom classRoom = classRoomService.findById(userId, classRoomId).toEntity();
     UserEntity user = userService.findById(userId).toEntity();
 
     return classRoomUserRepository.existsByClassRoomAndUser(classRoom,user);

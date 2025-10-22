@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.user.presentation.dto;
+package hello.cluebackend.domain.user.controller.dto;
 
 public interface OAuth2Response {
 

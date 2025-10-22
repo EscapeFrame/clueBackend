@@ -3,7 +3,7 @@ package hello.cluebackend.domain.document.controller;
 import hello.cluebackend.domain.document.controller.dto.*;
 import hello.cluebackend.domain.document.service.DocumentService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
+import hello.cluebackend.domain.user.controller.dto.CustomOAuth2User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

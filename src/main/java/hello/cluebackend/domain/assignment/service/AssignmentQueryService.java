@@ -12,7 +12,6 @@ import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.domain.UserEntity;
-import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

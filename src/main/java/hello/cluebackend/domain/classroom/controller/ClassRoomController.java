@@ -5,8 +5,7 @@ import hello.cluebackend.domain.classroom.controller.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.controller.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
-import hello.cluebackend.domain.user.service.UserService;
+import hello.cluebackend.domain.user.controller.dto.CustomOAuth2User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ClassRoomController {
     private final ClassRoomService classRoomService;
-    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
@@ -33,7 +31,9 @@ public class ClassRoomController {
     }
 
     @GetMapping("/{classId}/all")
-    public ResponseEntity<ClassRoomAllInfoDto> getAllInfo(@PathVariable UUID classId){
+    public ResponseEntity<ClassRoomAllInfoDto> getAllInfo(
+            @PathVariable UUID classId
+    ){
         return ResponseEntity.ok(classRoomService.getAllInfo(classId));
     }
 
@@ -71,11 +71,7 @@ public class ClassRoomController {
             @PathVariable UUID classId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-//        if(customOAuth2User.getUserDTO().getRole != Role.TEACHER) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-
-        ClassRoomDto findClassRoomDto = classRoomService.findById(classId);
+        ClassRoomDto findClassRoomDto = classRoomService.findById(customOAuth2User.getUserId(), classId);
         return ResponseEntity.ok(findClassRoomDto);
     }
 

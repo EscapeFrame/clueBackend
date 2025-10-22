@@ -58,7 +58,7 @@ public class AssignmentCommandService {
 
   // 과제 전체 조회
   public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
-    ClassRoom classRoom = classRoomService.findById(classId).toEntity();
+    ClassRoom classRoom = classRoomService.findById(userId, classId).toEntity();
     UserEntity user = userService.findById(userId).toEntity();
 
     if(!(user.getRole() == Role.TEACHER)) {

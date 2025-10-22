@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.user.domain;
 
-import hello.cluebackend.domain.user.presentation.dto.UserDto;
+import hello.cluebackend.domain.user.controller.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;

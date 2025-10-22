@@ -32,8 +32,8 @@ public class SubmissionQueryService {
 
   // 해당 교실 모든 학생에게 과제 부여 & 제출 과제 생성
   @Transactional
-  public void assignToAllStudentsInClassroom(UUID classroomId, Assignment assignment){
-    ClassRoom classRoom = classRoomService.findById(classroomId).toEntity();
+  public void assignToAllStudentsInClassroom(UUID userId, UUID classroomId, Assignment assignment){
+    ClassRoom classRoom = classRoomService.findById(userId ,classroomId).toEntity();
     List<UserEntity> users = classroomUserService.findAllClassroomUser(classRoom);
     List<Submission> submissions = users.stream()
             .map(u -> new Submission(assignment, u,assignment.getClassRoom(), false, null))

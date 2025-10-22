@@ -6,7 +6,7 @@ import hello.cluebackend.domain.assignment.controller.dto.request.ModifyAssignme
 import hello.cluebackend.domain.assignment.service.AssignmentQueryService;
 import hello.cluebackend.domain.assignment.domain.Assignment;
 import hello.cluebackend.domain.submission.service.SubmissionQueryService;
-import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
+import hello.cluebackend.domain.user.controller.dto.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class AssignmentQueryController {
   ) {
     Assignment assignment = assignmentQueryService.save(customOAuth2User.getUserId(), request);
 
-    submissionQueryService.assignToAllStudentsInClassroom(request.classId(), assignment);
+    submissionQueryService.assignToAllStudentsInClassroom(customOAuth2User.getUserId() ,request.classId(), assignment);
     return ResponseEntity.ok(assignment.getAssignmentId());
   }
 

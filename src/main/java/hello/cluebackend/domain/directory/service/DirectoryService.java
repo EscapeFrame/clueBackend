@@ -5,20 +5,17 @@ import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
 import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.directory.domain.repository.DirectoryRepository;
 import hello.cluebackend.domain.directory.controller.dto.RequestDirectoryDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class DirectoryService {
 
     private final DirectoryRepository directoryRepository;
     private final ClassRoomRepository classRoomRepository;
-
-    public DirectoryService(DirectoryRepository directoryRepository,  ClassRoomRepository classRoomRepository) {
-        this.directoryRepository = directoryRepository;
-        this.classRoomRepository = classRoomRepository;
-    }
 
     public void createDirectory(RequestDirectoryDto requestDirectoryDto) {
         ClassRoom findClassRoom = classRoomRepository.findById(requestDirectoryDto.getClassRoomId()).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
