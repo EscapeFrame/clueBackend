@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.directory.domain.Directory;
-import hello.cluebackend.domain.document.presentation.dto.DocumentDto;
+import hello.cluebackend.domain.document.controller.dto.DocumentDto;
 import jakarta.persistence.*;
 import lombok.*;
 

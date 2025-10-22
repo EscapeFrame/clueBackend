@@ -2,9 +2,9 @@ package hello.cluebackend.domain.notice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import hello.cluebackend.domain.notice.presentation.dto.request.ModifyNoticeDto;
-import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
-import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
+import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;
+import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
+import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;

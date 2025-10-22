@@ -1,12 +1,8 @@
 package hello.cluebackend.domain.subject.domain;
 
-import hello.cluebackend.domain.subject.presentation.dto.request.SubjectRequest;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "subject")

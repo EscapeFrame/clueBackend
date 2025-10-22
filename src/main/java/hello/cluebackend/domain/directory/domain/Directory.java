@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.directory.domain;
 
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import hello.cluebackend.domain.directory.presentation.dto.DirectoryDto;
+import hello.cluebackend.domain.directory.controller.dto.DirectoryDto;
 import hello.cluebackend.domain.document.domain.Document;
 import jakarta.persistence.*;
 import lombok.*;
