@@ -3,10 +3,12 @@ package hello.cluebackend.domain.notice.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
+import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,10 +52,20 @@ public class Notice {
     private ClassRoom classRoom;
 
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<NoticeDocument> documents = new ArrayList<>();
+    @BatchSize(size=100)
+    private List<NoticeDocument> noticeDocuments = new ArrayList<>();
 
     public NoticeDto toDto() {
         return NoticeDto.builder()
+                .noticeId(noticeId)
+                .title(title)
+                .content(content)
+                .createdAt(createdAt)
+                .build();
+    }
+
+    public NoticeInfoDto toInfoDto() {
+        return NoticeInfoDto.builder()
                 .noticeId(noticeId)
                 .title(title)
                 .content(content)

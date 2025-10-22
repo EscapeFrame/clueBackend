@@ -3,6 +3,7 @@ package hello.cluebackend.domain.noticedocument.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.notice.domain.Notice;
+import hello.cluebackend.domain.noticedocument.presentation.dto.response.NoticeDocumentDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,4 +50,11 @@ public class NoticeDocument {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
+
+    public NoticeDocumentDto toDto() {
+        return NoticeDocumentDto.builder()
+                .noticeDocumentId(noticeFileId)
+                .title(title)
+                .build();
+    }
 }

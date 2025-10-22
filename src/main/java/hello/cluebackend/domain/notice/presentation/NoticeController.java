@@ -3,6 +3,7 @@ package hello.cluebackend.domain.notice.presentation;
 import hello.cluebackend.domain.notice.application.NoticeService;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
+import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.presentation.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -61,5 +62,12 @@ public class NoticeController {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
 
         return ResponseEntity.status(HttpStatus.OK).body(noticeService.findAllById(userId));
+    }
+
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<NoticeInfoDto> getNotice(
+            @PathVariable UUID noticeId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findById(noticeId));
     }
 }

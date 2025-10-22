@@ -10,6 +10,7 @@ import hello.cluebackend.domain.notice.persistence.NoticeRepository;
 import hello.cluebackend.domain.notice.presentation.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.presentation.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.notice.presentation.dto.response.NoticeDto;
+import hello.cluebackend.domain.notice.presentation.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.persistence.NoticeDocumentRepository;
 import hello.cluebackend.domain.user.domain.UserEntity;
@@ -103,5 +104,13 @@ public class NoticeService {
     public List<NoticeDto> findAllById(UUID userId) {
         return noticeRepository.findAllByUserId(userId).stream()
                 .map(Notice::toDto).toList();
+    }
+
+    public NoticeInfoDto findById(UUID noticeId) {
+        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
+        List<NoticeDocument> noticeDocument = notice.getNoticeDocuments();
+        NoticeInfoDto noticeInfoDto = notice.toInfoDto();
+        noticeInfoDto.setNoticeDocuments(noticeDocument.stream().map(NoticeDocument::toDto).toList());
+        return noticeInfoDto;
     }
 }
