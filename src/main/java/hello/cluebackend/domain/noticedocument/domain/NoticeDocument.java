@@ -55,6 +55,7 @@ public class NoticeDocument {
         return NoticeDocumentDto.builder()
                 .noticeDocumentId(noticeFileId)
                 .title(title)
+                .type(type)
                 .build();
     }
 }

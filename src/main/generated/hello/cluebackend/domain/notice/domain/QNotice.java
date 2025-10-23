@@ -22,8 +22,6 @@ public class QNotice extends EntityPathBase<Notice> {
 
     public static final QNotice notice = new QNotice("notice");
 
-    public final hello.cluebackend.domain.classroom.domain.QClassRoom classRoom;
-
     public final StringPath content = createString("content");
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
@@ -56,7 +54,6 @@ public class QNotice extends EntityPathBase<Notice> {
 
     public QNotice(Class<? extends Notice> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.classRoom = inits.isInitialized("classRoom") ? new hello.cluebackend.domain.classroom.domain.QClassRoom(forProperty("classRoom")) : null;
         this.user = inits.isInitialized("user") ? new hello.cluebackend.domain.user.domain.QUserEntity(forProperty("user")) : null;
     }
 
