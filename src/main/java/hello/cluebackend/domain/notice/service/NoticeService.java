@@ -115,11 +115,13 @@ public class NoticeService {
         noticeRepository.delete(notice);
     }
 
+    @Transactional(readOnly = true)
     public List<NoticeDto> findAllById(UUID userId) {
         return noticeRepository.findAllByUserId(userId).stream()
                 .map(Notice::toDto).toList();
     }
 
+    @Transactional(readOnly = true)
     public NoticeInfoDto findById(UUID noticeId) {
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
         List<NoticeDocument> noticeDocument = notice.getNoticeDocuments();
@@ -128,6 +130,7 @@ public class NoticeService {
         return noticeInfoDto;
     }
 
+    @Transactional(readOnly = true)
     public NoticeDownloadDto downloadNoticeDocument(UUID noticeDocumentId) throws IOException {
         NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 파일을 찾을 수가 없습니다."));
         if(noticeDocument.getType() == FileType.FILE){
@@ -141,6 +144,7 @@ public class NoticeService {
         else return null;
     }
 
+    @Transactional(readOnly = true)
     public NoticeUrlDto getLink(UUID noticeDocumentId) {
         NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 링크를 찾을 수가 없습니다."));
         if(noticeDocument.getType() == FileType.URL) {
