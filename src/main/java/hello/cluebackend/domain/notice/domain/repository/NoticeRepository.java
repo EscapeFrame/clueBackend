@@ -14,4 +14,11 @@ public interface NoticeRepository extends JpaRepository<Notice, UUID> {
             " join fetch n.user u" +
             " where u.userId = :userId")
     List<Notice> findAllByUserId(UUID userId);
+
+    @Query("select count(n) from Notice n" +
+            " join n.user u" +
+            " where n.noticeId = :noticeId and u.userId = :userId")
+    Long findMyNoticeByUserId(UUID userId, UUID noticeId);
+
+//    Boolean existsByNoticeDocument_noticeDocumentId(UUID noticeDocumentId);
 }

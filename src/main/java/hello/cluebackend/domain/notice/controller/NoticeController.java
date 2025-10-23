@@ -8,11 +8,11 @@ import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeUrlDto;
-import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.controller.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +29,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping
     public ResponseEntity<Void> createNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -37,59 +37,47 @@ public class NoticeController {
             @RequestPart(value = "files") List<MultipartFile> files
             ) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        Role role = customOAuth2User.getUserDTO().getRole();
 
-        if(role == Role.TEACHER) {
-            noticeService.save(userId, createNoticeDto, files);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        noticeService.save(userId, createNoticeDto, files);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/{noticeId}")
     public ResponseEntity<Void> addNoticeDocument(
             @PathVariable("noticeId") UUID noticeId,
             @RequestPart(value = "metadata") AddNoticeDto addNoticeDto,
             @RequestPart(value = "files") List<MultipartFile> files,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        Role role = customOAuth2User.getUserDTO().getRole();
-        if(role == Role.TEACHER) {
-            noticeService.addNoticeDocument(noticeId, addNoticeDto, files);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        UUID userId = customOAuth2User.getUserDTO().getUserId();
+        noticeService.addNoticeDocument(userId, noticeId, addNoticeDto, files);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PatchMapping("/{noticeId}")
     public ResponseEntity<Void> updateNotice(
             @PathVariable("noticeId") UUID noticeId,
-            @RequestBody ModifyNoticeDto modifyNoticeDto) {
-        noticeService.modifyNotice(noticeId, modifyNoticeDto);
+            @RequestBody ModifyNoticeDto modifyNoticeDto,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        UUID userId = customOAuth2User.getUserDTO().getUserId();
+        noticeService.modifyNotice(userId, noticeId, modifyNoticeDto);
         return  ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @DeleteMapping("/{noticeId}")
     public ResponseEntity<Void> deleteNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable("noticeId") UUID noticeId) {
-        Role role = customOAuth2User.getUserDTO().getRole();
-
-        if(role == Role.TEACHER) {
-            noticeService.remove(noticeId);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        UUID userId = customOAuth2User.getUserDTO().getUserId();
+        noticeService.remove(userId, noticeId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping
     public ResponseEntity<List<NoticeDto>> getAllNotices(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-
         return ResponseEntity.status(HttpStatus.OK).body(noticeService.findAllById(userId));
     }
 
@@ -125,16 +113,14 @@ public class NoticeController {
         return ResponseEntity.status(HttpStatus.OK).body(noticeService.getLink(noticeDocumentId));
     }
 
-    @DeleteMapping("/document/{noticeDocumentId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    @DeleteMapping("/{noticeId}/document/{noticeDocumentId}")
     public ResponseEntity<Void> deleteNoticeDocument(
+            @PathVariable("noticeId") UUID noticeId,
             @PathVariable("noticeDocumentId") UUID noticeDocumentId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        Role role = customOAuth2User.getUserDTO().getRole();
-        if(role == Role.TEACHER) {
-            noticeService.removeNoticeDocument(noticeDocumentId);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        UUID userId = customOAuth2User.getUserDTO().getUserId();
+        noticeService.removeNoticeDocument(userId, noticeId, noticeDocumentId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

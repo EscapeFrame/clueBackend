@@ -1,3 +1,4 @@
+
 package hello.cluebackend.domain.notice.service;
 
 import hello.cluebackend.domain.assignment.domain.FileType;
@@ -13,6 +14,7 @@ import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
+import hello.cluebackend.domain.notice.exception.IsNotMyNoticeException;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.domain.repository.NoticeDocumentRepository;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
@@ -23,6 +25,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -98,7 +102,10 @@ public class NoticeService {
         }
     }
 
-    public void remove(UUID noticeId) {
+    public void remove(UUID userId, UUID noticeId) {
+        if(!isMyNotice(userId, noticeId)) {
+            throw new IsNotMyNoticeException("해당 공지사항을 수정할 권한이 없습니다.");
+        }
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
         List<NoticeDocument> noticeDocuments = noticeDocumentRepository.findByNotice_NoticeId(noticeId);
         for(NoticeDocument noticeDocument : noticeDocuments){
@@ -145,7 +152,10 @@ public class NoticeService {
         return null;
     }
 
-    public void removeNoticeDocument(UUID noticeDocumentId) {
+    public void removeNoticeDocument(UUID userId, UUID noticeId, UUID noticeDocumentId) {
+        if(!isMyNotice(userId, noticeId)) {
+            throw new IsNotMyNoticeException("해당 공지사항을 수정할 권한이 없습니다.");
+        }
         NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 문서를 찾을 수가 없습니다."));
         if(noticeDocument.getType() == FileType.FILE) {
             fileService.deleteFile(noticeDocument.getValue());
@@ -153,12 +163,18 @@ public class NoticeService {
         noticeDocumentRepository.delete(noticeDocument);
     }
 
-    public void modifyNotice(UUID noticeId, ModifyNoticeDto modifyNoticeDto) {
+    public void modifyNotice(UUID userId, UUID noticeId, ModifyNoticeDto modifyNoticeDto) {
+        if(!isMyNotice(userId, noticeId)) {
+            throw new IsNotMyNoticeException("해당 공지사항을 수정할 권한이 없습니다.");
+        }
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
         notice.modify(modifyNoticeDto);
     }
 
-    public void addNoticeDocument(UUID noticeId, AddNoticeDto dto, List<MultipartFile> files) {
+    public void addNoticeDocument(UUID userId, UUID noticeId, AddNoticeDto dto, List<MultipartFile> files) {
+        if(!isMyNotice(userId, noticeId)) {
+            throw new IsNotMyNoticeException("해당 공지사항을 수정할 권한이 없습니다.");
+        }
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
         if(dto.getFileInfo().size() != files.size()){
             throw new RuntimeException("한쪽 요소 부족");
@@ -192,4 +208,11 @@ public class NoticeService {
             noticeDocumentRepository.save(noticeDocument);
         }
     }
+
+    public boolean isMyNotice(UUID userId, UUID noticeId) {
+        boolean isMyNotice = noticeRepository.findMyNoticeByUserId(userId, noticeId) > 0;
+        log.info("isMyNotice: {}", isMyNotice);
+        return isMyNotice;
+    }
 }
+

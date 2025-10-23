@@ -1,5 +1,6 @@
 package hello.cluebackend.global.config;
 
+import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.service.CustomOAuth2UserService;
 import hello.cluebackend.global.security.jwt.RefreshTokenService;
 import hello.cluebackend.global.utils.JWTUtil;
@@ -11,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
@@ -18,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -99,6 +102,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
                                 "/test"
                         ).permitAll()
+//                        .requestMatchers("/api/notice").hasRole(Role.TEACHER.name())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
