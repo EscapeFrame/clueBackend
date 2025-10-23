@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.document.controller.dto;
+package hello.cluebackend.domain.noticedocument.controller.dto.response;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UrlDto {
+public class NoticeUrlDto {
     private String value;
     private String title;
 }
