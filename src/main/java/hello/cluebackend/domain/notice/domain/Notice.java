@@ -52,10 +52,6 @@ public class Notice {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_room_id")
-    private ClassRoom classRoom;
-
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @BatchSize(size=100)
     private List<NoticeDocument> noticeDocuments = new ArrayList<>();

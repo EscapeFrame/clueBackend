@@ -51,12 +51,9 @@ public class NoticeService {
     private EntityManager em;
 
     public void save(UUID userId, CreateNoticeDto dto, List<MultipartFile> files) {
-        // Notice
-        ClassRoom classRoom = classRoomRepository.findById(dto.getClassRoomId()).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수가 없습니다."));
 
         Notice notice = Notice.builder()
-                .classRoom(classRoom)
                 .user(user)
                 .title(dto.getTitle())
                 .content(dto.getContent())
