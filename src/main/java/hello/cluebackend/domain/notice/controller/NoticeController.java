@@ -85,7 +85,8 @@ public class NoticeController {
     public ResponseEntity<NoticeInfoDto> getNotice(
             @PathVariable UUID noticeId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findById(noticeId));
+        UUID userId = customOAuth2User.getUserDTO().getUserId();
+        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findById(userId, noticeId));
     }
 
     @GetMapping("/download/{noticeDocumentId}")
