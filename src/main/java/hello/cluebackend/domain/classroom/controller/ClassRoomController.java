@@ -94,4 +94,14 @@ public class ClassRoomController {
 
         return ResponseEntity.ok().build();
     }
+
+
+  @DeleteMapping("/{classId}")
+  public ResponseEntity<?> deleteClassRoom(
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+          @PathVariable UUID classId
+  ) {
+    classRoomService.deleteClassRoom(customOAuth2User.getUserId(), classId);
+    return ResponseEntity.noContent().build();
+  }
 }

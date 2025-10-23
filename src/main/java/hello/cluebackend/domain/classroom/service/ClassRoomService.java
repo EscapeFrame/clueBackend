@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -115,5 +116,14 @@ public class ClassRoomService {
             .teacherNames(teacherNames)
             .code(classRoom.getCode())
             .build();
+  }
+
+  public void deleteClassRoom(UUID userId, UUID classId) {
+    ClassRoom classRoom = findByIdOrElseThrow(classId);
+    classRoomRepository.delete(classRoom);
+  }
+
+  public ClassRoom findByIdOrElseThrow(UUID classId){
+    return classRoomRepository.findById(classId).orElseThrow(() -> new EntityNotFoundException("해당 교실은 찾을수 없습니다."));
   }
 }

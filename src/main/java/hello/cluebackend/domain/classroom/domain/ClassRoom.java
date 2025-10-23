@@ -5,6 +5,7 @@ import hello.cluebackend.domain.classroom.controller.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.domain.ClassRoomUser;
 import hello.cluebackend.domain.directory.domain.Directory;
 import hello.cluebackend.domain.document.domain.Document;
+import hello.cluebackend.domain.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
