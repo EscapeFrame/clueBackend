@@ -56,6 +56,7 @@ public class NoticeService {
                 .user(user)
                 .title(dto.getTitle())
                 .content(dto.getContent())
+                .type(dto.getType())
                 .build();
 
         noticeRepository.save(notice);

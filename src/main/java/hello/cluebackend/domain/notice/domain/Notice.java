@@ -39,6 +39,10 @@ public class Notice {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private NoticeType type;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
@@ -62,11 +66,13 @@ public class Notice {
                 .title(title)
                 .content(content)
                 .createdAt(createdAt)
+                .type(type)
                 .build();
     }
 
     public NoticeInfoDto toInfoDto() {
         return NoticeInfoDto.builder()
+                .type(type)
                 .noticeId(noticeId)
                 .title(title)
                 .content(content)
@@ -77,5 +83,6 @@ public class Notice {
     public void modify(ModifyNoticeDto modifyNoticeDto) {
         this.title = modifyNoticeDto.getTitle();
         this.content = modifyNoticeDto.getContent();
+        this.type = modifyNoticeDto.getType();
     }
 }

@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.notice.controller.dto.response;
 
+import hello.cluebackend.domain.notice.domain.NoticeType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class NoticeDto {
+    private NoticeType type;
     private UUID noticeId;
     private String title;
     private String content;

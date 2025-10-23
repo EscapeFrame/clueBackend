@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.notice.controller.dto.response;
 
+import hello.cluebackend.domain.notice.domain.NoticeType;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDocumentDto;
 import lombok.*;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class NoticeInfoDto {
+    private NoticeType type;
     private UUID noticeId;
     private String title;
     private String content;

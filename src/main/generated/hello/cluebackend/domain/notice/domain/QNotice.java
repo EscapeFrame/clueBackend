@@ -34,6 +34,8 @@ public class QNotice extends EntityPathBase<Notice> {
 
     public final StringPath title = createString("title");
 
+    public final EnumPath<NoticeType> type = createEnum("type", NoticeType.class);
+
     public final hello.cluebackend.domain.user.domain.QUserEntity user;
 
     public QNotice(String variable) {
