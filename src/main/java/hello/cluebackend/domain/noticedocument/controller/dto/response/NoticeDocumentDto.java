@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.noticedocument.controller.dto.response;
 
+import hello.cluebackend.domain.assignment.domain.FileType;
 import lombok.*;
 
 import java.util.UUID;
@@ -12,4 +13,5 @@ import java.util.UUID;
 public class NoticeDocumentDto {
     private UUID noticeDocumentId;
     private String title;
+    private FileType type;
 }
