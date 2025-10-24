@@ -38,7 +38,7 @@ public class SubmissionCommandService {
   // 과제 전체 조회 및 과제 첨부 파일 조회
   public List<SubmissionResponse> findAllByAssignmentId(UUID userId, UUID classId) {
     UserEntity user = userService.findById(userId).toEntity();
-    ClassRoom classRoom = classRoomService.findById(userId, classId).toEntity();
+    ClassRoom classRoom = classRoomService.findById(userId, classId);
 
     List<Submission> submissions = submissionRepository.findAllByClassRoomAndUser(classRoom, user);
 
