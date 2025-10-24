@@ -3,6 +3,7 @@ package hello.cluebackend.domain.classroom.controller;
 import hello.cluebackend.domain.classroom.controller.dto.ClassRoomAllInfoDto;
 import hello.cluebackend.domain.classroom.controller.dto.ClassRoomCardDto;
 import hello.cluebackend.domain.classroom.controller.dto.ClassRoomDto;
+import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.classroom.service.ClassRoomService;
 import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.controller.dto.CustomOAuth2User;
@@ -71,8 +72,8 @@ public class ClassRoomController {
             @PathVariable UUID classId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-        ClassRoomDto findClassRoomDto = classRoomService.findById(customOAuth2User.getUserId(), classId);
-        return ResponseEntity.ok(findClassRoomDto);
+        ClassRoom classRoom = classRoomService.findById(customOAuth2User.getUserId(), classId);
+        return ResponseEntity.ok(classRoom.toDTO());
     }
 
     @PatchMapping("/{classId}")
