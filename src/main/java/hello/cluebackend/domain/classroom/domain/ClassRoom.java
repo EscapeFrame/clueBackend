@@ -45,6 +45,7 @@ public class ClassRoom {
     @Column(nullable = false)
     private Boolean isActivation;
 
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

@@ -86,7 +86,7 @@ public class ClassRoomController {
         }
 
         try {
-            classRoomService.updateClassRoom(classId, classRoomDTO);
+            classRoomService.updateClassRoom(classId, customOAuth2User.getUserId(), classRoomDTO);
         } catch (IllegalArgumentException e){
             log.debug(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
