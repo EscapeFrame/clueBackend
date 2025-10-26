@@ -1,10 +1,13 @@
 package hello.cluebackend.domain.user.service;
 
 
-import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.domain.UserEntity;
-import hello.cluebackend.domain.user.domain.repository.UserRepository;
-import hello.cluebackend.domain.user.controller.dto.*;
+import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.GoogleResponse;
+import hello.cluebackend.application.user.dto.OAuth2Response;
+import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.domain.user.model.Role;
+import hello.cluebackend.domain.user.model.UserEntity;
+import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -17,7 +20,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -43,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = oAuth2Response.getName();
         username = username.substring(2);
 
-        Optional<UserEntity> existDataOptional = userRepository.findByEmail(email);
+        Optional<UserEntity> existDataOptional = userJpaRepository.findByEmail(email);
 
         if(existDataOptional.isEmpty()) {
             UserDto userDTO = new UserDto();
@@ -58,7 +61,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         UserEntity existData = existDataOptional.get();
         existData.setEmail(oAuth2Response.getEmail());
         existData.setUsername(oAuth2Response.getName());
-        userRepository.save(existData);
+        userJpaRepository.save(existData);
 
         UserDto userDTO = existData.toUserDTO();
         return new CustomOAuth2User(userDTO);
