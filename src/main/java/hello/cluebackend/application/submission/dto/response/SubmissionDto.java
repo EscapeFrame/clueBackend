@@ -1,0 +1,20 @@
+package hello.cluebackend.application.submission.dto.response;
+
+import hello.cluebackend.domain.submission.model.Submission;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record SubmissionDto(
+        UUID submissionId,
+        boolean IsSubmitted,
+        LocalDateTime submittedAt
+) {
+  public static SubmissionDto from(Submission submission) {
+    return new SubmissionDto(
+            submission.getSubmissionId(),
+            submission.getIsSubmitted(),
+            submission.getSubmittedAt()
+    );
+  }
+}

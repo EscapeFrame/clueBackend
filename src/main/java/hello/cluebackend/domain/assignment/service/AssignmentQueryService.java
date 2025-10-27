@@ -1,17 +1,17 @@
 package hello.cluebackend.domain.assignment.service;
 
-import hello.cluebackend.domain.assignment.controller.dto.request.AssignmentAttachmentDto;
-import hello.cluebackend.domain.assignment.controller.dto.request.CreateAssignmentDto;
-import hello.cluebackend.domain.assignment.controller.dto.request.ModifyAssignmentDto;
-import hello.cluebackend.domain.assignment.domain.Assignment;
-import hello.cluebackend.domain.assignment.domain.AssignmentAttachment;
-import hello.cluebackend.domain.assignment.domain.FileType;
-import hello.cluebackend.domain.assignment.domain.repository.AssignmentAttachmentRepository;
-import hello.cluebackend.domain.assignment.domain.repository.AssignmentRepository;
-import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
+import hello.cluebackend.application.assignment.dto.request.AssignmentAttachmentDto;
+import hello.cluebackend.application.assignment.dto.request.CreateAssignmentDto;
+import hello.cluebackend.application.assignment.dto.request.ModifyAssignmentDto;
+import hello.cluebackend.domain.assignment.model.Assignment;
+import hello.cluebackend.domain.assignment.model.AssignmentAttachment;
+import hello.cluebackend.domain.assignment.model.FileType;
+import hello.cluebackend.infrastructure.persistence.assignmentattachment.AssignmentAttachmentJpaRepository;
+import hello.cluebackend.infrastructure.persistence.assignment.AssignmentJpaRepository;
+import hello.cluebackend.domain.classroom.model.ClassRoom;
+import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import hello.cluebackend.domain.file.service.FileService;
-import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ public class AssignmentQueryService {
   private final UserService userService;
   private final FileService fileService;
   private final AssignmentCommandService assignmentCommandService;
-  private final ClassRoomRepository classRoomRepository;
-  private final AssignmentRepository assignmentRepository;
-  private final AssignmentAttachmentRepository assignmentAttachmentRepository;
+  private final ClassRoomJpaRepository classRoomJpaRepository;
+  private final AssignmentJpaRepository assignmentJpaRepository;
+  private final AssignmentAttachmentJpaRepository assignmentAttachmentJpaRepository;
 
   // ------------------------------- ASSIGNMENT ---------------------------------------------- //
 
@@ -41,7 +41,7 @@ public class AssignmentQueryService {
   public Assignment save(UUID userId, CreateAssignmentDto request) {
     UserEntity user = userService.findById(userId).toEntity();
 
-    ClassRoom classRoom = classRoomRepository.findById(request.classId())
+    ClassRoom classRoom = classRoomJpaRepository.findById(request.classId())
             .orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을수 없습니다"));
 
     Assignment assignment  = Assignment.builder()
@@ -53,7 +53,7 @@ public class AssignmentQueryService {
             .endDate(request.endDate())
             .build();
 
-    assignmentRepository.save(assignment);
+    assignmentJpaRepository.save(assignment);
     return assignment;
   }
 
@@ -69,7 +69,7 @@ public class AssignmentQueryService {
   @Transactional
   public void delete(UUID userId, UUID assignmentId) {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
-    assignmentRepository.delete(assignment);
+    assignmentJpaRepository.delete(assignment);
   }
 
   // --------------------------------- ATTACHMENT --------------------------------------------------- //
@@ -88,7 +88,7 @@ public class AssignmentQueryService {
             .contentType(file.getContentType())
             .size(file.getSize())
             .build();
-    assignmentAttachmentRepository.save(result);
+    assignmentAttachmentJpaRepository.save(result);
   }
 
   // url 업로드
@@ -103,7 +103,7 @@ public class AssignmentQueryService {
                     .value(dto.url())
                     .build())
             .toList();
-    assignmentAttachmentRepository.saveAll(result);
+    assignmentAttachmentJpaRepository.saveAll(result);
   }
 
   // 첨부 파일 업로드 삭제
@@ -113,7 +113,7 @@ public class AssignmentQueryService {
     if(assignmentAttachment.getType() == FileType.FILE){
       fileService.deleteFile(assignmentAttachment.getValue());
     }
-    assignmentAttachmentRepository.delete(assignmentAttachment);
+    assignmentAttachmentJpaRepository.delete(assignmentAttachment);
   }
 
   public Resource downloadAttachment(AssignmentAttachment assignmentAttachment) throws IOException {

@@ -1,11 +1,11 @@
 package hello.cluebackend.domain.subject.service;
 
-import hello.cluebackend.domain.subject.domain.Subject;
-import hello.cluebackend.domain.subject.domain.repository.SubjectRepository;
-import hello.cluebackend.domain.subject.controller.dto.request.SubjectRequest;
-import hello.cluebackend.domain.subject.controller.dto.response.SubjectResponse;
-import hello.cluebackend.domain.user.domain.Role;
-import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.subject.model.Subject;
+import hello.cluebackend.infrastructure.persistence.subject.SubjectJpaRepository;
+import hello.cluebackend.application.subject.dto.request.SubjectRequest;
+import hello.cluebackend.application.subject.dto.response.SubjectResponse;
+import hello.cluebackend.domain.user.model.Role;
+import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +20,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SubjectService {
-  private final SubjectRepository subjectRepository;
+  private final SubjectJpaRepository subjectJpaRepository;
   private final UserService userService;
 
   // 과목 학년 별로 전체 조회
   public List<SubjectResponse> findAllSubject(int grade){
-    List<Subject> subjects = subjectRepository.findAllByGrade(grade);
+    List<Subject> subjects = subjectJpaRepository.findAllByGrade(grade);
     List<SubjectResponse> subjectRequests = subjects.stream()
             .map(subject -> SubjectResponse.from(subject))
             .toList();
@@ -43,7 +43,7 @@ public class SubjectService {
   public SubjectResponse createSubject(SubjectRequest request, UUID userId) {
     UserEntity user = userService.findById(userId).toEntity();
     Subject subject = SubjectRequest.toEntity(request, user);
-    subjectRepository.save(subject);
+    subjectJpaRepository.save(subject);
     return SubjectResponse.from(subject);
   }
 
@@ -64,12 +64,12 @@ public class SubjectService {
       throw new AccessDeniedException("권한이 부족합니다.");
     }else {
       Subject subject = findByIdOrElseThrow(subjectId);
-      subjectRepository.delete(subject);
+      subjectJpaRepository.delete(subject);
     }
   }
 
   public Subject findByIdOrElseThrow(Long subjectId){
-    return subjectRepository.findById(subjectId)
+    return subjectJpaRepository.findById(subjectId)
             .orElseThrow(() -> new EntityNotFoundException("해당 과목을 찾을수 없습니다."));
   }
 }
