@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.timetable.service;
 
-import hello.cluebackend.application.timetable.dto.request.TimetableRequest;
-import hello.cluebackend.application.timetable.dto.response.TimetableResponse;
+import hello.cluebackend.domain.timetable.controller.dto.request.TimetableRequest;
+import hello.cluebackend.domain.timetable.controller.dto.response.TimetableResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
