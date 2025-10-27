@@ -1,6 +1,5 @@
 package hello.cluebackend.config;
 
-import hello.cluebackend.domain.user.domain.Role;
 import hello.cluebackend.domain.user.service.CustomOAuth2UserService;
 import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import hello.cluebackend.common.utils.JWTUtil;

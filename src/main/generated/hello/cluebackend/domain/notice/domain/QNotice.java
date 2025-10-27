@@ -34,7 +34,7 @@ public class QNotice extends EntityPathBase<Notice> {
 
     public final EnumPath<NoticeType> type = createEnum("type", NoticeType.class);
 
-    public final hello.cluebackend.domain.user.domain.QUserEntity user;
+    public final hello.cluebackend.domain.user.model.QUserEntity user;
 
     public QNotice(String variable) {
         this(Notice.class, forVariable(variable), INITS);
@@ -54,7 +54,7 @@ public class QNotice extends EntityPathBase<Notice> {
 
     public QNotice(Class<? extends Notice> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new hello.cluebackend.domain.user.domain.QUserEntity(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new hello.cluebackend.domain.user.model.QUserEntity(forProperty("user")) : null;
     }
 
 }

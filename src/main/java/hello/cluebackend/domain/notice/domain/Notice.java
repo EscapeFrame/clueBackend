@@ -1,12 +1,11 @@
 package hello.cluebackend.domain.notice.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import hello.cluebackend.domain.classroom.domain.ClassRoom;
 import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
-import hello.cluebackend.domain.user.domain.UserEntity;
+import hello.cluebackend.domain.user.model.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
@@ -22,7 +21,8 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Notice {
+public class
+Notice {
 
     @Id
     @GeneratedValue

@@ -1,10 +1,7 @@
 
 package hello.cluebackend.domain.notice.service;
 
-import hello.cluebackend.domain.assignment.domain.FileType;
-import hello.cluebackend.domain.classroom.domain.ClassRoom;
-import hello.cluebackend.domain.classroom.domain.repository.ClassRoomRepository;
-import hello.cluebackend.domain.document.controller.dto.UrlDto;
+import hello.cluebackend.application.document.dto.UrlDto;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.notice.domain.Notice;
 import hello.cluebackend.domain.notice.domain.repository.NoticeRepository;
@@ -15,12 +12,14 @@ import hello.cluebackend.domain.notice.controller.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.notice.exception.IsNotMyNoticeException;
+import hello.cluebackend.domain.noticedocument.domain.FileType;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.domain.repository.NoticeDocumentRepository;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeUrlDto;
-import hello.cluebackend.domain.user.domain.UserEntity;
-import hello.cluebackend.domain.user.domain.repository.UserRepository;
+import hello.cluebackend.domain.user.model.UserEntity;
+import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
+import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
@@ -43,8 +42,8 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final NoticeDocumentRepository noticeDocumentRepository;
-    private final ClassRoomRepository classRoomRepository;
-    private final UserRepository userRepository;
+    private final ClassRoomJpaRepository classRoomRepository;
+    private final UserJpaRepository userRepository;
     private final FileService fileService;
 
     @PersistenceContext

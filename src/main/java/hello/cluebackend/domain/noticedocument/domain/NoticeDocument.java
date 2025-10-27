@@ -1,7 +1,6 @@
 package hello.cluebackend.domain.noticedocument.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import hello.cluebackend.domain.assignment.domain.FileType;
 import hello.cluebackend.domain.notice.domain.Notice;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDocumentDto;
 import jakarta.persistence.*;

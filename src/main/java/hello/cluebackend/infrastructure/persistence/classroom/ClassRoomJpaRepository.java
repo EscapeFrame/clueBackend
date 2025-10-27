@@ -21,6 +21,6 @@ public interface ClassRoomJpaRepository extends JpaRepository<ClassRoom, UUID> {
             " join fetch c.classRoomUserList cu" +
             " join fetch cu.user u" +
             " where c.classRoomId =:classRoomId" +
-            " and u.role = hello.cluebackend.domain.user.domain.Role.TEACHER")
+            " and u.role = hello.cluebackend.domain.user.model.Role.TEACHER")
     ClassRoom findByIdWithTeachers(@Param("classRoomId") UUID classRoomId);
 }

@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.noticedocument.controller.dto.response;
 
-import hello.cluebackend.domain.assignment.domain.FileType;
+import hello.cluebackend.domain.noticedocument.domain.FileType;
 import lombok.*;
 
 import java.util.UUID;
