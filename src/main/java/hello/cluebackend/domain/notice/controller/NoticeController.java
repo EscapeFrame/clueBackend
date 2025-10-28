@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.notice.controller;
 
+import hello.cluebackend.application.user.dto.CustomOAuth2User;
 import hello.cluebackend.domain.notice.service.NoticeService;
 import hello.cluebackend.domain.notice.controller.dto.request.AddNoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.request.CreateNoticeDto;
@@ -8,7 +9,6 @@ import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeUrlDto;
-import hello.cluebackend.domain.user.controller.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;

@@ -15,18 +15,18 @@ import java.util.UUID;
 @Repository
 public interface ClassRoomUserJpaRepository extends JpaRepository<ClassRoomUser, UUID> {
 
-    List<ClassRoomUser> findByUser_UserId(UUID userId);
+  List<ClassRoomUser> findByUser_UserId(UUID userId);
 
-    @Query("SELECT cu.classRoom FROM ClassRoomUser cu WHERE cu.user.userId = :userId")
-    List<ClassRoom> findClassRoomsByUserId(@Param("userId") UUID userId);
+  @Query("SELECT cu.classRoom FROM ClassRoomUser cu WHERE cu.user.userId = :userId")
+  List<ClassRoom> findClassRoomsByUserId(@Param("userId") UUID userId);
 
-    @Query("select cu.user from ClassRoomUser cu where cu.classRoom.classRoomId = :classId")
-    List<UserEntity> findUsersByClassRoomId(@Param("classId") UUID classId);
+  @Query("select cu.user from ClassRoomUser cu where cu.classRoom.classRoomId = :classId")
+  List<UserEntity> findUsersByClassRoomId(@Param("classId") UUID classId);
 
-    @Query("SELECT cru.user FROM ClassRoomUser cru WHERE cru.classRoom.classRoomId = :classRoomId AND cru.user.role = hello.cluebackend.domain.user.domain.Role.STUDENT")
-    List<UserEntity> findAllStudentsByClassRoomId(UUID classRoomId);
+  @Query("SELECT cru.user FROM ClassRoomUser cru WHERE cru.classRoom.classRoomId = :classRoomId AND cru.user.role = hello.cluebackend.domain.user.model.Role.STUDENT")
+  List<UserEntity> findAllStudentsByClassRoomId(UUID classRoomId);
 
-    List<ClassRoomUser> user(UserEntity user);
+  List<ClassRoomUser> user(UserEntity user);
 
   List<ClassRoomUser> findAllByClassRoom(ClassRoom classRoom);
 

@@ -36,7 +36,7 @@ public class QNoticeDocument extends EntityPathBase<NoticeDocument> {
 
     public final StringPath title = createString("title");
 
-    public final EnumPath<hello.cluebackend.domain.assignment.domain.FileType> type = createEnum("type", hello.cluebackend.domain.assignment.domain.FileType.class);
+    public final EnumPath<FileType> type = createEnum("type", FileType.class);
 
     public final StringPath value = createString("value");
 
