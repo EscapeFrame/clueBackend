@@ -78,14 +78,7 @@ public class ClassRoomCommandService {
             .map(UserEntity::getUsername)
             .collect(Collectors.toList());
 
-    return ClassRoomAllInfoDto.builder()
-            .classRoomId(classRoom.getClassRoomId())
-            .classRoomName(classRoom.getName())
-            .description(classRoom.getDescription())
-            .directoryList(directoryDtoList)
-            .teacherNames(teacherNames)
-            .code(classRoom.getCode())
-            .build();
+   return classRoomMapper.toAllInfoDto(classRoom, directoryDtoList, teacherNames);
   }
 
 
