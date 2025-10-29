@@ -41,7 +41,7 @@ public class SubjectService {
   // 과목 생성
   @Transactional
   public SubjectResponse createSubject(SubjectRequest request, UUID userId) {
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
     Subject subject = SubjectRequest.toEntity(request, user);
     subjectJpaRepository.save(subject);
     return SubjectResponse.from(subject);
@@ -60,7 +60,7 @@ public class SubjectService {
   // 과목 삭제
   @Transactional
   public void deleteSubject(Long subjectId, UUID userId) {
-    if(!(userService.findById(userId).toEntity().getRole() == Role.TEACHER)){
+    if(!(userService.findById(userId).getRole() == Role.TEACHER)){
       throw new AccessDeniedException("권한이 부족합니다.");
     }else {
       Subject subject = findByIdOrElseThrow(subjectId);

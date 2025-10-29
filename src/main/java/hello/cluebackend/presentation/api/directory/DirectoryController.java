@@ -26,7 +26,7 @@ public class DirectoryController {
             @RequestBody RequestDirectoryDto requestDirectoryDto,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ){
-        UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+        UserEntity user = userService.findById(customOAuth2User.getUserId());
         if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try {
             directoryService.createDirectory(requestDirectoryDto);
@@ -42,7 +42,7 @@ public class DirectoryController {
             @RequestBody RequestDirectoryDto requestDirectoryDto,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ){
-      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+      UserEntity user = userService.findById(customOAuth2User.getUserId());
       if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       try {
           directoryService.updateDirectory(requestDirectoryDto);
@@ -58,7 +58,7 @@ public class DirectoryController {
             @RequestBody RequestDirectoryDto requestDirectoryDto,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-      UserEntity user = userService.findById(customOAuth2User.getUserId()).toEntity();
+      UserEntity user = userService.findById(customOAuth2User.getUserId());
       if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       try {
           directoryService.deleteById(requestDirectoryDto.getDirectoryId());

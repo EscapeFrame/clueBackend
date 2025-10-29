@@ -37,7 +37,7 @@ public class AssignmentCommandService {
   private final ClassRoomMapper classRoomMapper;
 
   public AssignmentAttachment findAssignmentAttachmentByIdOrderThrow(UUID userId, UUID attachmentId){
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
 
     return assignmentAttachmentJpaRepository.findById(attachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 첨부 파일을 찾을수 없습니다."));
@@ -62,7 +62,7 @@ public class AssignmentCommandService {
   // 과제 전체 조회
   public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classId));
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
 
     if(!(user.getRole() == Role.TEACHER)) {
       throw new AccessDeniedException("해당 사용자의 권한이 존재 하지 않습니다.");

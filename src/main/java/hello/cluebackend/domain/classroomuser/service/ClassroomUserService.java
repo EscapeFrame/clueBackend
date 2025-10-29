@@ -33,7 +33,7 @@ public class ClassroomUserService {
   // 수업실에 해당 유저가 속하는지 확인하는 로직
   public boolean isUserInClassroom(UUID classRoomId, UUID userId) {
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classRoomId));
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
 
     return classRoomUserJpaRepository.existsByClassRoomAndUser(classRoom,user);
   }

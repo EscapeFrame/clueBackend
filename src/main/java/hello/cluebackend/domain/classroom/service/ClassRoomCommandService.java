@@ -3,6 +3,7 @@ package hello.cluebackend.domain.classroom.service;
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
+import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import hello.cluebackend.domain.classroomuser.model.ClassRoomUser;
 import hello.cluebackend.infrastructure.persistence.classroomuser.ClassRoomUserJpaRepository;
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class ClassRoomCommandService {
   private final ClassRoomUserJpaRepository classRoomUserJpaRepository;
   private final ClassRoomJpaRepository classRoomJpaRepository;
-  private final UserJpaRepository userJpaRepository;
+  private final UserService userService;
   private final ClassRoomQueryService classRoomQueryService;
   private final ClassRoomMapper classRoomMapper;
 
@@ -30,7 +31,7 @@ public class ClassRoomCommandService {
     classRoomDto.generateCode();
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomDto);
     classRoomJpaRepository.save(classRoom);
-    UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
+    UserEntity user = userService.findById(userId);
     ClassRoomUser classRoomUser = ClassRoomUser.create(classRoom, user);
     classRoomUserJpaRepository.save(classRoomUser);
   }
@@ -38,7 +39,7 @@ public class ClassRoomCommandService {
   // 교실 수정 (선생)
   public void updateClassRoom(UUID classId, UUID userId, ClassRoomDto classRoomDTO) {
     classRoomQueryService.validateOwner(userId, classId);
-    ClassRoom findClassRoom =  classRoomJpaRepository.findById(classId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+    ClassRoom findClassRoom =  classRoomJpaRepository.findById(classId).orElseThrow(() -> new EntityNotFoundException("해당 수업이 존재하지 않습니다."));
     findClassRoom.update(classRoomDTO);
     classRoomJpaRepository.save(findClassRoom);
   }
@@ -52,8 +53,8 @@ public class ClassRoomCommandService {
 
   // 교실 참여 (전체)
   public void joinClassRoom(UUID userId, String code) {
-    ClassRoom findClassRoom = classRoomJpaRepository.findByCode(code).orElseThrow(() -> new IllegalArgumentException("classroom not found"));
-    UserEntity findUser = userJpaRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
+    ClassRoom findClassRoom = classRoomJpaRepository.findByCode(code).orElseThrow(() -> new EntityNotFoundException("classroom not found"));
+    UserEntity findUser = userService.findById(userId);
     ClassRoomUser classRoomUser = ClassRoomUser.create(findClassRoom, findUser);
     classRoomUserJpaRepository.save(classRoomUser);
   }

@@ -25,7 +25,7 @@ public class TimetableController {
 
   @GetMapping("/today")
   public Mono<ResponseEntity<List<?>>> getTodayTimetable(@CurrentUser UUID userId) {
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
     String[] codes = ClassCodeUtils.classCodeConverter(user);
 
     TimetableRequest request = new TimetableRequest(codes[0], codes[1]);
@@ -37,7 +37,7 @@ public class TimetableController {
 
   @GetMapping("/weekly")
   public Mono<ResponseEntity<List<?>>> getWeeklyTimetable(@CurrentUser UUID userId) {
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
     String[] codes = ClassCodeUtils.classCodeConverter(user);
 
     TimetableRequest request = new TimetableRequest(codes[0], codes[1]);

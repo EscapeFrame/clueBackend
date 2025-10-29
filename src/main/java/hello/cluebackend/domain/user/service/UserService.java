@@ -24,9 +24,14 @@ public class UserService {
         userJpaRepository.save(userEntity);
     }
 
-    public UserDto findById(UUID userId) {
+    public UserDto findByIdToUserDto(UUID userId) {
         UserEntity userEntity = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을수 없습니다."));
         return userEntity.toUserDTO();
+    }
+
+    public UserEntity findById(UUID userId) {
+        return userJpaRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을수 없습니다."));
     }
 }
