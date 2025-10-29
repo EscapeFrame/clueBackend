@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ClassRoomCommandService {
   private final ClassRoomUserJpaRepository classRoomUserJpaRepository;
   private final ClassRoomJpaRepository classRoomJpaRepository;
@@ -25,7 +26,6 @@ public class ClassRoomCommandService {
   private final ClassRoomMapper classRoomMapper;
 
   // 교실 생성 (선생)
-  @Transactional
   public void createClassRoom(ClassRoomDto classRoomDto, UUID userId) {
     classRoomDto.generateCode();
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomDto);

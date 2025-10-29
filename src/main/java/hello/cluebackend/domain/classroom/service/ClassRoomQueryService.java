@@ -67,7 +67,7 @@ public class ClassRoomQueryService {
       }).collect(Collectors.toList());
     List<UserEntity> findUsers = classRoomUserJpaRepository.findUsersByClassRoomId(classId);
     List<String> teacherNames = userMapper.toTeacherNames(findUsers);
-   return classRoomMapper.toAllInfoDto(classRoom, directoryDtoList, teacherNames);
+    return classRoomMapper.toAllInfoDto(classRoom, directoryDtoList, teacherNames);
   }
 
 
@@ -87,7 +87,7 @@ public class ClassRoomQueryService {
 
   // 교실에 속해 있는지 권한 확인
   public void validateInClassRoom(UUID userId, UUID classId) {
-    ClassRoomUser classRoomUser = (ClassRoomUser) classRoomUserJpaRepository.findByUser_UserIdAndClassRoom_ClassRoomId(userId, classId)
+    classRoomUserJpaRepository.findByUser_UserIdAndClassRoom_ClassRoomId(userId, classId)
             .orElseThrow(() -> new AccessDeniedException("해당 교실의 멤버가 아닙니다."));
   }
 }
