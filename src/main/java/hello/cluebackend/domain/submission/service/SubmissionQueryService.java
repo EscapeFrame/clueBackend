@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.submission.service;
 
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.application.submission.dto.request.SubmissionAttachmentUrlDto;
 import hello.cluebackend.domain.submission.model.FileType;
@@ -29,11 +30,12 @@ public class SubmissionQueryService {
   private final ClassRoomQueryService classRoomQueryService;
   private final FileService fileService;
   private final SubmissionCommandService submissionCommandService;
+  private final ClassRoomMapper classRoomMapper;
 
   // 해당 교실 모든 학생에게 과제 부여 & 제출 과제 생성
   @Transactional
   public void assignToAllStudentsInClassroom(UUID userId, UUID classroomId, Assignment assignment){
-    ClassRoom classRoom = classRoomQueryService.findById(userId ,classroomId).toEntity();
+    ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId ,classroomId));
     List<UserEntity> users = classroomUserService.findAllClassroomUser(classRoom);
     List<Submission> submissions = users.stream()
             .map(u -> new Submission(assignment, u,assignment.getClassRoom(), false, null))

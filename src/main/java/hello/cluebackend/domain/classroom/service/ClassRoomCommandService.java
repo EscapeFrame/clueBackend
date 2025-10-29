@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.classroom.service;
 
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import hello.cluebackend.domain.classroomuser.model.ClassRoomUser;
@@ -21,12 +22,13 @@ public class ClassRoomCommandService {
   private final ClassRoomJpaRepository classRoomJpaRepository;
   private final UserJpaRepository userJpaRepository;
   private final ClassRoomQueryService classRoomQueryService;
+  private final ClassRoomMapper classRoomMapper;
 
   // 교실 생성 (선생)
   @Transactional
-  public void createClassRoom(ClassRoomDto classRoomDTO, UUID userId) {
-    classRoomDTO.generateCode();
-    ClassRoom classRoom = classRoomDTO.toEntity();
+  public void createClassRoom(ClassRoomDto classRoomDto, UUID userId) {
+    classRoomDto.generateCode();
+    ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomDto);
     classRoomJpaRepository.save(classRoom);
     UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
     ClassRoomUser classRoomUser = ClassRoomUser.create(classRoom, user);

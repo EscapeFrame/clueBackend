@@ -2,6 +2,7 @@ package hello.cluebackend.domain.assignment.service;
 
 import hello.cluebackend.application.assignment.dto.response.AssignmentResponseDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.domain.assignment.model.AssignmentAttachment;
 import hello.cluebackend.infrastructure.persistence.assignmentattachment.AssignmentAttachmentJpaRepository;
@@ -13,6 +14,7 @@ import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.domain.user.service.UserService;
+import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -32,6 +34,7 @@ public class AssignmentCommandService {
   private final FileService fileService;
   private final AssignmentAttachmentJpaRepository assignmentAttachmentJpaRepository;
   private final AssignmentJpaRepository assignmentJpaRepository;
+  private final ClassRoomMapper classRoomMapper;
 
   public AssignmentAttachment findAssignmentAttachmentByIdOrderThrow(UUID userId, UUID attachmentId){
     UserEntity user = userService.findById(userId).toEntity();
@@ -58,7 +61,7 @@ public class AssignmentCommandService {
 
   // 과제 전체 조회
   public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
-    ClassRoom classRoom = classRoomQueryService.findById(userId, classId).toEntity();
+    ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classId));
     UserEntity user = userService.findById(userId).toEntity();
 
     if(!(user.getRole() == Role.TEACHER)) {

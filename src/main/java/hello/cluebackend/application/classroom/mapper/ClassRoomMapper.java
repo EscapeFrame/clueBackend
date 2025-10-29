@@ -35,4 +35,17 @@ public class ClassRoomMapper {
             .code(classRoom.getCode())
             .build();
   }
+
+  public ClassRoom fromClassRoomDtoToEntity(ClassRoomDto classRoomDto) {
+    return ClassRoom.builder()
+            .classRoomId(classRoomDto.getClassRoomId())
+            .name(classRoomDto.getName())
+            .description(classRoomDto.getDescription())
+            .sort(classRoomDto.getSort())
+            .target(classRoomDto.getTarget())
+            .isActivation(classRoomDto.getIsActivation())
+            .code(classRoomDto.getCode())
+            .createdAt(classRoomDto.getCreatedAt())
+            .build();
+  }
 }

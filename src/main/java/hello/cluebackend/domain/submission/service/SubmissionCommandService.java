@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.submission.service;
 
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.assignment.service.AssignmentCommandService;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
@@ -34,11 +35,12 @@ public class SubmissionCommandService {
   private final ClassRoomQueryService classRoomQueryService;
   private final FileService fileService;
   private final UserService userService;
+  private final ClassRoomMapper classRoomMapper;
 
   // 과제 전체 조회 및 과제 첨부 파일 조회
   public List<SubmissionResponse> findAllByAssignmentId(UUID userId, UUID classId) {
     UserEntity user = userService.findById(userId).toEntity();
-    ClassRoom classRoom = classRoomQueryService.findById(userId, classId).toEntity();
+    ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classId));
 
     List<Submission> submissions = submissionJpaRepository.findAllByClassRoomAndUser(classRoom, user);
 
