@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.classroom.service;
 
 import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
+import hello.cluebackend.application.directory.mapper.DirectoryMapper;
 import hello.cluebackend.application.user.UserMapper;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
@@ -32,6 +33,7 @@ public class ClassRoomCommandService {
   private final ClassRoomJpaRepository classRoomJpaRepository;
   private final ClassRoomMapper classRoomMapper;
   private final UserMapper userMapper;
+  private final DirectoryMapper directoryMapper;
 
   // 내가 속한 모든 교실 조회 (전체)
   public List<ClassRoomCardDto> findMyClassRoomById(UUID userId) {
@@ -64,14 +66,7 @@ public class ClassRoomCommandService {
                               .createdAt(doc.getCreatedAt())
                               .build())
                       .collect(Collectors.toList());
-
-
-              return DirectoryAllInfoDto.builder()
-                  .directoryId(directory.getDirectoryId())
-                  .directoryName(directory.getName())
-                  .directoryOrder(directory.getDirectoryOrder())
-                  .documentList(documentDtoList)
-                  .build();
+              return directoryMapper.toDirectoryAllInfoDto(directory, documentDtoList);
       }).collect(Collectors.toList());
     List<UserEntity> findUsers = classRoomUserJpaRepository.findUsersByClassRoomId(classId);
     List<String> teacherNames = userMapper.toTeacherNames(findUsers);
