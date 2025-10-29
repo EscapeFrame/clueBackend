@@ -2,6 +2,7 @@ package hello.cluebackend.domain.classroom.service;
 
 import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.application.directory.mapper.DirectoryMapper;
+import hello.cluebackend.application.document.mapper.DocumentMapper;
 import hello.cluebackend.application.user.UserMapper;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
@@ -34,6 +35,7 @@ public class ClassRoomCommandService {
   private final ClassRoomMapper classRoomMapper;
   private final UserMapper userMapper;
   private final DirectoryMapper directoryMapper;
+  private final DocumentMapper documentMapper;
 
   // 내가 속한 모든 교실 조회 (전체)
   public List<ClassRoomCardDto> findMyClassRoomById(UUID userId) {
@@ -60,11 +62,7 @@ public class ClassRoomCommandService {
             .map(directory -> {
               List<DocumentAllInfoDto> documentDtoList = directory.getDocumentList().stream()
                       .sorted(Comparator.comparing(Document::getCreatedAt))
-                      .map(doc -> DocumentAllInfoDto.builder()
-                              .documentId(doc.getDocumentId())
-                              .title(doc.getTitle())
-                              .createdAt(doc.getCreatedAt())
-                              .build())
+                      .map(documentMapper::toDocumentAllInfoDto)
                       .collect(Collectors.toList());
               return directoryMapper.toDirectoryAllInfoDto(directory, documentDtoList);
       }).collect(Collectors.toList());
