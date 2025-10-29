@@ -28,9 +28,7 @@ public class ClassRoomQueryService {
     classRoomDTO.generateCode();
     ClassRoom classRoom = classRoomDTO.toEntity();
     classRoomJpaRepository.save(classRoom);
-
     UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
-
     ClassRoomUser classRoomUser = ClassRoomUser.create(classRoom, user);
     classRoomUserJpaRepository.save(classRoomUser);
   }
@@ -54,10 +52,7 @@ public class ClassRoomQueryService {
   public void joinClassRoom(UUID userId, String code) {
     ClassRoom findClassRoom = classRoomJpaRepository.findByCode(code).orElseThrow(() -> new IllegalArgumentException("classroom not found"));
     UserEntity findUser = userJpaRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
-    ClassRoomUser classRoomUser = ClassRoomUser.builder()
-            .user(findUser)
-            .classRoom(findClassRoom)
-            .build();
+    ClassRoomUser classRoomUser = ClassRoomUser.create(findClassRoom, findUser);
     classRoomUserJpaRepository.save(classRoomUser);
   }
 }

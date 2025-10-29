@@ -1,5 +1,6 @@
 package hello.cluebackend.application.classroom.mapper;
 
+import hello.cluebackend.application.classroom.dto.ClassRoomCardDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.domain.user.model.Role;
@@ -18,6 +19,17 @@ public class ClassRoomMapper {
     return ClassRoomDto.builder()
             .classRoomId(classRoom.getClassRoomId())
             .name(classRoom.getName())
+            .build();
+  }
+
+  public ClassRoomCardDto toCardDto(ClassRoom classRoom) {
+    return ClassRoomCardDto.builder()
+            .classRoomId(classRoom.getClassRoomId())
+            .name(classRoom.getName())
+            .sort(classRoom.getSort())
+            .target(classRoom.getTarget())
+            .studentCount(classRoom.getClassRoomUserList().size())
+            .isActivation(classRoom.getIsActivation())
             .build();
   }
 }
