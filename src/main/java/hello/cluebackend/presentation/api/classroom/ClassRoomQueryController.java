@@ -1,7 +1,7 @@
 package hello.cluebackend.presentation.api.classroom;
 
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
-import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
+import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
 import hello.cluebackend.domain.user.model.Role;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/class")
 @RequiredArgsConstructor
 public class ClassRoomQueryController {
-  private final ClassRoomQueryService classRoomQueryService;
+  private final ClassRoomCommandService classRoomCommandService;
 
   @PostMapping
   public ResponseEntity<HashMap<?,?>> createClassRoom(
@@ -29,7 +29,7 @@ public class ClassRoomQueryController {
   ) {
     if(customOAuth2User.getUserDTO().getRole() != Role.TEACHER) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     try {
-      classRoomQueryService.createClassRoom(classRoomDTO, customOAuth2User.getUserId());
+      classRoomCommandService.createClassRoom(classRoomDTO, customOAuth2User.getUserId());
       return new ResponseEntity<>(HttpStatus.OK);
     } catch (EntityNotFoundException e){
       log.error(e.getMessage());
@@ -43,7 +43,7 @@ public class ClassRoomQueryController {
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User
   ) {
     try {
-      classRoomQueryService.joinClassRoom(customOAuth2User.getUserId(), code);
+      classRoomCommandService.joinClassRoom(customOAuth2User.getUserId(), code);
       return ResponseEntity.ok().build();
     } catch (IllegalArgumentException e){
       log.debug(e.getMessage());
@@ -62,7 +62,7 @@ public class ClassRoomQueryController {
     }
 
     try {
-      classRoomQueryService.updateClassRoom(classId, customOAuth2User.getUserId(), classRoomDTO);
+      classRoomCommandService.updateClassRoom(classId, customOAuth2User.getUserId(), classRoomDTO);
     } catch (IllegalArgumentException e){
       log.debug(e.getMessage());
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -77,7 +77,7 @@ public class ClassRoomQueryController {
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID classId
   ) {
-    classRoomQueryService.deleteClassRoom(customOAuth2User.getUserId(), classId);
+    classRoomCommandService.deleteClassRoom(customOAuth2User.getUserId(), classId);
     return ResponseEntity.noContent().build();
   }
 }

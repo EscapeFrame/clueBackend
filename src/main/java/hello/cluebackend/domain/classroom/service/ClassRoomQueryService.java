@@ -1,58 +1,93 @@
 package hello.cluebackend.domain.classroom.service;
 
-import hello.cluebackend.application.classroom.dto.ClassRoomDto;
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
+import hello.cluebackend.application.directory.mapper.DirectoryMapper;
+import hello.cluebackend.application.document.mapper.DocumentMapper;
+import hello.cluebackend.application.user.UserMapper;
+import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
+import hello.cluebackend.application.classroom.dto.ClassRoomAllInfoDto;
+import hello.cluebackend.application.classroom.dto.ClassRoomCardDto;
+import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroomuser.model.ClassRoomUser;
 import hello.cluebackend.infrastructure.persistence.classroomuser.ClassRoomUserJpaRepository;
+import hello.cluebackend.domain.directory.model.Directory;
+import hello.cluebackend.application.directory.dto.DirectoryAllInfoDto;
+import hello.cluebackend.domain.document.model.Document;
+import hello.cluebackend.application.document.dto.DocumentAllInfoDto;
+import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
-import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ClassRoomQueryService {
   private final ClassRoomUserJpaRepository classRoomUserJpaRepository;
   private final ClassRoomJpaRepository classRoomJpaRepository;
-  private final UserJpaRepository userJpaRepository;
-  private final ClassRoomCommandService classRoomCommandService;
+  private final ClassRoomMapper classRoomMapper;
+  private final UserMapper userMapper;
+  private final DirectoryMapper directoryMapper;
+  private final DocumentMapper documentMapper;
 
-  // 교실 생성 (선생)
-  @Transactional
-  public void createClassRoom(ClassRoomDto classRoomDTO, UUID userId) {
-    classRoomDTO.generateCode();
-    ClassRoom classRoom = classRoomDTO.toEntity();
-    classRoomJpaRepository.save(classRoom);
-    UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
-    ClassRoomUser classRoomUser = ClassRoomUser.create(classRoom, user);
-    classRoomUserJpaRepository.save(classRoomUser);
+  // 내가 속한 모든 교실 조회 (전체)
+  public List<ClassRoomCardDto> findMyClassRoomById(UUID userId) {
+    List<ClassRoomUser> classRoomUsers = classRoomUserJpaRepository.findByUser_UserId(userId);
+    return classRoomUsers.stream()
+            .map(ClassRoomUser::getClassRoom)
+            .map(classRoomMapper::toCardDto)
+            .toList();
   }
 
-  // 교실 수정 (선생)
-  public void updateClassRoom(UUID classId, UUID userId, ClassRoomDto classRoomDTO) {
-    classRoomCommandService.validateOwner(userId, classId);
-    ClassRoom findClassRoom =  classRoomJpaRepository.findById(classId).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
-    findClassRoom.update(classRoomDTO);
-    classRoomJpaRepository.save(findClassRoom);
+  // 교실 단일 조회 (전체)
+  public ClassRoomDto findById(UUID userId, UUID classId) {
+    validateInClassRoom(userId, classId);
+    return classRoomJpaRepository.findByIdWithTeachers(classId).toDTO();
   }
 
-  // 교실 삭제 (선생)
-  public void deleteClassRoom(UUID userId, UUID classId) {
-    classRoomCommandService.validateOwner(userId, classId);
-    ClassRoom classRoom = classRoomCommandService.findByIdOrElseThrow(classId);
-    classRoomJpaRepository.delete(classRoom);
+  // 교실 정보 조회 (전체)
+  public ClassRoomAllInfoDto getAllInfo(UUID classId) {
+    ClassRoom classRoom = classRoomJpaRepository.findById(classId)
+      .orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
+    List<DirectoryAllInfoDto> directoryDtoList = classRoom.getDirectoryList().stream()
+            .sorted(Comparator.comparingInt(Directory::getDirectoryOrder))
+            .map(directory -> {
+              List<DocumentAllInfoDto> documentDtoList = directory.getDocumentList().stream()
+                      .sorted(Comparator.comparing(Document::getCreatedAt))
+                      .map(documentMapper::toDocumentAllInfoDto)
+                      .collect(Collectors.toList());
+              return directoryMapper.toDirectoryAllInfoDto(directory, documentDtoList);
+      }).collect(Collectors.toList());
+    List<UserEntity> findUsers = classRoomUserJpaRepository.findUsersByClassRoomId(classId);
+    List<String> teacherNames = userMapper.toTeacherNames(findUsers);
+   return classRoomMapper.toAllInfoDto(classRoom, directoryDtoList, teacherNames);
   }
 
-  // 교실 참여 (전체)
-  public void joinClassRoom(UUID userId, String code) {
-    ClassRoom findClassRoom = classRoomJpaRepository.findByCode(code).orElseThrow(() -> new IllegalArgumentException("classroom not found"));
-    UserEntity findUser = userJpaRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
-    ClassRoomUser classRoomUser = ClassRoomUser.create(findClassRoom, findUser);
-    classRoomUserJpaRepository.save(classRoomUser);
+
+  public ClassRoom findByIdOrElseThrow(UUID classId){
+    return classRoomJpaRepository.findById(classId).orElseThrow(() -> new EntityNotFoundException("해당 교실은 찾을수 없습니다."));
+  }
+
+  // 교실에 대한 선생님 권한 확인
+  public void validateOwner(UUID userId, UUID classId) {
+    ClassRoomUser classRoomUser = (ClassRoomUser) classRoomUserJpaRepository.findByUser_UserIdAndClassRoom_ClassRoomId(userId, classId)
+            .orElseThrow(() -> new AccessDeniedException("해당 교실의 멤버가 아닙니다."));
+
+    if (classRoomUser.getUser().getRole() != Role.TEACHER) {
+      throw new AccessDeniedException("해당 작업을 수행할 권한(교사)이 없습니다.");
+    }
+  }
+
+  // 교실에 속해 있는지 권한 확인
+  public void validateInClassRoom(UUID userId, UUID classId) {
+    ClassRoomUser classRoomUser = (ClassRoomUser) classRoomUserJpaRepository.findByUser_UserIdAndClassRoom_ClassRoomId(userId, classId)
+            .orElseThrow(() -> new AccessDeniedException("해당 교실의 멤버가 아닙니다."));
   }
 }

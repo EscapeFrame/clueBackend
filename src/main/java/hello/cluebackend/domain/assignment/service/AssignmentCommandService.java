@@ -8,7 +8,7 @@ import hello.cluebackend.infrastructure.persistence.assignmentattachment.Assignm
 import hello.cluebackend.infrastructure.persistence.assignment.AssignmentJpaRepository;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
-import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
+import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
@@ -28,7 +28,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class AssignmentCommandService {
   private final UserService userService;
-  private final ClassRoomCommandService classRoomCommandService;
+  private final ClassRoomQueryService classRoomQueryService;
   private final FileService fileService;
   private final AssignmentAttachmentJpaRepository assignmentAttachmentJpaRepository;
   private final AssignmentJpaRepository assignmentJpaRepository;
@@ -58,7 +58,7 @@ public class AssignmentCommandService {
 
   // 과제 전체 조회
   public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
-    ClassRoom classRoom = classRoomCommandService.findById(userId, classId).toEntity();
+    ClassRoom classRoom = classRoomQueryService.findById(userId, classId).toEntity();
     UserEntity user = userService.findById(userId).toEntity();
 
     if(!(user.getRole() == Role.TEACHER)) {

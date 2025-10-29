@@ -3,7 +3,7 @@ package hello.cluebackend.presentation.api.classroom;
 import hello.cluebackend.application.classroom.dto.ClassRoomAllInfoDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomCardDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
-import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
+import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +19,18 @@ import java.util.UUID;
 @RequestMapping("/api/class")
 @RequiredArgsConstructor
 public class ClassRoomCommandController {
-    private final ClassRoomCommandService classRoomCommandService;
+    private final ClassRoomQueryService classRoomQueryService;
 
     @GetMapping
     public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
-        return ResponseEntity.ok(classRoomCommandService.findMyClassRoomById(customOAuth2User.getUserId()));
+        return ResponseEntity.ok(classRoomQueryService.findMyClassRoomById(customOAuth2User.getUserId()));
     }
 
     @GetMapping("/{classId}/all")
     public ResponseEntity<ClassRoomAllInfoDto> getAllInfo(
             @PathVariable UUID classId
     ){
-        return ResponseEntity.ok(classRoomCommandService.getAllInfo(classId));
+        return ResponseEntity.ok(classRoomQueryService.getAllInfo(classId));
     }
 
     @GetMapping("/{classId}")
@@ -38,7 +38,7 @@ public class ClassRoomCommandController {
             @PathVariable UUID classId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-      ClassRoomDto findClassRoomDto = classRoomCommandService.findById(customOAuth2User.getUserId(), classId);
+      ClassRoomDto findClassRoomDto = classRoomQueryService.findById(customOAuth2User.getUserId(), classId);
       return ResponseEntity.ok(findClassRoomDto);
     }
 }
