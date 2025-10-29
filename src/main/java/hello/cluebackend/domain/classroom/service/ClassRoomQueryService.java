@@ -31,10 +31,7 @@ public class ClassRoomQueryService {
 
     UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("user not found"));
 
-    ClassRoomUser classRoomUser = ClassRoomUser.builder()
-            .classRoom(classRoom)
-            .user(user)
-            .build();
+    ClassRoomUser classRoomUser = ClassRoomUser.create(classRoom, user);
     classRoomUserJpaRepository.save(classRoomUser);
   }
 
