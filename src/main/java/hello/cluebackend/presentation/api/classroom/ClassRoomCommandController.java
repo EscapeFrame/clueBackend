@@ -1,17 +1,18 @@
 package hello.cluebackend.presentation.api.classroom;
 
-import hello.cluebackend.application.classroom.dto.ClassRoomAllInfoDto;
-import hello.cluebackend.application.classroom.dto.ClassRoomCardDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
-import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
+import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.domain.user.model.Role;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
 
 @Slf4j
@@ -19,26 +20,64 @@ import java.util.UUID;
 @RequestMapping("/api/class")
 @RequiredArgsConstructor
 public class ClassRoomCommandController {
-    private final ClassRoomQueryService classRoomQueryService;
+  private final ClassRoomCommandService classRoomCommandService;
 
-    @GetMapping
-    public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
-        return ResponseEntity.ok(classRoomQueryService.findMyClassRoomById(customOAuth2User.getUserId()));
+  @PostMapping
+  public ResponseEntity<HashMap<?,?>> createClassRoom(
+          @RequestBody ClassRoomDto classRoomDTO,
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+  ) {
+    if(customOAuth2User.getUserDTO().getRole() != Role.TEACHER) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    try {
+      classRoomCommandService.createClassRoom(classRoomDTO, customOAuth2User.getUserId());
+      return new ResponseEntity<>(HttpStatus.OK);
+    } catch (EntityNotFoundException e){
+      log.error(e.getMessage());
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @PostMapping("/{code}/members")
+  public ResponseEntity<?> joinClassRoom(
+          @PathVariable String code,
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+  ) {
+    try {
+      classRoomCommandService.joinClassRoom(customOAuth2User.getUserId(), code);
+      return ResponseEntity.ok().build();
+    } catch (IllegalArgumentException e){
+      log.debug(e.getMessage());
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @PatchMapping("/{classId}")
+  public ResponseEntity<?> updateClassRoom(
+          @PathVariable UUID classId,
+          @RequestBody ClassRoomDto classRoomDTO,
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+  ) {
+    if(customOAuth2User.getUserDTO().getRole() != Role.TEACHER) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/{classId}/all")
-    public ResponseEntity<ClassRoomAllInfoDto> getAllInfo(
-            @PathVariable UUID classId
-    ){
-        return ResponseEntity.ok(classRoomQueryService.getAllInfo(classId));
+    try {
+      classRoomCommandService.updateClassRoom(classId, customOAuth2User.getUserId(), classRoomDTO);
+    } catch (IllegalArgumentException e){
+      log.debug(e.getMessage());
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/{classId}")
-    public ResponseEntity<ClassRoomDto> findClassRoom(
-            @PathVariable UUID classId,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
-    ) {
-      ClassRoomDto findClassRoomDto = classRoomQueryService.findById(customOAuth2User.getUserId(), classId);
-      return ResponseEntity.ok(findClassRoomDto);
-    }
+    return ResponseEntity.ok().build();
+  }
+
+
+  @DeleteMapping("/{classId}")
+  public ResponseEntity<?> deleteClassRoom(
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+          @PathVariable UUID classId
+  ) {
+    classRoomCommandService.deleteClassRoom(customOAuth2User.getUserId(), classId);
+    return ResponseEntity.noContent().build();
+  }
 }
