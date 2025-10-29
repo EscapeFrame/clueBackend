@@ -13,17 +13,6 @@ import java.util.List;
 
 @Component
 public class ClassRoomMapper {
-  public ClassRoomDto toDto(ClassRoom classRoom) {
-    List<String> teacherNames = classRoom.getClassRoomUserList().stream()
-            .filter(cu -> cu.getUser().getRole() == Role.TEACHER)
-            .map(cu -> cu.getUser().getUsername())
-            .toList();
-
-    return ClassRoomDto.builder()
-            .classRoomId(classRoom.getClassRoomId())
-            .name(classRoom.getName())
-            .build();
-  }
 
   public ClassRoomCardDto toCardDto(ClassRoom classRoom) {
     return ClassRoomCardDto.builder()

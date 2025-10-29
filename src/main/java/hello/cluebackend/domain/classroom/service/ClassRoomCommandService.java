@@ -56,7 +56,6 @@ public class ClassRoomCommandService {
   public ClassRoomAllInfoDto getAllInfo(UUID classId) {
     ClassRoom classRoom = classRoomJpaRepository.findById(classId)
       .orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
-
     List<DirectoryAllInfoDto> directoryDtoList = classRoom.getDirectoryList().stream()
             .sorted(Comparator.comparingInt(Directory::getDirectoryOrder))
             .map(directory -> {
