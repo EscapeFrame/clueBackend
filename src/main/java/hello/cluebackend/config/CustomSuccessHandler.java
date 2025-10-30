@@ -24,7 +24,10 @@ import java.util.UUID;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${front.base-url}")
-    private String baseurl;
+    private String frontBaseUrl;
+
+    @Value("${app.base-url}")
+    private String appBaseUrl;
 
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
@@ -40,13 +43,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         UserDto userDTO = customUserDetails.getUserDTO();
 
+        String baseUrl = frontBaseUrl;
+
+        if("app".equals(request.getSession().getAttribute("client_type").toString())) {
+            baseUrl = appBaseUrl;
+        }
+
         int classCode = userDTO.getClassCode();
         if (classCode == -1) {
             request.getSession().setAttribute("firstUser", userDTO);
             getRedirectStrategy().sendRedirect(
                     request,
                     response,
-                    baseurl + "/register"
+                    baseUrl + "/register"
             );
         } else {
             String username = customUserDetails.getUsername();
@@ -65,7 +74,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //            response.setHeader("Authorization", "Bearer " + access);
 //            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect(baseurl+"/login?access_token=" + access + "&refresh_token=" + refresh);
+            response.sendRedirect(baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh);
         }
     }
 
