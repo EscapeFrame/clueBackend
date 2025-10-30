@@ -63,8 +63,7 @@ public class NoticeService {
 
         em.flush();
         em.clear();
-
-        if(dto.getFileInfo().size() != files.size()){
+        if(files!=null && dto.getFileInfo().size() != files.size()){
             throw new RuntimeException("한쪽 요소 부족");
         }
 
@@ -112,8 +111,8 @@ public class NoticeService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoticeDto> findAllById(UUID userId) {
-        return noticeRepository.findAllByUserId(userId).stream()
+    public List<NoticeDto> findAllById() {
+        return noticeRepository.findAll().stream()
                 .map(Notice::toDto).toList();
     }
 
