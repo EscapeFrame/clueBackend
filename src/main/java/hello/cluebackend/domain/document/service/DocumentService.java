@@ -94,11 +94,7 @@ public class DocumentService {
     public DownloadDto downloadDocument(UUID documentId) throws IOException {
         Document document = documentJpaRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
         Resource resource = fileService.downloadFile(document.getValue());
-        return DownloadDto.builder()
-                .original(document.getOriginalFileName())
-                .contentType(document.getContentType())
-                .resource(resource)
-                .build();
+        return documentMapper.toDownloadDto(document, resource);
     }
 
     public UrlDto getLink(UUID documentId) {
