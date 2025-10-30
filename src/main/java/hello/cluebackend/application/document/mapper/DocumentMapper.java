@@ -1,6 +1,7 @@
 package hello.cluebackend.application.document.mapper;
 
 import hello.cluebackend.application.document.dto.DocumentAllInfoDto;
+import hello.cluebackend.application.document.dto.DocumentDto;
 import hello.cluebackend.application.document.dto.UrlDto;
 import hello.cluebackend.domain.assignment.model.FileType;
 import hello.cluebackend.domain.classroom.model.ClassRoom;

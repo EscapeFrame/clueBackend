@@ -91,11 +91,6 @@ public class DocumentService {
         documentJpaRepository.delete(document);
     }
 
-    public DocumentDto findById(UUID documentId) {
-        Document findDocument = documentJpaRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업자료가 존재하지 않습니다."));
-        return findDocument.toDto();
-    }
-
     public DownloadDto downloadDocument(UUID documentId) throws IOException {
         Document document = documentJpaRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
         Resource resource = fileService.downloadFile(document.getValue());
