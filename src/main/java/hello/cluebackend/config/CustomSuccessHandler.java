@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -45,10 +46,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String baseUrl = frontBaseUrl;
 
-        if("app".equals(request.getSession().getAttribute("client_type").toString())) {
-            baseUrl = appBaseUrl;
-        }
+        HttpSession session = request.getSession(false); // 세션이 없을 수도 있으면 false로
+        if (session != null) {
+            Object clientTypeObj = session.getAttribute("client_type");
+            String clientType = clientTypeObj != null ? clientTypeObj.toString() : null;
 
+            if ("app".equals(clientType)) {
+                baseUrl = appBaseUrl;
+            }
+
+            // 확인 후 세션에서 삭제
+            session.removeAttribute("client_type");
+        }
+        System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
         int classCode = userDTO.getClassCode();
         if (classCode == -1) {
             request.getSession().setAttribute("firstUser", userDTO);

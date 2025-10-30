@@ -20,7 +20,8 @@ public class ClientTypeFilter extends OncePerRequestFilter {
         if (request.getRequestURI().startsWith("/oauth2/authorization/google")) {
             String clientType = request.getParameter("client_type");
 
-            if (clientType != null && clientType.equals("web") || clientType.equals("app")) {
+
+            if (clientType != null && (clientType.equals("web") || clientType.equals("app"))) {
                 HttpSession session = request.getSession();
                 session.setAttribute("client_type", clientType);
                 log.info("client type is " + clientType);
