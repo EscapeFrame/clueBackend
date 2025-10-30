@@ -39,7 +39,7 @@ public class AssignmentQueryService {
   // 과제 생성
   @Transactional
   public Assignment save(UUID userId, CreateAssignmentDto request) {
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
 
     ClassRoom classRoom = classRoomJpaRepository.findById(request.classId())
             .orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을수 없습니다"));

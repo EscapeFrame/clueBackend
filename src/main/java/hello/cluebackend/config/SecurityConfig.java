@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest().permitAll()
                 )
+                .addFilterBefore(new ClientTypeFilter(), org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.class)
                 .oauth2Login(o -> o
                         .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)

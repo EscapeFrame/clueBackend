@@ -39,17 +39,4 @@ public class ClassRoomDto {
         }
         this.code = randomStringBuilder.toString();
     }
-
-    public ClassRoom toEntity() {
-        return ClassRoom.builder()
-                .classRoomId(classRoomId)
-                .name(name)
-                .description(description)
-                .sort(sort)
-                .target(target)
-                .isActivation(isActivation)
-                .code(code)
-                .createdAt(createdAt)
-                .build();
-    }
 }

@@ -73,7 +73,8 @@ cloud:
 
 front:
   base-url: ${FRONT_BASE_URL}
-
+app:
+  base-url: ${APP_BASE_URL}
 server:
   servlet:
     session:

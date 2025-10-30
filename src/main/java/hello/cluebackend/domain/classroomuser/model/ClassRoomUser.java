@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.classroomuser.model;
 
+import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.domain.user.model.UserEntity;
 import jakarta.persistence.*;
@@ -26,4 +27,11 @@ public class ClassRoomUser {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_room_id", nullable = false)
     private ClassRoom classRoom;
+
+    public static ClassRoomUser create(ClassRoom classRoom, UserEntity user) {
+        return ClassRoomUser.builder()
+                .classRoom(classRoom)
+                .user(user)
+                .build();
+    }
 }

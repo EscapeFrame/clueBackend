@@ -2,17 +2,19 @@ package hello.cluebackend.domain.assignment.service;
 
 import hello.cluebackend.application.assignment.dto.response.AssignmentResponseDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.domain.assignment.model.AssignmentAttachment;
 import hello.cluebackend.infrastructure.persistence.assignmentattachment.AssignmentAttachmentJpaRepository;
 import hello.cluebackend.infrastructure.persistence.assignment.AssignmentJpaRepository;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
-import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
+import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.domain.user.service.UserService;
+import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -28,13 +30,14 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class AssignmentCommandService {
   private final UserService userService;
-  private final ClassRoomCommandService classRoomCommandService;
+  private final ClassRoomQueryService classRoomQueryService;
   private final FileService fileService;
   private final AssignmentAttachmentJpaRepository assignmentAttachmentJpaRepository;
   private final AssignmentJpaRepository assignmentJpaRepository;
+  private final ClassRoomMapper classRoomMapper;
 
   public AssignmentAttachment findAssignmentAttachmentByIdOrderThrow(UUID userId, UUID attachmentId){
-    UserEntity user = userService.findById(userId).toEntity();
+    UserEntity user = userService.findById(userId);
 
     return assignmentAttachmentJpaRepository.findById(attachmentId)
             .orElseThrow(() -> new EntityNotFoundException("해당 첨부 파일을 찾을수 없습니다."));
@@ -58,8 +61,8 @@ public class AssignmentCommandService {
 
   // 과제 전체 조회
   public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
-    ClassRoom classRoom = classRoomCommandService.findById(userId, classId).toEntity();
-    UserEntity user = userService.findById(userId).toEntity();
+    ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classId));
+    UserEntity user = userService.findById(userId);
 
     if(!(user.getRole() == Role.TEACHER)) {
       throw new AccessDeniedException("해당 사용자의 권한이 존재 하지 않습니다.");

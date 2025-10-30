@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.submission.service;
 
+import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.application.submission.dto.request.SubmissionAttachmentUrlDto;
 import hello.cluebackend.domain.submission.model.FileType;
@@ -8,7 +9,7 @@ import hello.cluebackend.domain.submission.model.Submission;
 import hello.cluebackend.domain.submission.model.SubmissionAttachment;
 import hello.cluebackend.infrastructure.persistence.submission.SubmissionJpaRepository;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
-import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
+import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
 import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
 import hello.cluebackend.infrastructure.persistence.submissionattachment.SubmissionAttachmentJpaRepository;
 import hello.cluebackend.domain.user.model.UserEntity;
@@ -26,14 +27,15 @@ public class SubmissionQueryService {
   private final SubmissionJpaRepository submissionJpaRepository;
   private final SubmissionAttachmentJpaRepository submissionAttachmentJpaRepository;
   private final ClassroomUserService classroomUserService;
-  private final ClassRoomCommandService classRoomCommandService;
+  private final ClassRoomQueryService classRoomQueryService;
   private final FileService fileService;
   private final SubmissionCommandService submissionCommandService;
+  private final ClassRoomMapper classRoomMapper;
 
   // 해당 교실 모든 학생에게 과제 부여 & 제출 과제 생성
   @Transactional
   public void assignToAllStudentsInClassroom(UUID userId, UUID classroomId, Assignment assignment){
-    ClassRoom classRoom = classRoomCommandService.findById(userId ,classroomId).toEntity();
+    ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId ,classroomId));
     List<UserEntity> users = classroomUserService.findAllClassroomUser(classRoom);
     List<Submission> submissions = users.stream()
             .map(u -> new Submission(assignment, u,assignment.getClassRoom(), false, null))
