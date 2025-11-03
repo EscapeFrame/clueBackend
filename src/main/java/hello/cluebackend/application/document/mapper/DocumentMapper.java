@@ -21,6 +21,13 @@ public class DocumentMapper {
                 .build();
     }
 
+    public UrlDto toUrlDto(Document document) {
+        return UrlDto.builder()
+                .value(document.getValue())
+                .title(document.getTitle())
+                .build();
+    }
+
     public Document fromUrlDtoToDocument(UrlDto urlDto, ClassRoom classRoom, Directory directory) {
         return Document.builder()
                 .title(urlDto.getTitle())

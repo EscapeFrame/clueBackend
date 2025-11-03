@@ -100,10 +100,7 @@ public class DocumentService {
     public UrlDto getLink(UUID documentId) {
         Document document = documentJpaRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
         if(document.getType() == FileType.URL) {
-            return UrlDto.builder()
-                    .value(document.getValue())
-                    .title(document.getTitle())
-                    .build();
+            return documentMapper.toUrlDto(document);
         }
         return null;
     }
