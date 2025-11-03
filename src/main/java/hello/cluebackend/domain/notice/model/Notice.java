@@ -1,9 +1,9 @@
 package hello.cluebackend.domain.notice.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;
-import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
-import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
+import hello.cluebackend.application.notice.dto.request.ModifyNoticeDto;
+import hello.cluebackend.application.notice.dto.response.NoticeDto;
+import hello.cluebackend.application.notice.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.user.model.UserEntity;
 import jakarta.persistence.*;

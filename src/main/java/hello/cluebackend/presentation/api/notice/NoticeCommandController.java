@@ -1,10 +1,10 @@
 package hello.cluebackend.presentation.api.notice;
 
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
-import hello.cluebackend.domain.notice.service.NoticeService;
-import hello.cluebackend.domain.notice.controller.dto.request.AddNoticeDto;
-import hello.cluebackend.domain.notice.controller.dto.request.CreateNoticeDto;
-import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;
+import hello.cluebackend.domain.notice.service.NoticeCommandService;
+import hello.cluebackend.application.notice.dto.request.AddNoticeDto;
+import hello.cluebackend.application.notice.dto.request.CreateNoticeDto;
+import hello.cluebackend.application.notice.dto.request.ModifyNoticeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/notice")
 public class NoticeCommandController {
 
-    private final NoticeService noticeService;
+    private final NoticeCommandService noticeCommandService;
 
     @PreAuthorize("hasRole('TEACHER')")
     @PostMapping
@@ -31,7 +31,7 @@ public class NoticeCommandController {
             ) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
 
-        noticeService.save(userId, createNoticeDto, files);
+        noticeCommandService.save(userId, createNoticeDto, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -43,7 +43,7 @@ public class NoticeCommandController {
             @RequestPart(value = "files") List<MultipartFile> files,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        noticeService.addNoticeDocument(userId, noticeId, addNoticeDto, files);
+        noticeCommandService.addNoticeDocument(userId, noticeId, addNoticeDto, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -54,7 +54,7 @@ public class NoticeCommandController {
             @RequestBody ModifyNoticeDto modifyNoticeDto,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        noticeService.modifyNotice(userId, noticeId, modifyNoticeDto);
+        noticeCommandService.modifyNotice(userId, noticeId, modifyNoticeDto);
         return  ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -64,7 +64,7 @@ public class NoticeCommandController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable("noticeId") UUID noticeId) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        noticeService.remove(userId, noticeId);
+        noticeCommandService.remove(userId, noticeId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -75,7 +75,7 @@ public class NoticeCommandController {
             @PathVariable("noticeDocumentId") UUID noticeDocumentId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        noticeService.removeNoticeDocument(userId, noticeId, noticeDocumentId);
+        noticeCommandService.removeNoticeDocument(userId, noticeId, noticeDocumentId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

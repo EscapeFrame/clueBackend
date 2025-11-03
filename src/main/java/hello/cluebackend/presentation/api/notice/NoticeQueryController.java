@@ -1,9 +1,9 @@
 package hello.cluebackend.presentation.api.notice;
 
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
-import hello.cluebackend.domain.notice.controller.dto.response.NoticeDto;
-import hello.cluebackend.domain.notice.controller.dto.response.NoticeInfoDto;
-import hello.cluebackend.domain.notice.service.NoticeService;
+import hello.cluebackend.application.notice.dto.response.NoticeDto;
+import hello.cluebackend.application.notice.dto.response.NoticeInfoDto;
+import hello.cluebackend.domain.notice.service.NoticeQueryService;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeUrlDto;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +25,12 @@ import java.util.UUID;
 @RequestMapping("/api/notice")
 public class NoticeQueryController {
 
-    private final NoticeService noticeService;
+    private final NoticeQueryService noticeQueryService;
 
     @GetMapping
     public ResponseEntity<List<NoticeDto>> getAllNotices(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findAllById());
+        return ResponseEntity.status(HttpStatus.OK).body(noticeQueryService.findAllById());
     }
 
     @GetMapping("/{noticeId}")
@@ -38,13 +38,13 @@ public class NoticeQueryController {
             @PathVariable UUID noticeId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findById(userId, noticeId));
+        return ResponseEntity.status(HttpStatus.OK).body(noticeQueryService.findById(userId, noticeId));
     }
 
     @GetMapping("/download/{noticeDocumentId}")
     public ResponseEntity<Resource> downloadNoticeDocument(
             @PathVariable("noticeDocumentId")  UUID noticeDocumentId) throws IOException {
-        NoticeDownloadDto dto = noticeService.downloadNoticeDocument(noticeDocumentId);
+        NoticeDownloadDto dto = noticeQueryService.downloadNoticeDocument(noticeDocumentId);
 
         String original = dto.getOriginal();
         String contentType = dto.getContentType();
@@ -63,6 +63,6 @@ public class NoticeQueryController {
     @GetMapping("/link/{noticeDocumentId}")
     public ResponseEntity<NoticeUrlDto> getNoticeLink(
             @PathVariable("noticeDocumentId") UUID noticeDocumentId) {
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.getLink(noticeDocumentId));
+        return ResponseEntity.status(HttpStatus.OK).body(noticeQueryService.getLink(noticeDocumentId));
     }
 }

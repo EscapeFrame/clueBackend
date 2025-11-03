@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.notice.controller.dto.request;
+package hello.cluebackend.application.notice.dto.request;
 
 import hello.cluebackend.application.document.dto.UrlDto;
 import lombok.*;

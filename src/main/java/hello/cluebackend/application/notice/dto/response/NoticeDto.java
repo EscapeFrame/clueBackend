@@ -1,12 +1,9 @@
-package hello.cluebackend.domain.notice.controller.dto.response;
+package hello.cluebackend.application.notice.dto.response;
 
 import hello.cluebackend.domain.notice.model.NoticeType;
-import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDocumentDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,11 +11,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NoticeInfoDto {
+public class NoticeDto {
     private NoticeType type;
     private UUID noticeId;
     private String title;
     private String content;
     private LocalDateTime createdAt;
-    List<NoticeDocumentDto> noticeDocuments = new ArrayList<>();
 }
