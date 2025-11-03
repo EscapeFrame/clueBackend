@@ -3,7 +3,7 @@ name: Spring Deplot to EC2
 
 on:
   push:
-    branches: ["develop","bug/#84"]
+    branches: ["develop"]
 
 jobs:
   build:
