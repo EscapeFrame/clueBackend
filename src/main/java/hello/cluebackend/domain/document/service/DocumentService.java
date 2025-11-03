@@ -51,11 +51,7 @@ public class DocumentService {
         ClassRoom findClassRoom = classRoomJpaRepository.findById(classRoomId).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
         Directory findDirectory = directoryJpaRepository.findById(directoryId).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
 
-        log.info("requestDocumentDto size: {}", requestDocumentDto.size());
-        log.info("files size: {}", files.size());
-        if(requestDocumentDto.size() != files.size()) {
-            throw new RuntimeException("한쪽 요소 부족");
-        }
+        validateFileSize(requestDocumentDto, files);
         for(int i = 0; i < requestDocumentDto.size(); i++) {
             try {
                 MultipartFile file = files.get(i);
@@ -103,5 +99,11 @@ public class DocumentService {
             return documentMapper.toUrlDto(document);
         }
         return null;
+    }
+
+    public void validateFileSize(List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+        if(requestDocumentDto.size() != files.size()) {
+            throw new RuntimeException("한쪽 요소 부족");
+        }
     }
 }
