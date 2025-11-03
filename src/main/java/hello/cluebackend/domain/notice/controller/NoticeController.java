@@ -35,7 +35,7 @@ public class NoticeController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestPart(value = "metadata") CreateNoticeDto createNoticeDto,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
-            ) {
+            ) throws IOException {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
 
         noticeService.save(userId, createNoticeDto, files);
@@ -48,7 +48,7 @@ public class NoticeController {
             @PathVariable("noticeId") UUID noticeId,
             @RequestPart(value = "metadata") AddNoticeDto addNoticeDto,
             @RequestPart(value = "files") List<MultipartFile> files,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws  IOException {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
         noticeService.addNoticeDocument(userId, noticeId, addNoticeDto, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();

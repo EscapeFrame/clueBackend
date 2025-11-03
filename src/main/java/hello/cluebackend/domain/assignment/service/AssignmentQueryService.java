@@ -75,7 +75,7 @@ public class AssignmentQueryService {
   // --------------------------------- ATTACHMENT --------------------------------------------------- //
 
   // 첨부 파일 추가
-  public void uploadFileAttachment(UUID assignmentId, MultipartFile file) {
+  public void uploadFileAttachment(UUID assignmentId, MultipartFile file) throws IOException {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
 
     String storedFileName = fileService.storeFile(file);

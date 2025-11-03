@@ -24,7 +24,7 @@ public class FileService {
   private String bucket;
 
   // 파일 추가
-  public String storeFile(MultipartFile file) {
+  public String storeFile(MultipartFile file) throws IOException {
     String originalFilename = file.getOriginalFilename();
     String extension = "";
     if (originalFilename != null && originalFilename.contains(".")) {
@@ -36,30 +36,18 @@ public class FileService {
     metadata.setContentLength(file.getSize());
     metadata.setContentType(file.getContentType());
 
-    try {
-      amazonS3Client.putObject(new PutObjectRequest(bucket, storedFileName, file.getInputStream(), metadata)); // 공개 권한 설정
-      return storedFileName;
-    } catch (IOException e) {
-      throw new RuntimeException("파일 업로드에 실패했습니다.", e);
-    }
+    amazonS3Client.putObject(new PutObjectRequest(bucket, storedFileName, file.getInputStream(), metadata)); // 공개 권한 설정
+    return storedFileName;
   }
 
   // 파일 삭제
   public void deleteFile(String storedFileName) {
-    try{
-      amazonS3Client.deleteObject(bucket, storedFileName);
-    }catch(Exception e){
-      throw new RuntimeException("파일 삭제에 실패했습니다.");
-    }
+    amazonS3Client.deleteObject(bucket, storedFileName);
   }
 
   // 파일 다운로드
-  public Resource downloadFile(String filePath) throws IOException {
-    try{
-      S3Object s3Object = amazonS3Client.getObject(bucket, filePath);
-      return new InputStreamResource(s3Object.getObjectContent());
-    } catch (Exception e) {
-      throw new S3FileNotFoundException("해당 파일 경로를 찾을수 없습니다: " + filePath);
-    }
+  public Resource downloadFile(String filePath) {
+    S3Object s3Object = amazonS3Client.getObject(bucket, filePath);
+    return new InputStreamResource(s3Object.getObjectContent());
   }
 }

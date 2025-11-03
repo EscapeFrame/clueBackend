@@ -49,11 +49,7 @@ public class RefreshTokenService {
             throw new AuthenticationCredentialsNotFoundException("refresh token null");
         }
 
-        try {
-            jwtUtil.isExpired(refreshToken);
-        } catch (ExpiredJwtException e){
-            throw new AuthenticationCredentialsNotFoundException("refresh token expired");
-        }
+        jwtUtil.isExpired(refreshToken);
 
         String category = jwtUtil.getCategory(refreshToken);
 

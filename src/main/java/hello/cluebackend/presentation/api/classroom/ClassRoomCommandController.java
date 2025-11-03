@@ -28,13 +28,8 @@ public class ClassRoomCommandController {
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User
   ) {
     if(customOAuth2User.getUserDTO().getRole() != Role.TEACHER) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    try {
-      classRoomCommandService.createClassRoom(classRoomDTO, customOAuth2User.getUserId());
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (EntityNotFoundException e){
-      log.error(e.getMessage());
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
+    classRoomCommandService.createClassRoom(classRoomDTO, customOAuth2User.getUserId());
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @PostMapping("/{code}/members")
@@ -42,13 +37,8 @@ public class ClassRoomCommandController {
           @PathVariable String code,
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User
   ) {
-    try {
-      classRoomCommandService.joinClassRoom(customOAuth2User.getUserId(), code);
-      return ResponseEntity.ok().build();
-    } catch (IllegalArgumentException e){
-      log.debug(e.getMessage());
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
+    classRoomCommandService.joinClassRoom(customOAuth2User.getUserId(), code);
+    return ResponseEntity.ok().build();
   }
 
   @PatchMapping("/{classId}")
@@ -61,12 +51,7 @@ public class ClassRoomCommandController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    try {
-      classRoomCommandService.updateClassRoom(classId, customOAuth2User.getUserId(), classRoomDTO);
-    } catch (IllegalArgumentException e){
-      log.debug(e.getMessage());
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
+    classRoomCommandService.updateClassRoom(classId, customOAuth2User.getUserId(), classRoomDTO);
 
     return ResponseEntity.ok().build();
   }
