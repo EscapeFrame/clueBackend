@@ -57,16 +57,7 @@ public class DocumentService {
                 MultipartFile file = files.get(i);
                 RequestDocumentDto requestDocument = requestDocumentDto.get(i);
                 String storedFileName = fileService.storeFile(file);
-                Document document = Document.builder()
-                        .classRoom(findClassRoom)
-                        .directory(findDirectory)
-                        .title(requestDocument.getTitle())
-                        .type(FileType.FILE)
-                        .value(storedFileName)
-                        .originalFileName(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .size(file.getSize())
-                        .build();
+                Document document = documentMapper.fromRequestDocumentDtoToDocument(requestDocument,findClassRoom, findDirectory, storedFileName, file);
                 documentJpaRepository.save(document);
             } catch(Exception e) {
                 throw new RuntimeException("파일 저장 중 에러 발생");
