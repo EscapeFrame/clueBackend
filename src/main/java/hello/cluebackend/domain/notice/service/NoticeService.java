@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -63,7 +64,15 @@ public class NoticeService {
 
         em.flush();
         em.clear();
-        if(files!=null && dto.getFileInfo().size() != files.size()){
+
+        files = files.stream()
+                .filter(file -> !file.isEmpty())
+                .collect(Collectors.toList());
+
+        log.info("Flies size: {}", files.size());
+        log.info("dto.size: {}", dto.getFileInfo().size());
+
+        if(dto.getFileInfo().size() != files.size()){
             throw new RuntimeException("한쪽 요소 부족");
         }
 
@@ -217,4 +226,3 @@ public class NoticeService {
         return isMyNotice;
     }
 }
-

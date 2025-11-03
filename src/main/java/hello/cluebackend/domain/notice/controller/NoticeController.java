@@ -34,7 +34,7 @@ public class NoticeController {
     public ResponseEntity<Void> createNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestPart(value = "metadata") CreateNoticeDto createNoticeDto,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files
+            @RequestPart(value = "files") List<MultipartFile> files
             ) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
 
