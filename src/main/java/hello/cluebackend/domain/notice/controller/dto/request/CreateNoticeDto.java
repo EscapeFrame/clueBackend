@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.notice.controller.dto.request;
 
 import hello.cluebackend.application.document.dto.UrlDto;
-import hello.cluebackend.domain.notice.domain.NoticeType;
+import hello.cluebackend.domain.notice.model.NoticeType;
 import lombok.*;
 
 import java.util.ArrayList;

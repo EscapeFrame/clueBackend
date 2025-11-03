@@ -1,4 +1,4 @@
-package hello.cluebackend.domain.notice.domain;
+package hello.cluebackend.domain.notice.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;

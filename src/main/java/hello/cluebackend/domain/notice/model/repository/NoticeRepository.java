@@ -1,6 +1,6 @@
-package hello.cluebackend.domain.notice.domain.repository;
+package hello.cluebackend.domain.notice.model.repository;
 
-import hello.cluebackend.domain.notice.domain.Notice;
+import hello.cluebackend.domain.notice.model.Notice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

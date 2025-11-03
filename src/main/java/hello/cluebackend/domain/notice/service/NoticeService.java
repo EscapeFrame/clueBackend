@@ -3,8 +3,8 @@ package hello.cluebackend.domain.notice.service;
 
 import hello.cluebackend.application.document.dto.UrlDto;
 import hello.cluebackend.domain.file.service.FileService;
-import hello.cluebackend.domain.notice.domain.Notice;
-import hello.cluebackend.domain.notice.domain.repository.NoticeRepository;
+import hello.cluebackend.domain.notice.model.Notice;
+import hello.cluebackend.domain.notice.model.repository.NoticeRepository;
 import hello.cluebackend.domain.notice.controller.dto.request.AddNoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.request.CreateNoticeDto;
 import hello.cluebackend.domain.notice.controller.dto.request.ModifyNoticeDto;

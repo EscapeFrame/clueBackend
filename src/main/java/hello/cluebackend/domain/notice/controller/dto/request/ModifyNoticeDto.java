@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.notice.controller.dto.request;
 
-import hello.cluebackend.domain.notice.domain.NoticeType;
+import hello.cluebackend.domain.notice.model.NoticeType;
 import lombok.*;
 
 @Getter
