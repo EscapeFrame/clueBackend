@@ -28,12 +28,7 @@ public class DirectoryController {
     ){
         UserEntity user = userService.findById(customOAuth2User.getUserId());
         if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        try {
-            directoryService.createDirectory(requestDirectoryDto);
-        } catch (IllegalArgumentException e){
-            log.debug(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        directoryService.createDirectory(requestDirectoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -44,12 +39,7 @@ public class DirectoryController {
     ){
       UserEntity user = userService.findById(customOAuth2User.getUserId());
       if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      try {
-          directoryService.updateDirectory(requestDirectoryDto);
-      } catch (IllegalArgumentException e) {
-          log.debug(e.getMessage());
-          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      }
+      directoryService.updateDirectory(requestDirectoryDto);
       return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -60,11 +50,7 @@ public class DirectoryController {
     ) {
       UserEntity user = userService.findById(customOAuth2User.getUserId());
       if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      try {
-          directoryService.deleteById(requestDirectoryDto.getDirectoryId());
-          return new ResponseEntity<>(HttpStatus.OK);
-      } catch (Exception e) {
-          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      }
+      directoryService.deleteById(requestDirectoryDto.getDirectoryId());
+      return new ResponseEntity<>(HttpStatus.OK);
     }
 }

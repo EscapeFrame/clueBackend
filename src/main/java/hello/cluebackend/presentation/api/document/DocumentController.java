@@ -33,7 +33,7 @@ public class DocumentController {
             @RequestPart(value = "metadata") List<RequestDocumentDto> requestDocumentDto,
             @RequestPart(value = "files") @NotNull List<MultipartFile> files,
             @RequestParam(value = "classRoomId") UUID classRoomId,
-            @RequestParam(value = "directoryId") UUID directoryId) {
+            @RequestParam(value = "directoryId") UUID directoryId) throws IOException {
         documentService.uploadFileDocument(classRoomId, directoryId, requestDocumentDto, files);
         return ResponseEntity.ok().build();
     }
@@ -49,12 +49,7 @@ public class DocumentController {
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @DeleteMapping("/{documentId}")
     public ResponseEntity<?> deleteDocument(@PathVariable("documentId") UUID documentId) {
-        try {
-            documentService.deleteDocument(documentId);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
+        documentService.deleteDocument(documentId);
         return ResponseEntity.ok().build();
     }
 
