@@ -5,6 +5,7 @@ import hello.cluebackend.domain.document.service.DocumentService;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -30,7 +31,7 @@ public class DocumentController {
     @PostMapping(value = "/file")
     public ResponseEntity<Void> uploadDocument(
             @RequestPart(value = "metadata") List<RequestDocumentDto> requestDocumentDto,
-            @RequestPart(value = "files")  List<MultipartFile> files,
+            @RequestPart(value = "files") @NotNull List<MultipartFile> files,
             @RequestParam(value = "classRoomId") UUID classRoomId,
             @RequestParam(value = "directoryId") UUID directoryId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {

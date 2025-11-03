@@ -52,6 +52,7 @@ public class DocumentService {
         Directory findDirectory = directoryJpaRepository.findById(directoryId).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
 
         validateFileSize(requestDocumentDto, files);
+
         for(int i = 0; i < requestDocumentDto.size(); i++) {
             try {
                 MultipartFile file = files.get(i);
