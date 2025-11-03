@@ -34,7 +34,7 @@ public class NoticeController {
     public ResponseEntity<Void> createNotice(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestPart(value = "metadata") CreateNoticeDto createNoticeDto,
-            @RequestPart(value = "files") List<MultipartFile> files
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
             ) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
 
@@ -78,7 +78,7 @@ public class NoticeController {
     @GetMapping
     public ResponseEntity<List<NoticeDto>> getAllNotices(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
-        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findAllById(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(noticeService.findAllById());
     }
 
     @GetMapping("/{noticeId}")

@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.document.service;
 
 import hello.cluebackend.application.document.dto.*;
+import hello.cluebackend.application.document.mapper.DocumentMapper;
 import hello.cluebackend.domain.assignment.model.FileType;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
@@ -35,18 +36,13 @@ public class DocumentService {
     private final ClassRoomJpaRepository classRoomJpaRepository;
     private final DirectoryJpaRepository directoryJpaRepository;
     private final FileService fileService;
+    private final DocumentMapper documentMapper;
 
     public void uploadUrlDocument(InfoDto urlDto) {
         ClassRoom classRoom = classRoomJpaRepository.findById(urlDto.getClassRoomId()).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
         Directory directory = directoryJpaRepository.findById(urlDto.getDirectoryId()).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
         for (UrlDto dto : urlDto.getUrls()) {
-            Document document = Document.builder()
-                    .title(dto.getTitle())
-                    .classRoom(classRoom)
-                    .directory(directory)
-                    .type(FileType.URL)
-                    .value(dto.getValue())
-                    .build();
+            Document document = documentMapper.fromUrlDtoToDocument(dto, classRoom, directory);
             documentJpaRepository.save(document);
         }
     }
@@ -55,26 +51,14 @@ public class DocumentService {
         ClassRoom findClassRoom = classRoomJpaRepository.findById(classRoomId).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
         Directory findDirectory = directoryJpaRepository.findById(directoryId).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
 
-        log.info("requestDocumentDto size: {}", requestDocumentDto.size());
-        log.info("files size: {}", files.size());
-        if(requestDocumentDto.size() != files.size()) {
-            throw new RuntimeException("한쪽 요소 부족");
-        }
+        validateFileSize(requestDocumentDto, files);
+
         for(int i = 0; i < requestDocumentDto.size(); i++) {
             try {
                 MultipartFile file = files.get(i);
                 RequestDocumentDto requestDocument = requestDocumentDto.get(i);
                 String storedFileName = fileService.storeFile(file);
-                Document document = Document.builder()
-                        .classRoom(findClassRoom)
-                        .directory(findDirectory)
-                        .title(requestDocument.getTitle())
-                        .type(FileType.FILE)
-                        .value(storedFileName)
-                        .originalFileName(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .size(file.getSize())
-                        .build();
+                Document document = documentMapper.fromRequestDocumentDtoToDocument(requestDocument,findClassRoom, findDirectory, storedFileName, file);
                 documentJpaRepository.save(document);
             } catch(Exception e) {
                 throw new RuntimeException("파일 저장 중 에러 발생");
@@ -95,29 +79,23 @@ public class DocumentService {
         documentJpaRepository.delete(document);
     }
 
-    public DocumentDto findById(UUID documentId) {
-        Document findDocument = documentJpaRepository.findById(documentId).orElseThrow(() -> new IllegalArgumentException("해당 수업자료가 존재하지 않습니다."));
-        return findDocument.toDto();
-    }
-
     public DownloadDto downloadDocument(UUID documentId) throws IOException {
         Document document = documentJpaRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
         Resource resource = fileService.downloadFile(document.getValue());
-        return DownloadDto.builder()
-                .original(document.getOriginalFileName())
-                .contentType(document.getContentType())
-                .resource(resource)
-                .build();
+        return documentMapper.toDownloadDto(document, resource);
     }
 
     public UrlDto getLink(UUID documentId) {
         Document document = documentJpaRepository.findById(documentId).orElseThrow(() -> new EntityNotFoundException("해당 수업자료가 존재하지 않습니다."));
         if(document.getType() == FileType.URL) {
-            return UrlDto.builder()
-                    .value(document.getValue())
-                    .title(document.getTitle())
-                    .build();
+            return documentMapper.toUrlDto(document);
         }
         return null;
+    }
+
+    public void validateFileSize(List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+        if(requestDocumentDto.size() != files.size()) {
+            throw new RuntimeException("한쪽 요소 부족");
+        }
     }
 }
