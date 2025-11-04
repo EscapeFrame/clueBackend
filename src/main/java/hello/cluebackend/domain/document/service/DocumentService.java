@@ -47,22 +47,18 @@ public class DocumentService {
         }
     }
 
-    public void uploadFileDocument(UUID classRoomId, UUID directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) {
+    public void uploadFileDocument(UUID classRoomId, UUID directoryId, List<RequestDocumentDto> requestDocumentDto, List<MultipartFile> files) throws IOException {
         ClassRoom findClassRoom = classRoomJpaRepository.findById(classRoomId).orElseThrow(() -> new EntityNotFoundException("해당 교실을 찾을 수가 없습니다."));
         Directory findDirectory = directoryJpaRepository.findById(directoryId).orElseThrow(() -> new EntityNotFoundException("해당 디렉토리를 찾을 수가 없습니다."));
 
         validateFileSize(requestDocumentDto, files);
 
         for(int i = 0; i < requestDocumentDto.size(); i++) {
-            try {
-                MultipartFile file = files.get(i);
-                RequestDocumentDto requestDocument = requestDocumentDto.get(i);
-                String storedFileName = fileService.storeFile(file);
-                Document document = documentMapper.fromRequestDocumentDtoToDocument(requestDocument,findClassRoom, findDirectory, storedFileName, file);
-                documentJpaRepository.save(document);
-            } catch(Exception e) {
-                throw new RuntimeException("파일 저장 중 에러 발생");
-            }
+            MultipartFile file = files.get(i);
+            RequestDocumentDto requestDocument = requestDocumentDto.get(i);
+            String storedFileName = fileService.storeFile(file);
+            Document document = documentMapper.fromRequestDocumentDtoToDocument(requestDocument,findClassRoom, findDirectory, storedFileName, file);
+            documentJpaRepository.save(document);
         }
     }
 

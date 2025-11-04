@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class NoticeCommandService {
     @PersistenceContext
     private EntityManager em;
 
-    public void save(UUID userId, CreateNoticeDto dto, List<MultipartFile> files) {
+    public void save(UUID userId, CreateNoticeDto dto, List<MultipartFile> files) throws IOException {
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수가 없습니다."));
 
         Notice notice = Notice.builder()
@@ -69,23 +70,19 @@ public class NoticeCommandService {
         }
 
         for(int i = 0; i < dto.getFileInfo().size(); i++){
-            try {
-                MultipartFile file = files.get(i);
-                NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
-                String storedFileName = fileService.storeFile(file);
-                NoticeDocument noticeDocument = NoticeDocument.builder()
-                        .notice(notice)
-                        .title(noticeFileDto.getTitle())
-                        .type(FileType.FILE)
-                        .value(storedFileName)
-                        .originalFileName(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .size(file.getSize())
-                        .build();
-                noticeDocumentRepository.save(noticeDocument);
-            } catch(Exception e) {
-                throw new RuntimeException("파일 저장 중 에러 발생");
-            }
+            MultipartFile file = files.get(i);
+            NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
+            String storedFileName = fileService.storeFile(file);
+            NoticeDocument noticeDocument = NoticeDocument.builder()
+                    .notice(notice)
+                    .title(noticeFileDto.getTitle())
+                    .type(FileType.FILE)
+                    .value(storedFileName)
+                    .originalFileName(file.getOriginalFilename())
+                    .contentType(file.getContentType())
+                    .size(file.getSize())
+                    .build();
+            noticeDocumentRepository.save(noticeDocument);
         }
         for(UrlDto urlDto : dto.getUrls()){
             NoticeDocument noticeDocument = NoticeDocument.builder()
@@ -130,7 +127,7 @@ public class NoticeCommandService {
         notice.modify(modifyNoticeDto);
     }
 
-    public void addNoticeDocument(UUID userId, UUID noticeId, AddNoticeDto dto, List<MultipartFile> files) {
+    public void addNoticeDocument(UUID userId, UUID noticeId, AddNoticeDto dto, List<MultipartFile> files) throws IOException {
         if(!isMyNotice(userId, noticeId)) {
             throw new IsNotMyNoticeException("해당 공지사항을 수정할 권한이 없습니다.");
         }
@@ -139,23 +136,19 @@ public class NoticeCommandService {
             throw new RuntimeException("한쪽 요소 부족");
         }
         for(int i = 0; i < dto.getFileInfo().size(); i++){
-            try {
-                MultipartFile file = files.get(i);
-                NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
-                String storedFileName = fileService.storeFile(file);
-                NoticeDocument noticeDocument = NoticeDocument.builder()
-                        .notice(notice)
-                        .title(noticeFileDto.getTitle())
-                        .type(FileType.FILE)
-                        .value(storedFileName)
-                        .originalFileName(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .size(file.getSize())
-                        .build();
-                noticeDocumentRepository.save(noticeDocument);
-            } catch(Exception e) {
-                throw new RuntimeException("파일 저장 중 에러 발생");
-            }
+            MultipartFile file = files.get(i);
+            NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
+            String storedFileName = fileService.storeFile(file);
+            NoticeDocument noticeDocument = NoticeDocument.builder()
+                    .notice(notice)
+                    .title(noticeFileDto.getTitle())
+                    .type(FileType.FILE)
+                    .value(storedFileName)
+                    .originalFileName(file.getOriginalFilename())
+                    .contentType(file.getContentType())
+                    .size(file.getSize())
+                    .build();
+            noticeDocumentRepository.save(noticeDocument);
         }
         for(UrlDto urlDto : dto.getUrls()){
             NoticeDocument noticeDocument = NoticeDocument.builder()

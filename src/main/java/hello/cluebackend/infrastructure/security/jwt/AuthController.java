@@ -19,11 +19,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            refreshTokenService.reissueRefreshToken(request, response);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (AuthenticationCredentialsNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        refreshTokenService.reissueRefreshToken(request, response);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
