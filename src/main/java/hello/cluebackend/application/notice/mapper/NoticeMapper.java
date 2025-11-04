@@ -4,9 +4,11 @@ import hello.cluebackend.application.document.dto.UrlDto;
 import hello.cluebackend.application.notice.dto.request.CreateNoticeDto;
 import hello.cluebackend.application.notice.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.notice.model.Notice;
+import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
 import hello.cluebackend.domain.noticedocument.domain.FileType;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.user.model.UserEntity;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +42,14 @@ public class NoticeMapper {
                 .type(FileType.URL)
                 .value(urlDto.getValue())
                 .notice(notice)
+                .build();
+    }
+
+    public NoticeDownloadDto fromNoticeDocumentToNoticeDownloadDto(NoticeDocument noticeDocument, Resource resource) {
+        return NoticeDownloadDto.builder()
+                .original(noticeDocument.getValue())
+                .contentType(noticeDocument.getContentType())
+                .resource(resource)
                 .build();
     }
 }

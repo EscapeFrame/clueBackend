@@ -2,6 +2,7 @@
 package hello.cluebackend.domain.notice.service;
 
 import hello.cluebackend.application.document.dto.UrlDto;
+import hello.cluebackend.application.notice.mapper.NoticeMapper;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.notice.model.Notice;
 import hello.cluebackend.infrastructure.persistence.notice.NoticeJpaRepository;
@@ -43,6 +44,7 @@ public class NoticeQueryService {
     private final NoticeJpaRepository noticeJpaRepository;
     private final NoticeDocumentRepository noticeDocumentRepository;
     private final FileService fileService;
+    private final NoticeMapper noticeMapper;
 
     public List<NoticeDto> findAllById() {
         return noticeJpaRepository.findAll().stream()
@@ -64,11 +66,7 @@ public class NoticeQueryService {
         NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 파일을 찾을 수가 없습니다."));
         if(noticeDocument.getType() == FileType.FILE){
             Resource resource = fileService.downloadFile(noticeDocument.getValue());
-            return NoticeDownloadDto.builder()
-                    .original(noticeDocument.getValue())
-                    .contentType(noticeDocument.getContentType())
-                    .resource(resource)
-                    .build();
+            return noticeMapper.fromNoticeDocumentToNoticeDownloadDto(noticeDocument, resource);
         }
         else return null;
     }
