@@ -119,24 +119,11 @@ public class NoticeCommandService {
             MultipartFile file = files.get(i);
             NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
             String storedFileName = fileService.storeFile(file);
-            NoticeDocument noticeDocument = NoticeDocument.builder()
-                    .notice(notice)
-                    .title(noticeFileDto.getTitle())
-                    .type(FileType.FILE)
-                    .value(storedFileName)
-                    .originalFileName(file.getOriginalFilename())
-                    .contentType(file.getContentType())
-                    .size(file.getSize())
-                    .build();
+            NoticeDocument noticeDocument = noticeMapper.fromNoticeFileDtoToNoticeDocument(noticeFileDto,notice,storedFileName,file);
             noticeDocumentRepository.save(noticeDocument);
         }
         for(UrlDto urlDto : dto.getUrls()){
-            NoticeDocument noticeDocument = NoticeDocument.builder()
-                    .title(urlDto.getTitle())
-                    .type(FileType.URL)
-                    .value(urlDto.getValue())
-                    .notice(notice)
-                    .build();
+            NoticeDocument noticeDocument = noticeMapper.fromUrlDtoToNoticeDocument(urlDto, notice);
             noticeDocumentRepository.save(noticeDocument);
         }
     }
