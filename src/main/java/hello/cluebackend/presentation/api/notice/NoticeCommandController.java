@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,11 +25,11 @@ public class NoticeCommandController {
 
     @PreAuthorize("hasRole('TEACHER')")
     @PostMapping
-    public ResponseEntity<Void> createNotice(
+    public ResponseEntity<Void> createNotice (
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestPart(value = "metadata") CreateNoticeDto createNoticeDto,
-            @RequestPart(value = "files") List<MultipartFile> files
-            ) {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+            ) throws IOException, RuntimeException {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
 
         noticeCommandService.save(userId, createNoticeDto, files);
@@ -41,7 +42,7 @@ public class NoticeCommandController {
             @PathVariable("noticeId") UUID noticeId,
             @RequestPart(value = "metadata") AddNoticeDto addNoticeDto,
             @RequestPart(value = "files") List<MultipartFile> files,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
         UUID userId = customOAuth2User.getUserDTO().getUserId();
         noticeCommandService.addNoticeDocument(userId, noticeId, addNoticeDto, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -5,6 +5,7 @@ import hello.cluebackend.application.notice.dto.request.AddNoticeDto;
 import hello.cluebackend.application.notice.dto.request.CreateNoticeDto;
 import hello.cluebackend.application.notice.dto.request.ModifyNoticeDto;
 import hello.cluebackend.application.notice.dto.request.NoticeFileDto;
+import hello.cluebackend.application.notice.mapper.NoticeMapper;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.notice.exception.IsNotMyNoticeException;
 import hello.cluebackend.domain.notice.model.Notice;
@@ -12,7 +13,6 @@ import hello.cluebackend.domain.noticedocument.domain.FileType;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.domain.repository.NoticeDocumentRepository;
 import hello.cluebackend.domain.user.model.UserEntity;
-import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import hello.cluebackend.infrastructure.persistence.notice.NoticeJpaRepository;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
 import jakarta.persistence.EntityManager;
@@ -39,19 +39,15 @@ public class NoticeCommandService {
     private final NoticeDocumentRepository noticeDocumentRepository;
     private final UserJpaRepository userRepository;
     private final FileService fileService;
+    private final NoticeMapper noticeMapper;
 
     @PersistenceContext
     private EntityManager em;
 
-    public void save(UUID userId, CreateNoticeDto dto, List<MultipartFile> files) throws IOException {
+    public void save(UUID userId, CreateNoticeDto dto, List<MultipartFile> files) throws RuntimeException, IOException {
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당 유저를 찾을 수가 없습니다."));
 
-        Notice notice = Notice.builder()
-                .user(user)
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .type(dto.getType())
-                .build();
+        Notice notice = noticeMapper.fromCreateNoticeDtoToNotice(dto, user);
 
         noticeJpaRepository.save(notice);
 
@@ -62,9 +58,6 @@ public class NoticeCommandService {
                 .filter(file -> !file.isEmpty())
                 .collect(Collectors.toList());
 
-        log.info("Flies size: {}", files.size());
-        log.info("dto.size: {}", dto.getFileInfo().size());
-
         if(dto.getFileInfo().size() != files.size()){
             throw new RuntimeException("한쪽 요소 부족");
         }
@@ -73,24 +66,11 @@ public class NoticeCommandService {
             MultipartFile file = files.get(i);
             NoticeFileDto noticeFileDto = dto.getFileInfo().get(i);
             String storedFileName = fileService.storeFile(file);
-            NoticeDocument noticeDocument = NoticeDocument.builder()
-                    .notice(notice)
-                    .title(noticeFileDto.getTitle())
-                    .type(FileType.FILE)
-                    .value(storedFileName)
-                    .originalFileName(file.getOriginalFilename())
-                    .contentType(file.getContentType())
-                    .size(file.getSize())
-                    .build();
+            NoticeDocument noticeDocument = noticeMapper.fromNoticeFileDtoToNoticeDocument(noticeFileDto,notice,storedFileName,file);
             noticeDocumentRepository.save(noticeDocument);
         }
         for(UrlDto urlDto : dto.getUrls()){
-            NoticeDocument noticeDocument = NoticeDocument.builder()
-                    .title(urlDto.getTitle())
-                    .type(FileType.URL)
-                    .value(urlDto.getValue())
-                    .notice(notice)
-                    .build();
+            NoticeDocument noticeDocument = noticeMapper.fromUrlDtoToNoticeDocument(urlDto, notice);
             noticeDocumentRepository.save(noticeDocument);
         }
     }
