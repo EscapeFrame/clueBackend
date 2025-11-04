@@ -5,6 +5,7 @@ import hello.cluebackend.application.notice.dto.request.CreateNoticeDto;
 import hello.cluebackend.application.notice.dto.request.NoticeFileDto;
 import hello.cluebackend.domain.notice.model.Notice;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
+import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeUrlDto;
 import hello.cluebackend.domain.noticedocument.domain.FileType;
 import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.user.model.UserEntity;
@@ -50,6 +51,13 @@ public class NoticeMapper {
                 .original(noticeDocument.getValue())
                 .contentType(noticeDocument.getContentType())
                 .resource(resource)
+                .build();
+    }
+
+    public NoticeUrlDto fromNoticeDocumentToNoticeUrlDto(NoticeDocument noticeDocument) {
+        return NoticeUrlDto.builder()
+                .value(noticeDocument.getValue())
+                .title(noticeDocument.getTitle())
                 .build();
     }
 }

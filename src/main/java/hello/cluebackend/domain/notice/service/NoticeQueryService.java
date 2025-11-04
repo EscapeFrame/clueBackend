@@ -1,15 +1,9 @@
-
 package hello.cluebackend.domain.notice.service;
 
-import hello.cluebackend.application.document.dto.UrlDto;
 import hello.cluebackend.application.notice.mapper.NoticeMapper;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.notice.model.Notice;
 import hello.cluebackend.infrastructure.persistence.notice.NoticeJpaRepository;
-import hello.cluebackend.application.notice.dto.request.AddNoticeDto;
-import hello.cluebackend.application.notice.dto.request.CreateNoticeDto;
-import hello.cluebackend.application.notice.dto.request.ModifyNoticeDto;
-import hello.cluebackend.application.notice.dto.request.NoticeFileDto;
 import hello.cluebackend.application.notice.dto.response.NoticeDto;
 import hello.cluebackend.application.notice.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.notice.exception.IsNotMyNoticeException;
@@ -18,23 +12,15 @@ import hello.cluebackend.domain.noticedocument.domain.NoticeDocument;
 import hello.cluebackend.domain.noticedocument.domain.repository.NoticeDocumentRepository;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeDownloadDto;
 import hello.cluebackend.domain.noticedocument.controller.dto.response.NoticeUrlDto;
-import hello.cluebackend.domain.user.model.UserEntity;
-import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
-import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -74,10 +60,7 @@ public class NoticeQueryService {
     public NoticeUrlDto getLink(UUID noticeDocumentId) {
         NoticeDocument noticeDocument = noticeDocumentRepository.findById(noticeDocumentId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항 링크를 찾을 수가 없습니다."));
         if(noticeDocument.getType() == FileType.URL) {
-            return NoticeUrlDto.builder()
-                    .value(noticeDocument.getValue())
-                    .title(noticeDocument.getTitle())
-                    .build();
+            return noticeMapper.fromNoticeDocumentToNoticeUrlDto(noticeDocument);
         }
         return null;
     }
