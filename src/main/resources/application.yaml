@@ -52,7 +52,7 @@ spring:
               - email
         provider:
           google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth?prompt=consent
+            authorization-uri: ${GOOGLE_AUTHORIZATION_URI}
 
 
 upload:
