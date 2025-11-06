@@ -13,6 +13,6 @@ public record CreateAssignmentDto (
         @NotNull @JsonProperty("class_id") UUID classId,
         @NotNull String title,
         @NotNull String content,
-        @NotNull @JsonProperty("start_date") @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate,
-        @NotNull @JsonProperty("end_date") @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate
+        @NotNull @JsonProperty("start_date") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul") LocalDateTime startDate,
+        @NotNull @JsonProperty("end_date") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul") LocalDateTime endDate
 ){}

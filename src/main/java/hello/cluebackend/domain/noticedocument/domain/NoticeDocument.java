@@ -24,7 +24,7 @@ public class NoticeDocument {
     @Column(nullable = false)
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     // FILE, URL

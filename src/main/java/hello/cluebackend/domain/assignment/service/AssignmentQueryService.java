@@ -15,6 +15,7 @@ import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.domain.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssignmentQueryService {
@@ -54,6 +56,7 @@ public class AssignmentQueryService {
             .build();
 
     assignmentJpaRepository.save(assignment);
+    log.info("assignment 생성 성공 : assignment : {}", assignment);
     return assignment;
   }
 

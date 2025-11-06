@@ -39,10 +39,8 @@ public class Assignment {
   @Column(columnDefinition = "TEXT")
   private String content;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDate;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endDate;
 
   @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
