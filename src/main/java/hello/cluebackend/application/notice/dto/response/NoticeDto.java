@@ -1,6 +1,6 @@
-package hello.cluebackend.domain.notice.controller.dto.response;
+package hello.cluebackend.application.notice.dto.response;
 
-import hello.cluebackend.domain.notice.domain.NoticeType;
+import hello.cluebackend.domain.notice.model.NoticeType;
 import lombok.*;
 
 import java.time.LocalDateTime;

@@ -1,7 +1,6 @@
-package hello.cluebackend.domain.notice.controller.dto.request;
+package hello.cluebackend.application.notice.dto.request;
 
 import hello.cluebackend.application.document.dto.UrlDto;
-import hello.cluebackend.domain.notice.domain.NoticeType;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -12,10 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateNoticeDto {
-    private NoticeType type;
-    private String title;
-    private String content;
+public class AddNoticeDto {
     private List<NoticeFileDto> fileInfo = new ArrayList<>();
     private List<UrlDto> urls = new ArrayList<>();
 }

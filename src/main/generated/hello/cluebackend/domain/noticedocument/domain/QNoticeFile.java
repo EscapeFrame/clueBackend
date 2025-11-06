@@ -26,7 +26,7 @@ public class QNoticeFile extends EntityPathBase<NoticeDocument> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final hello.cluebackend.domain.notice.domain.QNotice notice;
+    public final hello.cluebackend.domain.notice.model.QNotice notice;
 
     public final NumberPath<Long> noticeFileId = createNumber("noticeFileId", Long.class);
 
@@ -58,7 +58,7 @@ public class QNoticeFile extends EntityPathBase<NoticeDocument> {
 
     public QNoticeFile(Class<? extends NoticeDocument> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.notice = inits.isInitialized("notice") ? new hello.cluebackend.domain.notice.domain.QNotice(forProperty("notice"), inits.get("notice")) : null;
+        this.notice = inits.isInitialized("notice") ? new hello.cluebackend.domain.notice.model.QNotice(forProperty("notice"), inits.get("notice")) : null;
     }
 
 }
