@@ -4,7 +4,7 @@ import hello.cluebackend.domain.assignment.service.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.domain.assignment.model.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
-import hello.cluebackend.application.assignment.dto.response.AssignmentResponseDto;
+import hello.cluebackend.application.assignment.dto.response.AssignmentDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
 import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
@@ -36,7 +36,7 @@ public class AssignmentCommandController {
 
   // 과제 단일 조회
   @GetMapping("/{assignmentId}")
-  public ResponseEntity<AssignmentResponseDto> getAssignment(
+  public ResponseEntity<AssignmentDto> getAssignment(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID assignmentId
   ) {
@@ -45,17 +45,17 @@ public class AssignmentCommandController {
     if (!classroomUserService.isUserInClassroom(classroomId, customOAuth2User.getUserId())) {
       throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
     }
-    AssignmentResponseDto result = assignmentCommandService.findById(assignmentId);
+    AssignmentDto result = assignmentCommandService.findById(assignmentId);
     return ResponseEntity.ok(result);
   }
 
   // 교실 과제 전체 조회
   @GetMapping("/{classId}/all")
-  public ResponseEntity<List<AssignmentResponseDto>> getAllClassroomAssignment(
+  public ResponseEntity<List<AssignmentDto>> getAllClassroomAssignment(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID classId
   ) {
-    List<AssignmentResponseDto> result = assignmentCommandService.findAllById(customOAuth2User.getUserId(),classId);
+    List<AssignmentDto> result = assignmentCommandService.findAllById(customOAuth2User.getUserId(),classId);
 
     return ResponseEntity.ok(result);
   }

@@ -1,6 +1,6 @@
 package hello.cluebackend.domain.assignment.service;
 
-import hello.cluebackend.application.assignment.dto.response.AssignmentResponseDto;
+import hello.cluebackend.application.assignment.dto.response.AssignmentDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
 import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
 import hello.cluebackend.domain.assignment.model.Assignment;
@@ -14,7 +14,6 @@ import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.domain.user.service.UserService;
-import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -44,11 +43,11 @@ public class AssignmentCommandService {
   }
 
   // 과제 단일 조회
-  public AssignmentResponseDto findById(UUID assignmentId) {
+  public AssignmentDto findById(UUID assignmentId) {
     Assignment a = findByIdOrThrow(assignmentId);
     List<AssignmentAttachment> assignmentAttachments = assignmentAttachmentJpaRepository.findAllByAssignment(a);
 
-    return AssignmentResponseDto.from(a, assignmentAttachments);
+    return AssignmentDto.from(a, assignmentAttachments);
   }
 
   // 사용자가 속한 모든 수업 과제 조회
@@ -60,7 +59,7 @@ public class AssignmentCommandService {
   }
 
   // 과제 전체 조회
-  public List<AssignmentResponseDto> findAllById(UUID userId, UUID classId) {
+  public List<AssignmentDto> findAllById(UUID userId, UUID classId) {
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classId));
     UserEntity user = userService.findById(userId);
 
