@@ -34,6 +34,7 @@ public class AssignmentQueryController {
           @Valid @RequestBody CreateAssignmentDto request
   ) {
     Assignment assignment = assignmentQueryService.save(customOAuth2User.getUserId(), request);
+    log.info("Assignment 생성 완료. User ID: {}, Assignment ID: {}", customOAuth2User.getUserId(), assignment.getAssignmentId());
 
     submissionQueryService.assignToAllStudentsInClassroom(customOAuth2User.getUserId() ,request.classId(), assignment);
     return ResponseEntity.ok(assignment.getAssignmentId());

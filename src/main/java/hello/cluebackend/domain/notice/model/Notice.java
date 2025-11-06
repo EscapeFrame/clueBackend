@@ -36,7 +36,7 @@ Notice {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     @Column(nullable = false)

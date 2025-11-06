@@ -9,8 +9,8 @@ import java.util.UUID;
 public record GetAllAssignmentDto(
         UUID assignmentId, // 과제 아이디
         String title,      // 과제 제목
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate, // 과제 시작일
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate    // 마감일
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul") LocalDateTime startDate, // 과제 시작일
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul") LocalDateTime endDate    // 마감일
 ) {
   public static GetAllAssignmentDto from(Assignment assignment){
     return new GetAllAssignmentDto (
