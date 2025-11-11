@@ -86,7 +86,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
             if ("app".equals(clientType)) {
-                baseUrl = baseUrl+"/login/callback?access_token=" + access + "&refresh_token=" + refresh;
+                baseUrl = baseUrl+"/auth/callback?access_token=" + access + "&refresh_token=" + refresh;
             } else {
                 baseUrl = baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh;
             }
