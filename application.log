@@ -1,0 +1,10 @@
+2025-11-11 20:00:01 DEBUG [http-nio-0.0.0.0-8080-exec-8] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:01 DEBUG [http-nio-0.0.0.0-8080-exec-1] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:01 DEBUG [http-nio-0.0.0.0-8080-exec-7] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:01 DEBUG [http-nio-0.0.0.0-8080-exec-9] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:01 DEBUG [http-nio-0.0.0.0-8080-exec-4] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:04 DEBUG [http-nio-0.0.0.0-8080-exec-3] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:06 DEBUG [http-nio-0.0.0.0-8080-exec-10] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:10 DEBUG [http-nio-0.0.0.0-8080-exec-4] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:17 DEBUG [http-nio-0.0.0.0-8080-exec-8] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
+2025-11-11 20:00:18 DEBUG [http-nio-0.0.0.0-8080-exec-5] o.s.web.cors.DefaultCorsProcessor - Reject: 'http://localhost:3000' origin is not allowed
