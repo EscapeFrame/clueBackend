@@ -1,6 +1,6 @@
 <configuration>
   <property name="LOG_FILE" value="application.log"/>
-
+<!-- -->
 <!--  &lt;!&ndash; Logstash로 전송할 Appender &ndash;&gt;-->
 <!--  <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
 <!--    <destination>localhost:5001</destination>-->
