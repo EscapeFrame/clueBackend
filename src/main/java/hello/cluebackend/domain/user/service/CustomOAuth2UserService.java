@@ -29,12 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         System.out.println(oAuth2User);
 
         String email = oAuth2User.getAttribute("email");
-        String isBssm = email.split("@")[1];
         String isTeacher = email.split("@")[0];
-        if(!isBssm.equals("bssm.hs.kr")) {
-            System.out.println("not bssm");
-            throw new IllegalArgumentException("not bssm email");
-        }
 
         Role role;
         if(isTeacher.equals("teacher")) role = Role.TEACHER;

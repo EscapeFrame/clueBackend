@@ -34,6 +34,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'io.github.openfeign:feign-okhttp'
+
     testImplementation 'io.projectreactor:reactor-test'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
@@ -94,6 +97,7 @@ tasks.withType(JavaCompile).configureEach {
 
 ext {
     snippetsDir = file('build/generated-snippets')
+    springCloudVersion = "2024.0.2"
 }
 
 tasks.named('test') {
@@ -120,4 +124,9 @@ task copyDocument(type: Copy) {
 
 build {
     dependsOn copyDocument
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
 }
