@@ -46,3 +46,5 @@ src/main/resources/files
 
 /src/main/generated
 
+### 로킹 파일 ###
+application.*
