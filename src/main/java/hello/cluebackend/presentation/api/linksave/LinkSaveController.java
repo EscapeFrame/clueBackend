@@ -6,6 +6,7 @@ import hello.cluebackend.domain.linksave.model.AuthorizationType;
 import hello.cluebackend.domain.linksave.model.SubjectType;
 import hello.cluebackend.infrastructure.client.linksave.LinkSaveClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/linksave")
 @RequiredArgsConstructor
+@Slf4j
 public class LinkSaveController {
 
     private final LinkSaveClient linkSaveClient;
@@ -50,6 +52,7 @@ public class LinkSaveController {
 
     @PatchMapping("/{linkId}") // 링크 수정
     public ResponseEntity<LinkResponse> updateLink(@PathVariable Long linkId, @RequestBody LinkRequest linkRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(linkSaveClient.updateLink(linkId, linkRequest));
+        LinkResponse linkResponse = linkSaveClient.updateLink(linkId, linkRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(linkResponse);
     }
 }

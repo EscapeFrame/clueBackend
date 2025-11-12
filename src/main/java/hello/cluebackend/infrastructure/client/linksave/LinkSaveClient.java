@@ -2,6 +2,7 @@ package hello.cluebackend.infrastructure.client.linksave;
 
 import hello.cluebackend.application.linksave.dto.request.LinkRequest;
 import hello.cluebackend.application.linksave.dto.response.LinkResponse;
+import hello.cluebackend.config.FeignOkHttpConfiguration;
 import hello.cluebackend.domain.linksave.model.AuthorizationType;
 import hello.cluebackend.domain.linksave.model.SubjectType;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name="LinkSave", url = "http://localhost:8081")
+@FeignClient(name="LinkSave", url = "http://localhost:8081", configuration = FeignOkHttpConfiguration.class)
 public interface LinkSaveClient {
 
     @GetMapping("/linksave")
