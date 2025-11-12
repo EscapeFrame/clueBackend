@@ -1,11 +1,11 @@
 <configuration>
   <property name="LOG_FILE" value="application.log"/>
-
-  <!-- Logstash로 전송할 Appender -->
-  <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-    <destination>localhost:5001</destination>
-    <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-  </appender>
+<!-- -->
+<!--  &lt;!&ndash; Logstash로 전송할 Appender &ndash;&gt;-->
+<!--  <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--    <destination>localhost:5001</destination>-->
+<!--    <encoder class="net.logstash.logback.encoder.LogstashEncoder" />-->
+<!--  </appender>-->
 
   <!-- 콘솔 출력 -->
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -30,6 +30,6 @@
   <root level="trace">
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
-    <appender-ref ref="LOGSTASH" />
+<!--    <appender-ref ref="LOGSTASH" />-->
   </root>
 </configuration>
