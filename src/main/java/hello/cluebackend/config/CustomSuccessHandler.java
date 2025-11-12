@@ -47,9 +47,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String baseUrl = frontBaseUrl;
 
         HttpSession session = request.getSession(false); // 세션이 없을 수도 있으면 false로
+        String clientType = null;
         if (session != null) {
             Object clientTypeObj = session.getAttribute("client_type");
-            String clientType = clientTypeObj != null ? clientTypeObj.toString() : null;
+            clientType = clientTypeObj != null ? clientTypeObj.toString() : null;
 
             if ("app".equals(clientType)) {
                 baseUrl = appBaseUrl;
@@ -84,7 +85,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //            response.setHeader("Authorization", "Bearer " + access);
 //            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect(baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh);
+            if ("app".equals(clientType)) {
+                baseUrl = baseUrl+"/auth/callback?access_token=" + access + "&refresh_token=" + refresh;
+            } else {
+                baseUrl = baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh;
+            }
+            response.sendRedirect(baseUrl);
+//            getRedirectStrategy().sendRedirect(request, response, baseUrl);
         }
     }
 
