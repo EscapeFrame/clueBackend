@@ -2,6 +2,7 @@ package hello.cluebackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableFeignClients
 public class ClueBackendApplication {
   public static void main(String[] args) {
     SpringApplication.run(ClueBackendApplication.class, args);
