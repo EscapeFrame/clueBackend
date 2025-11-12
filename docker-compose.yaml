@@ -30,44 +30,44 @@ services:
     ports:
       - "6379:6379"
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.1
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
-    networks:
-      - elk
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.1
+#    container_name: elasticsearch
+#    environment:
+#      - discovery.type=single-node
+#      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+#      - xpack.security.enabled=false
+#    ports:
+#      - "9200:9200"
+#    networks:
+#      - elk
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.10.1
-    container_name: logstash
-    ports:
-      - "5001:5000"
-    volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    depends_on:
-      - elasticsearch
-    networks:
-      - elk
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:8.10.1
+#    container_name: logstash
+#    ports:
+#      - "5001:5000"
+#    volumes:
+#      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      - elk
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.1
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-    networks:
-      - elk
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:8.10.1
+#    container_name: kibana
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - "5601:5601"
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      - elk
  
 networks:
   web-net:
     driver: bridge
-  elk:
-    driver: bridge
+#  elk:
+#    driver: bridge
