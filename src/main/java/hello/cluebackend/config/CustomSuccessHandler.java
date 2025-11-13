@@ -91,6 +91,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 baseUrl = baseUrl+"/auth/callback?access_token=" + access + "&refresh_token=" + refresh;
             } else {
                 baseUrl = baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh;
+                System.out.println("============== web login success ===============");
             }
             response.sendRedirect(baseUrl);
 //            getRedirectStrategy().sendRedirect(request, response, baseUrl);
