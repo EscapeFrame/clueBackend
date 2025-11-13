@@ -36,8 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> processRegistration(HttpServletRequest request,
-                                                 RegisterUserDto registerUserDto) {
+    public ResponseEntity<?> processRegistration(HttpServletRequest request, @RequestBody RegisterUserDto registerUserDto) {
         HttpSession session = request.getSession();
         UserDto userDto = (UserDto) session.getAttribute("firstUser");
         session.removeAttribute("firstUser");
