@@ -71,19 +71,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else {
             String username = customUserDetails.getUsername();
             UUID userId = customUserDetails.getUserId();
+            String email =  userDTO.getEmail();
 
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
             String role = String.valueOf(customUserDetails.getUserDTO().getRole());
 
-            String access = jwtUtil.createJwt("access", userId, username, role, 60*60*1000L);
-            String refresh = jwtUtil.createJwt("refresh", userId, username, role,7 * 24  * 60 * 60 * 1000L);
+            String access = jwtUtil.createJwt("access", userId, username, email, role, 60*60*1000L);
+            String refresh = jwtUtil.createJwt("refresh", userId, username, email, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
 
 //            response.setHeader("Authorization", "Bearer " + access);
-//            response.addCookie(createCookie("refresh_token", refresh));
+            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
             if ("app".equals(clientType)) {
                 baseUrl = baseUrl+"/auth/callback?access_token=" + access + "&refresh_token=" + refresh;

@@ -47,25 +47,13 @@ public class UserController {
     }
 
     @GetMapping("/api/user/me")
-    public ResponseEntity<UserDataDto> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
-        UUID userId = customUser.getUserDTO().getUserId();
-        Role role = customUser.getUserDTO().getRole();
-        String username = customUser.getUserDTO().getUsername();
-        int classCode = customUser.getUserDTO().getClassCode();
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(UserDataDto.builder()
-                        .userId(userId)
-                        .username(username)
-                        .role(role)
-                        .classCode(classCode)
-                        .build());
+    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
+        return ResponseEntity.status(HttpStatus.OK).body(customUser.getUserDTO());
     }
 
     @PostMapping("/test")
-    public ResponseEntity<?> issueToken(@RequestParam UUID userId, @RequestParam String username, @RequestParam String role, HttpServletResponse response) {
-        String access = jwtUtil.createJwt("access", userId, username, role, 100 * 60 * 60 * 1000L);
-
+    public ResponseEntity<?> issueToken(@RequestParam UUID userId, @RequestParam String username, @RequestParam String email, @RequestParam String role, HttpServletResponse response) {
+        String access = jwtUtil.createJwt("access", userId, username, email, role, 100 * 60 * 60 * 1000L);
         return ResponseEntity.ok()
                 .header("Authorization", "Bearer " + access)
                 .body("JWT access token and refresh token issued for dev use.");

@@ -64,10 +64,11 @@ public class RefreshTokenService {
         String username = jwtUtil.getUsername(refreshToken);
         String role = jwtUtil.getRole(refreshToken).name();
         UUID userId = jwtUtil.getUserId(refreshToken);
+        String email = jwtUtil.getEmail(refreshToken);
 
 
-        String newAccessToken = jwtUtil.createJwt("access", userId, username, role, 60 * 10 * 1000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", userId, username, role,24 * 60 * 60 * 1000L);
+        String newAccessToken = jwtUtil.createJwt("access", userId, username, email, role, 60 * 10 * 1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", userId, username, email, role,24 * 60 * 60 * 1000L);
 
         saveRefreshToken(newRefreshToken, username);
         deleteByRefresh(refreshToken);
