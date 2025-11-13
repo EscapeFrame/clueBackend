@@ -5,6 +5,7 @@ import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class RegisterController {
+public class UserController {
 
     private final JWTUtil jwtUtil;
     private final UserService userService;
@@ -59,5 +60,14 @@ public class RegisterController {
                         .role(role)
                         .classCode(classCode)
                         .build());
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<?> issueToken(@RequestParam UUID userId, @RequestParam String username, @RequestParam String role, HttpServletResponse response) {
+        String access = jwtUtil.createJwt("access", userId, username, role, 100 * 60 * 60 * 1000L);
+
+        return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + access)
+                .body("JWT access token and refresh token issued for dev use.");
     }
 }
