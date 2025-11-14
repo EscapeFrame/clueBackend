@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.user.model;
 
+import hello.cluebackend.application.user.dto.RegisterUserDto;
 import hello.cluebackend.application.user.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,13 @@ public class UserEntity {
     @Column(name="class_code")
     private int classCode;
 
+    private int grade;
+
+    @Column(name="class")
+    private int classNo;
+
+    private int number;
+
     @Column(name="user_name", nullable = false)
     private String username;
 
@@ -44,11 +52,15 @@ public class UserEntity {
         createdAt = LocalDateTime.now();
     }
 
-    public UserEntity(int classCode, String username, String email, Role role) {
-        this.classCode = classCode;
-        this.username = username;
-        this.email = email;
-        this.role = role;
+    public static UserEntity create(UserDto userDto, RegisterUserDto registerUserDto) {
+        UserEntity user = new UserEntity();
+        user.username = userDto.getUsername();
+        user.email = userDto.getEmail();
+        user.role = userDto.getRole();
+        user.grade = registerUserDto.getGrade();
+        user.classNo = registerUserDto.getClassNo();
+        user.number = registerUserDto.getNumber();
+        return user;
     }
 
     public UserDto toUserDTO() {

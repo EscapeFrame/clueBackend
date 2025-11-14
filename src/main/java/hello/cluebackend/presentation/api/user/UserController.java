@@ -40,8 +40,7 @@ public class UserController {
         HttpSession session = request.getSession();
         UserDto userDto = (UserDto) session.getAttribute("firstUser");
         session.removeAttribute("firstUser");
-        log.info("ClassCode 1 : " + registerUserDto.getClassCode());
-        userService.registerUser(userDto, registerUserDto.getClassCode());
+        userService.registerUser(userDto, registerUserDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

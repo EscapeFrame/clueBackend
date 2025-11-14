@@ -48,7 +48,12 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+            return false;
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            return true;
+        }
     }
 
     public String getCategory(String token) {

@@ -79,7 +79,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             GrantedAuthority auth = iterator.next();
             String role = String.valueOf(customUserDetails.getUserDTO().getRole());
 
-            String access = jwtUtil.createJwt("access", userId, username, email, role, 60*60*1000L);
+            String access = jwtUtil.createJwt("access", userId, username, email, role, 20000L);
             String refresh = jwtUtil.createJwt("refresh", userId, username, email, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
@@ -88,13 +88,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
             if ("app".equals(clientType)) {
-                baseUrl = baseUrl+"/auth/callback?access_token=" + access + "&refresh_token=" + refresh;
+                baseUrl = baseUrl+"/auth/callback?access_token=" + access;
             } else {
                 baseUrl = baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh;
                 System.out.println("============== web login success ===============");
             }
-            response.sendRedirect(baseUrl);
-//            getRedirectStrategy().sendRedirect(request, response, baseUrl);
+//            response.sendRedirect(baseUrl);
+            getRedirectStrategy().sendRedirect(request, response, baseUrl);
         }
     }
 
@@ -104,7 +104,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-
         return cookie;
     }
 }

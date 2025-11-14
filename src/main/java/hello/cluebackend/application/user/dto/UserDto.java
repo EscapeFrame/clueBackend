@@ -18,24 +18,19 @@ public class UserDto {
     private Role role;
     private String username;
     private int classCode;
+    private int grade;
+    private int classNo;
+    private int number;
     private LocalDateTime createdAt;
 
-    public UserDto(UUID userId, String email, Role role, String username, int classCode) {
-        this.userId = userId;
-        this.email = email;
-        this.role = role;
-        this.username = username;
-        this.classCode = classCode;
-    }
-
-    public UserEntity toEntity() {
-        return UserEntity.builder()
-                .userId(userId)
-                .email(email)
-                .role(role)
-                .username(username)
-                .classCode(classCode)
-                .createdAt(createdAt)
-                .build();
+    public static UserDto first(String email, String username, Role role) {
+        UserDto userDto = new UserDto();
+        userDto.email = email;
+        userDto.username = username;
+        userDto.role = role;
+        userDto.grade = -1;
+        userDto.classNo = -1;
+        userDto.number = -1;
+        return userDto;
     }
 }

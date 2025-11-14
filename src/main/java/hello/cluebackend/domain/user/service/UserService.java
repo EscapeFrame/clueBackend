@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.user.service;
 
+import hello.cluebackend.application.user.dto.RegisterUserDto;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
 import hello.cluebackend.application.user.dto.UserDto;
@@ -14,13 +15,8 @@ import java.util.UUID;
 public class UserService {
     private final UserJpaRepository userJpaRepository;
 
-    public void registerUser(UserDto userDto, int classCode) {
-        UserEntity userEntity = new UserEntity(
-                classCode,
-                userDto.getUsername(),
-                userDto.getEmail(),
-                userDto.getRole()
-        );
+    public void registerUser(UserDto userDto, RegisterUserDto registerUserDto) {
+        UserEntity userEntity = UserEntity.create(userDto, registerUserDto);
         userJpaRepository.save(userEntity);
     }
 

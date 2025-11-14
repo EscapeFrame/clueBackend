@@ -44,13 +44,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<UserEntity> existDataOptional = userJpaRepository.findByEmail(email);
 
         if(existDataOptional.isEmpty()) {
-            UserDto userDTO = new UserDto();
-            userDTO.setEmail(oAuth2Response.getEmail());
-            userDTO.setUsername(username);
-            userDTO.setRole(role);
-            userDTO.setClassCode(-1);
-
-            return new CustomOAuth2User(userDTO);
+            UserDto userDto = UserDto.first(oAuth2Response.getEmail(), username, role);
+            return new CustomOAuth2User(userDto);
         }
 
         UserEntity existData = existDataOptional.get();
@@ -58,8 +53,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         existData.setUsername(oAuth2Response.getName());
         userJpaRepository.save(existData);
 
-        UserDto userDTO = existData.toUserDTO();
-        return new CustomOAuth2User(userDTO);
+        UserDto userDto = existData.toUserDTO();
+        return new CustomOAuth2User(userDto);
     }
 
 }

@@ -6,5 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RegisterUserDto {
-    private int classCode;
+    private int grade;
+    private int classNo;
+    private int number;
 }

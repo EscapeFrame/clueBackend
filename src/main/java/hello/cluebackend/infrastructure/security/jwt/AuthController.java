@@ -18,7 +18,7 @@ public class AuthController {
         this.refreshTokenService = refreshTokenService;
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/reissue")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         refreshTokenService.reissueRefreshToken(request, response);
         return new ResponseEntity<>(HttpStatus.OK);
