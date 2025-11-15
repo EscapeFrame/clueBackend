@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name="LinkSave", url = "http://localhost:8081", configuration = FeignOkHttpConfiguration.class)
+@FeignClient(name="LinkSave", url = "${linksave.url}", configuration = FeignOkHttpConfiguration.class)
 public interface LinkSaveClient {
 
     @GetMapping("/linksave")
