@@ -48,3 +48,5 @@ src/main/resources/files
 
 ### 로킹 파일 ###
 application.*
+
+API_SPEC.md
