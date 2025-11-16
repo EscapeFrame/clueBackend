@@ -39,7 +39,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2Response oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
 
         String username = oAuth2Response.getName();
-        username = username.substring(2);
 
         Optional<UserEntity> existDataOptional = userJpaRepository.findByEmail(email);
 
@@ -49,8 +48,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         UserEntity existData = existDataOptional.get();
-        existData.setEmail(oAuth2Response.getEmail());
-        existData.setUsername(oAuth2Response.getName());
+        existData.update(oAuth2Response.getEmail(), username);
         userJpaRepository.save(existData);
 
         UserDto userDto = existData.toUserDTO();

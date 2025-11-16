@@ -12,7 +12,6 @@ import java.util.UUID;
 @ToString
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,12 +26,12 @@ public class UserEntity {
     @Column(name="class_code")
     private int classCode;
 
-    private int grade;
+    private Integer grade;
 
     @Column(name="class")
-    private int classNo;
+    private Integer classNo;
 
-    private int number;
+    private Integer number;
 
     @Column(name="user_name", nullable = false)
     private String username;
@@ -46,6 +45,9 @@ public class UserEntity {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private String value;
 
     @PrePersist
     protected void onCreate() {
@@ -76,5 +78,10 @@ public class UserEntity {
 
     public boolean isTeacher() {
       return this.role == Role.TEACHER;
+    }
+
+    public void update(String email, String username) {
+        if(!this.email.equals(email)) this.email = email;
+        if(!this.username.equals(username)) this.username = username;
     }
 }

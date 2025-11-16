@@ -42,7 +42,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        UserDto userDTO = customUserDetails.getUserDTO();
+        UserDto userDto = customUserDetails.getUserDTO();
 
         String baseUrl = frontBaseUrl;
 
@@ -60,9 +60,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             session.removeAttribute("client_type");
         }
         System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
-        int classCode = userDTO.getClassCode();
-        if (classCode == -1) {
-            request.getSession().setAttribute("firstUser", userDTO);
+        int grade = userDto.getGrade();
+        int classNo = userDto.getClassNo();
+        int number = userDto.getNumber();
+        if (grade == -1 ||  classNo == -1 || number == -1) {
+            request.getSession().setAttribute("firstUser", userDto);
 
             getRedirectStrategy().sendRedirect(
                     request,
@@ -72,14 +74,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else {
             String username = customUserDetails.getUsername();
             UUID userId = customUserDetails.getUserId();
-            String email =  userDTO.getEmail();
+            String email =  userDto.getEmail();
 
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
             String role = String.valueOf(customUserDetails.getUserDTO().getRole());
 
-            String access = jwtUtil.createJwt("access", userId, username, email, role, 20000L);
+            String access = jwtUtil.createJwt("access", userId, username, email, role, 60*60*1000L);
             String refresh = jwtUtil.createJwt("refresh", userId, username, email, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
