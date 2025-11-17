@@ -4,15 +4,15 @@ import hello.cluebackend.application.user.dto.*;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.common.utils.JWTUtil;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,7 +57,18 @@ public class UserController {
 
     @GetMapping("/api/user/me/image")
     public ResponseEntity<Resource> getMyImage(@AuthenticationPrincipal CustomOAuth2User customUser) {
-        userService.getMyImage(customUser.getUserDTO().getUserId());
+        UserImage userImage = userService.getMyImage(customUser.getUserDTO().getUserId());
+
+        String contentType = userImage.getContentType();
+        MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
+
+        return ResponseEntity.
+                status(HttpStatus.OK)
+                .contentType(mediaType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .build()
+                        .toString())
+                .body(userImage.getResource());
     }
 
     @PostMapping("/test")

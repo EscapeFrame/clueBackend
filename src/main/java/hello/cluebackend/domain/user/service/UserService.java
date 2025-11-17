@@ -2,6 +2,7 @@ package hello.cluebackend.domain.user.service;
 
 import hello.cluebackend.application.user.UserMapper;
 import hello.cluebackend.application.user.dto.RegisterUserDto;
+import hello.cluebackend.application.user.dto.UserImage;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
@@ -40,9 +41,9 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을수 없습니다."));
     }
 
-    public void getMyImage(UUID userId) {
+    public UserImage getMyImage(UUID userId) {
         UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수가 없습니다."));
         Resource resource = fileService.downloadFile(user.getValue());
-
+        return userMapper.toUserImage(user, resource);
     }
 }
