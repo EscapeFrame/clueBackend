@@ -1,6 +1,6 @@
 package hello.cluebackend.application.user;
 
-import hello.cluebackend.application.user.dto.UserImage;
+import hello.cluebackend.application.user.dto.response.UserImage;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import org.springframework.core.io.Resource;

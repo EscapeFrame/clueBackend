@@ -1,7 +1,7 @@
 package hello.cluebackend.domain.user.model;
 
-import hello.cluebackend.application.user.dto.RegisterUserDto;
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -61,7 +61,7 @@ public class UserEntity {
 
     public static UserEntity create(UserDto userDto, RegisterUserDto registerUserDto, String storedFileName,  MultipartFile image) throws IOException {
         UserEntity user = new UserEntity();
-        user.username = userDto.getUsername();
+        user.username = registerUserDto.getUsername();
         user.email = userDto.getEmail();
         user.role = userDto.getRole();
         user.grade = registerUserDto.getGrade();

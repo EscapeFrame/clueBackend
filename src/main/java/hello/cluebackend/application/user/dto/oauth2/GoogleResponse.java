@@ -1,4 +1,4 @@
-package hello.cluebackend.application.user.dto;
+package hello.cluebackend.application.user.dto.oauth2;
 
 import java.util.Map;
 

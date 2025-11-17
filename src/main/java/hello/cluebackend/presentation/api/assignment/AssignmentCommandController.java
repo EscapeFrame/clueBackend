@@ -7,7 +7,7 @@ import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.application.assignment.dto.response.AssignmentDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
 import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;

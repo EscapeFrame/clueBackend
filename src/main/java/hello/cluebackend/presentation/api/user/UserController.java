@@ -1,7 +1,10 @@
 package hello.cluebackend.presentation.api.user;
 
-import hello.cluebackend.application.user.dto.*;
-import hello.cluebackend.domain.user.model.Role;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.DefaultRegisterUserDto;
+import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.response.UserDto;
+import hello.cluebackend.application.user.dto.response.UserImage;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,6 +52,11 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PatchMapping("/api/user")
+    public ResponseEntity<Void> updateProfile(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+    }
+
     @GetMapping("/api/user/me")
     public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
         return ResponseEntity.status(HttpStatus.OK).body(customUser.getUserDTO());
@@ -65,7 +72,7 @@ public class UserController {
         return ResponseEntity.
                 status(HttpStatus.OK)
                 .contentType(mediaType)
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .build()
                         .toString())
                 .body(userImage.getResource());

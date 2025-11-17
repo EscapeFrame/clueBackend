@@ -1,6 +1,6 @@
 package hello.cluebackend.presentation.api.notice;
 
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.application.notice.dto.response.NoticeDto;
 import hello.cluebackend.application.notice.dto.response.NoticeInfoDto;
 import hello.cluebackend.domain.notice.service.NoticeQueryService;

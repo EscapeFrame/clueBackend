@@ -1,7 +1,7 @@
 package hello.cluebackend.config;
 
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.ServletException;

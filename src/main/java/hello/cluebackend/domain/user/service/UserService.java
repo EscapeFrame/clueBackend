@@ -1,12 +1,12 @@
 package hello.cluebackend.domain.user.service;
 
 import hello.cluebackend.application.user.UserMapper;
-import hello.cluebackend.application.user.dto.RegisterUserDto;
-import hello.cluebackend.application.user.dto.UserImage;
+import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.response.UserImage;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;

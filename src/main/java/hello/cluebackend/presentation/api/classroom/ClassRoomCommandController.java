@@ -2,9 +2,8 @@ package hello.cluebackend.presentation.api.classroom;
 
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomCommandService;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.domain.user.model.Role;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

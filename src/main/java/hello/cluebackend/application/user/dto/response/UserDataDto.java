@@ -1,4 +1,4 @@
-package hello.cluebackend.application.user.dto;
+package hello.cluebackend.application.user.dto.response;
 
 import hello.cluebackend.domain.user.model.Role;
 import lombok.*;

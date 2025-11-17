@@ -1,10 +1,10 @@
 package hello.cluebackend.domain.user.service;
 
 
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
-import hello.cluebackend.application.user.dto.GoogleResponse;
-import hello.cluebackend.application.user.dto.OAuth2Response;
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.GoogleResponse;
+import hello.cluebackend.application.user.dto.oauth2.OAuth2Response;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;

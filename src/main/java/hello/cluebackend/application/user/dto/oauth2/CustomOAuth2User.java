@@ -1,5 +1,6 @@
-package hello.cluebackend.application.user.dto;
+package hello.cluebackend.application.user.dto.oauth2;
 
+import hello.cluebackend.application.user.dto.response.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
