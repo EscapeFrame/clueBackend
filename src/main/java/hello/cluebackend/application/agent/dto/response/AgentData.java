@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AgentData {
     @JsonProperty("agent_id")
-    private String agentId;
+    private UUID agentId;
     private String status;
     @JsonProperty("created_at")
     private ZonedDateTime createdAt;
