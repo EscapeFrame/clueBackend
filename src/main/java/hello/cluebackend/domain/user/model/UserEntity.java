@@ -1,6 +1,7 @@
 package hello.cluebackend.domain.user.model;
 
 import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.request.UpdateUserDto;
 import hello.cluebackend.application.user.dto.response.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,7 +49,7 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String value;
 
     @Column(nullable = true)
@@ -83,6 +84,10 @@ public class UserEntity {
                 .email(email)
                 .role(role)
                 .createdAt(createdAt)
+                .grade(grade)
+                .classNo(classNo)
+                .number(number)
+                .description(description)
                 .build();
     }
 
@@ -93,5 +98,13 @@ public class UserEntity {
     public void update(String email, String username) {
         if(!this.email.equals(email)) this.email = email;
         if(!this.username.equals(username)) this.username = username;
+    }
+
+    public void updateProfile(UpdateUserDto userDto) {
+        if(userDto.getUsername() != null) this.username = userDto.getUsername();
+        if(userDto.getGrade() != null) this.grade = userDto.getGrade();
+        if(userDto.getClassNo() != null) this.classNo = userDto.getClassNo();
+        if(userDto.getNumber() != null) this.number = userDto.getNumber();
+        if(userDto.getDescription() != null) this.description = userDto.getDescription();
     }
 }

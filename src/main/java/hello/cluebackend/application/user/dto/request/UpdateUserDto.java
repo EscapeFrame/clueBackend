@@ -7,10 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class UpdateUserDto {
     private String username;
     private String description;
-    private int grade;
-    private int classNo;
-    private int number;
+    private Integer grade;
+    private Integer classNo;
+    private Integer number;
 }
