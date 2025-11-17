@@ -90,8 +90,8 @@ server:
 logging:
   level:
     root: INFO
-    org.springframework.web: INFO
-    org.hibernate.SQL: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
 
 linksave:
   url: http://localhost:8081
