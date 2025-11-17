@@ -1,36 +1,27 @@
 package hello.cluebackend.infrastructure.client.agent;
 
 import hello.cluebackend.application.agent.dto.request.AgentRequest;
-import hello.cluebackend.application.agent.dto.response.AgentDocResponse;
-import hello.cluebackend.application.agent.dto.response.AgentFlowResponse;
-import hello.cluebackend.application.agent.dto.response.AgentGraphResponse;
-import hello.cluebackend.application.agent.dto.response.AgentResponse;
+import hello.cluebackend.application.agent.dto.response.*;
 import hello.cluebackend.config.FeignLoggerConfig;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @FeignClient(name = "agentClient", url = "${fastapi.url}", configuration = FeignLoggerConfig.class)
 public interface AgentClient {
   @PostMapping("/api/v1/agents")
-  AgentResponse createAgent(@RequestBody AgentRequest agentRequest);
+  AgentResponse<AgentData> createAgent(@RequestBody AgentRequest agentRequest);
+
+  @GetMapping("/api/v1/agents/{agent_id}")
+  AgentResponse<AgentAllDataResponse> getAgent(@PathVariable UUID agent_id);
 
   @PostMapping("/api/v1/agents/{agent_id}/flow")
-  AgentFlowResponse createFlow(@PathVariable UUID agent_id);
-
-  @PatchMapping("/api/v1/agents/{agent_id}/flow")
-  AgentFlowResponse patchFlow(@PathVariable UUID agent_id );
+  AgentResponse<AgentFlowResponse> createFlow(@PathVariable UUID agent_id);
 
   @PostMapping("/api/v1/agents/{agent_id}/doc")
-  AgentDocResponse createDoc(@PathVariable UUID agent_id);
-
-  @PatchMapping("/api/v1/agents/{agent_id}/doc")
-  AgentDocResponse patchDoc(@PathVariable UUID agent_id);
+  AgentResponse<AgentDocResponse> createDoc(@PathVariable UUID agent_id);
 
   @PostMapping("/api/v1/agents/{agent_id}/graph")
-  AgentGraphResponse createGraph(@PathVariable UUID agent_id);
+  AgentResponse<AgentGraphResponse> createGraph(@PathVariable UUID agent_id);
 }
