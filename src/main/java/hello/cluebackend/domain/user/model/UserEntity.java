@@ -5,7 +5,9 @@ import hello.cluebackend.application.user.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -49,12 +51,15 @@ public class UserEntity {
     @Column(nullable = false)
     private String value;
 
+    @Column(nullable = true)
+    private String contentType;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
 
-    public static UserEntity create(UserDto userDto, RegisterUserDto registerUserDto) {
+    public static UserEntity create(UserDto userDto, RegisterUserDto registerUserDto, String storedFileName,  MultipartFile image) throws IOException {
         UserEntity user = new UserEntity();
         user.username = userDto.getUsername();
         user.email = userDto.getEmail();
@@ -62,6 +67,8 @@ public class UserEntity {
         user.grade = registerUserDto.getGrade();
         user.classNo = registerUserDto.getClassNo();
         user.number = registerUserDto.getNumber();
+        user.value = storedFileName;
+        user.contentType = image.getContentType();
         return user;
     }
 

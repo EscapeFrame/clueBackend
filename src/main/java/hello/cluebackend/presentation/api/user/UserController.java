@@ -4,6 +4,7 @@ import hello.cluebackend.application.user.dto.*;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.common.utils.JWTUtil;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Slf4j
@@ -36,17 +39,25 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> processRegistration(HttpServletRequest request, @RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<?> processRegistration(
+            HttpServletRequest request,
+            @RequestPart(value = "user") RegisterUserDto registerUserDto,
+            @RequestPart(value = "image") MultipartFile image) throws IOException {
         HttpSession session = request.getSession();
         UserDto userDto = (UserDto) session.getAttribute("firstUser");
         session.removeAttribute("firstUser");
-        userService.registerUser(userDto, registerUserDto);
+        userService.registerUser(userDto, registerUserDto, image);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/api/user/me")
     public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User customUser) {
         return ResponseEntity.status(HttpStatus.OK).body(customUser.getUserDTO());
+    }
+
+    @GetMapping("/api/user/me/image")
+    public ResponseEntity<Resource> getMyImage(@AuthenticationPrincipal CustomOAuth2User customUser) {
+        userService.getMyImage(customUser.getUserDTO().getUserId());
     }
 
     @PostMapping("/test")
