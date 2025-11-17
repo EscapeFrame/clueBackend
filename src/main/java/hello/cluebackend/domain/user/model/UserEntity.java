@@ -54,6 +54,9 @@ public class UserEntity {
     @Column(nullable = true)
     private String contentType;
 
+    @Column(nullable = true)
+    private String description;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
