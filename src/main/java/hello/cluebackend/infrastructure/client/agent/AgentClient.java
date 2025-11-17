@@ -5,6 +5,7 @@ import hello.cluebackend.application.agent.dto.response.AgentDocResponse;
 import hello.cluebackend.application.agent.dto.response.AgentFlowResponse;
 import hello.cluebackend.application.agent.dto.response.AgentGraphResponse;
 import hello.cluebackend.application.agent.dto.response.AgentResponse;
+import hello.cluebackend.config.FeignLoggerConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
-@FeignClient(name = "agentClient", url = "${fastapi.url}")
+@FeignClient(name = "agentClient", url = "${fastapi.url}", configuration = FeignLoggerConfig.class)
 public interface AgentClient {
   @PostMapping("/api/v1/agents")
   AgentResponse createAgent(@RequestBody AgentRequest agentRequest);

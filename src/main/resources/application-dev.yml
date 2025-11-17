@@ -7,3 +7,7 @@ spring:
   config:
     activate:
       on-profile: dev
+
+logging:
+  level:
+    hello.cluebackend.infrastructure.client.agent.AgentClient: DEBUG
