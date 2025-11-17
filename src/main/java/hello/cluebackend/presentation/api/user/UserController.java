@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/api/user/me/image")
-    public ResponseEntity<Resource> getMyImage(@AuthenticationPrincipal CustomOAuth2User customUser) {
+    public ResponseEntity<Resource> getImage(@AuthenticationPrincipal CustomOAuth2User customUser) {
         UserImage userImage = userService.getMyImage(customUser.getUserDTO().getUserId());
 
         String contentType = userImage.getContentType();
@@ -81,6 +81,14 @@ public class UserController {
                         .build()
                         .toString())
                 .body(userImage.getResource());
+    }
+
+    @PutMapping("/api/user/me/image")
+    public ResponseEntity<Void> updateImage(
+            @AuthenticationPrincipal CustomOAuth2User customUser,
+            MultipartFile image) throws IOException {
+        userService.updateImage(customUser.getUserDTO().getUserId(), image);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/test")

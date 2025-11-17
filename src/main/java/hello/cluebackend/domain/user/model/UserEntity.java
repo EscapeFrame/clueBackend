@@ -107,4 +107,9 @@ public class UserEntity {
         if(userDto.getNumber() != null) this.number = userDto.getNumber();
         if(userDto.getDescription() != null) this.description = userDto.getDescription();
     }
+
+    public void updateImage(String storedFileName, MultipartFile image) {
+        this.value = storedFileName;
+        this.contentType = image.getContentType();
+    }
 }

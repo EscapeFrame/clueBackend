@@ -59,4 +59,11 @@ public class UserService {
         UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
         return user.toUserDTO();
     }
+
+    public void updateImage(UUID userId, MultipartFile image) throws IOException {
+        UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
+        fileService.deleteFile(user.getValue());
+        String storedFileName = fileService.storeFile(image);
+        user.updateImage(storedFileName, image);
+    }
 }
