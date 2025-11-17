@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AgentFlowResponse {
-    private UUID agentId;
-    private String status;
-    private Flow flow;
+public class AgentAllDataResponse {
+    private AgentAllData data;
+    private String message;
 }

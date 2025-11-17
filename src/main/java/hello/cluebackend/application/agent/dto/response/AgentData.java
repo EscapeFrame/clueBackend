@@ -5,14 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AgentDocResponse {
-  @JsonProperty("agent_id")
-  private UUID agentId;
-  private String status;
-  private Doc doc;
+public class AgentData {
+    @JsonProperty("agent_id")
+    private UUID agentId;
+    private String status;
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
 }

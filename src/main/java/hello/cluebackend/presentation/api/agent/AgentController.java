@@ -1,10 +1,7 @@
 package hello.cluebackend.presentation.api.agent;
 
 import hello.cluebackend.application.agent.dto.request.AgentRequest;
-import hello.cluebackend.application.agent.dto.response.AgentDocResponse;
-import hello.cluebackend.application.agent.dto.response.AgentFlowResponse;
-import hello.cluebackend.application.agent.dto.response.AgentGraphResponse;
-import hello.cluebackend.application.agent.dto.response.AgentResponse;
+import hello.cluebackend.application.agent.dto.response.*;
 import hello.cluebackend.application.user.dto.CustomOAuth2User;
 import hello.cluebackend.infrastructure.client.agent.AgentClient;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +22,7 @@ public class AgentController {
 
   // 에이전트 생성
   @PostMapping
-  public ResponseEntity<AgentResponse> createAgent(
+  public ResponseEntity<AgentResponse<AgentData>> createAgent(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @RequestBody AgentRequest agentRequest
   ) {
@@ -33,49 +30,40 @@ public class AgentController {
     return ResponseEntity.status(HttpStatus.CREATED).body(agentResponse);
   }
 
-  // 플로우 생성
-  @PostMapping("/{agent_id}/flow")
-  public ResponseEntity<AgentFlowResponse> createFlow(
+  @GetMapping("/{agentId}")
+  public ResponseEntity<AgentResponse<AgentAllDataResponse>> getAgent(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-          @PathVariable UUID agent_id
+          @PathVariable UUID agentId
   ) {
-    AgentFlowResponse agentFlowResponse = agentClient.createFlow(agent_id);
-    return ResponseEntity.status(HttpStatus.CREATED).body(agentFlowResponse);
+    AgentResponse getAgent = agentClient.getAgent(agentId);
+    return ResponseEntity.status(HttpStatus.OK).body(getAgent);
   }
 
-  @PatchMapping("/{agent_id}/flow")
-  public ResponseEntity<AgentFlowResponse> patchFlow(
+  // 플로우 생성
+  @PostMapping("/{agent_id}/flow")
+  public ResponseEntity<AgentResponse<AgentFlowResponse>> createFlow(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agent_id
   ) {
-    AgentFlowResponse agentFlowResponse = agentClient.patchFlow(agent_id);
+    AgentResponse agentFlowResponse = agentClient.createFlow(agent_id);
     return ResponseEntity.status(HttpStatus.CREATED).body(agentFlowResponse);
   }
 
   @PostMapping("/{agent_id}/doc")
-  public ResponseEntity<AgentDocResponse> createDoc(
+  public ResponseEntity<AgentResponse<AgentDocResponse>> createDoc(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agent_id
   ) {
-    AgentDocResponse agentDocResponse = agentClient.createDoc(agent_id);
-    return ResponseEntity.status(HttpStatus.CREATED).body(agentDocResponse);
-  }
-
-  @PatchMapping("/{agent_id}/doc")
-  public ResponseEntity<AgentDocResponse> patchDoc(
-          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-          @PathVariable UUID agent_id
-  ) {
-    AgentDocResponse agentDocResponse = agentClient.patchDoc(agent_id);
+    AgentResponse agentDocResponse = agentClient.createDoc(agent_id);
     return ResponseEntity.status(HttpStatus.CREATED).body(agentDocResponse);
   }
 
   @PostMapping("/{agent_id}/graph")
-  public ResponseEntity<AgentGraphResponse> createGraph(
+  public ResponseEntity<AgentResponse<AgentGraphResponse>> createGraph(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agent_id
   ) {
-    AgentGraphResponse agentGraphResponse = agentClient.createGraph(agent_id);
+    AgentResponse agentGraphResponse = agentClient.createGraph(agent_id);
     return ResponseEntity.status(HttpStatus.CREATED).body(agentGraphResponse);
   }
 }
