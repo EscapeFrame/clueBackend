@@ -2,7 +2,7 @@ package hello.cluebackend.presentation.api.agent;
 
 import hello.cluebackend.application.agent.dto.request.AgentRequest;
 import hello.cluebackend.application.agent.dto.response.*;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.infrastructure.client.agent.AgentClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
