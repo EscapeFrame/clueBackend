@@ -1,8 +1,8 @@
 package hello.cluebackend.config;
 
 import hello.cluebackend.domain.user.model.Role;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -59,11 +59,13 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(accessToken);
         Role role = jwtUtil.getRole(accessToken);
         UUID userId = jwtUtil.getUserId(accessToken);
+        String email = jwtUtil.getEmail(accessToken);
 
         UserDto userDTO = new UserDto();
         userDTO.setUsername(username);
         userDTO.setRole(role);
         userDTO.setUserId(userId);
+        userDTO.setEmail(email);
 
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
 

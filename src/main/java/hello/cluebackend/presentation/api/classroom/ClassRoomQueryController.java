@@ -4,7 +4,7 @@ import hello.cluebackend.application.classroom.dto.ClassRoomAllInfoDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomCardDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
