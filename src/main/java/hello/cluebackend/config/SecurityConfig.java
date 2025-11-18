@@ -97,7 +97,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(
-                                "/", "/refresh-token", "/h2-console/**",
+                                "/", "/reissue", "/h2-console/**",
                                 "/favicon.ico", "/error",
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
                                 "/test"

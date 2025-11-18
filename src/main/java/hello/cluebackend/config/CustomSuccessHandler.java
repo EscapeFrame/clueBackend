@@ -1,7 +1,7 @@
 package hello.cluebackend.config;
 
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.ServletException;
@@ -42,7 +42,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        UserDto userDTO = customUserDetails.getUserDTO();
+        UserDto userDto = customUserDetails.getUserDTO();
 
         String baseUrl = frontBaseUrl;
 
@@ -60,9 +60,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             session.removeAttribute("client_type");
         }
         System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
-        int classCode = userDTO.getClassCode();
-        if (classCode == -1) {
-            request.getSession().setAttribute("firstUser", userDTO);
+        int grade = userDto.getGrade();
+        int classNo = userDto.getClassNo();
+        int number = userDto.getNumber();
+        if (grade == -1 ||  classNo == -1 || number == -1) {
+            request.getSession().setAttribute("firstUser", userDto);
+
             getRedirectStrategy().sendRedirect(
                     request,
                     response,
@@ -71,27 +74,29 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else {
             String username = customUserDetails.getUsername();
             UUID userId = customUserDetails.getUserId();
+            String email =  userDto.getEmail();
 
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
             String role = String.valueOf(customUserDetails.getUserDTO().getRole());
 
-            String access = jwtUtil.createJwt("access", userId, username, role, 60*60*1000L);
-            String refresh = jwtUtil.createJwt("refresh", userId, username, role,7 * 24  * 60 * 60 * 1000L);
+            String access = jwtUtil.createJwt("access", userId, username, email, role, 60*60*1000L);
+            String refresh = jwtUtil.createJwt("refresh", userId, username, email, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
 
 //            response.setHeader("Authorization", "Bearer " + access);
-//            response.addCookie(createCookie("refresh_token", refresh));
+            response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
             if ("app".equals(clientType)) {
-                baseUrl = baseUrl+"/auth/callback?access_token=" + access + "&refresh_token=" + refresh;
+                baseUrl = baseUrl+"/auth/callback?access_token=" + access;
             } else {
                 baseUrl = baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh;
+                System.out.println("============== web login success ===============");
             }
-            response.sendRedirect(baseUrl);
-//            getRedirectStrategy().sendRedirect(request, response, baseUrl);
+//            response.sendRedirect(baseUrl);
+            getRedirectStrategy().sendRedirect(request, response, baseUrl);
         }
     }
 
@@ -101,7 +106,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-
         return cookie;
     }
 }

@@ -6,7 +6,7 @@ import hello.cluebackend.application.assignment.dto.request.ModifyAssignmentDto;
 import hello.cluebackend.domain.assignment.service.AssignmentQueryService;
 import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.domain.submission.service.SubmissionQueryService;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

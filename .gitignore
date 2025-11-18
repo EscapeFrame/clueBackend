@@ -46,7 +46,7 @@ src/main/resources/files
 
 /src/main/generated
 
-### 로킹 파일 ###
-application.*
+application.log
+application.2025*
 
 API_SPEC.md
