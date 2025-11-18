@@ -72,9 +72,9 @@ public class Assignment {
 
 
   public void updateDetails(String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
-    if (title != null) this.title = title;
-    if (content != null) this.content = content;
-    if (startDate != null) this.startDate = startDate;
-    if (endDate != null) this.endDate = endDate;
+    this.title = title;
+    this.content = content;
+    this.startDate = startDate;
+    this.endDate = endDate;
   }
 }

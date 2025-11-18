@@ -92,3 +92,6 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
+
+linksave:
+  url: http://localhost:8081

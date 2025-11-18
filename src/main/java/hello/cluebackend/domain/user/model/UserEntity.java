@@ -1,17 +1,20 @@
 package hello.cluebackend.domain.user.model;
 
-import hello.cluebackend.application.user.dto.UserDto;
+import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.request.UpdateUserDto;
+import hello.cluebackend.application.user.dto.response.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @ToString
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,6 +29,13 @@ public class UserEntity {
     @Column(name="class_code")
     private int classCode;
 
+    private Integer grade;
+
+    @Column(name="class")
+    private Integer classNo;
+
+    private Integer number;
+
     @Column(name="user_name", nullable = false)
     private String username;
 
@@ -39,16 +49,31 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = true)
+    private String value;
+
+    @Column(nullable = true)
+    private String contentType;
+
+    @Column(nullable = true)
+    private String description;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
 
-    public UserEntity(int classCode, String username, String email, Role role) {
-        this.classCode = classCode;
-        this.username = username;
-        this.email = email;
-        this.role = role;
+    public static UserEntity create(UserDto userDto, RegisterUserDto registerUserDto, String storedFileName,  MultipartFile image) throws IOException {
+        UserEntity user = new UserEntity();
+        user.username = registerUserDto.getUsername();
+        user.email = userDto.getEmail();
+        user.role = userDto.getRole();
+        user.grade = registerUserDto.getGrade();
+        user.classNo = registerUserDto.getClassNo();
+        user.number = registerUserDto.getNumber();
+        user.value = storedFileName;
+        user.contentType = image.getContentType();
+        return user;
     }
 
     public UserDto toUserDTO() {
@@ -59,10 +84,32 @@ public class UserEntity {
                 .email(email)
                 .role(role)
                 .createdAt(createdAt)
+                .grade(grade)
+                .classNo(classNo)
+                .number(number)
+                .description(description)
                 .build();
     }
 
     public boolean isTeacher() {
       return this.role == Role.TEACHER;
+    }
+
+    public void update(String email, String username) {
+        if(!this.email.equals(email)) this.email = email;
+        if(!this.username.equals(username)) this.username = username;
+    }
+
+    public void updateProfile(UpdateUserDto userDto) {
+        this.username = userDto.getUsername();
+        this.grade = userDto.getGrade();
+        this.classNo = userDto.getClassNo();
+        this.number = userDto.getNumber();
+        this.description = userDto.getDescription();
+    }
+
+    public void updateImage(String storedFileName, MultipartFile image) {
+        this.value = storedFileName;
+        this.contentType = image.getContentType();
     }
 }

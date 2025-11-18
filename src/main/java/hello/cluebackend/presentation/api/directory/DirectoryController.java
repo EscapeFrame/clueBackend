@@ -4,7 +4,7 @@ import hello.cluebackend.application.directory.dto.RequestDirectoryDto;
 import hello.cluebackend.domain.directory.service.DirectoryService;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
+import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

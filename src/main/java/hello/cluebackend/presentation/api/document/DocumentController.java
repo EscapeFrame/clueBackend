@@ -2,7 +2,6 @@ package hello.cluebackend.presentation.api.document;
 
 import hello.cluebackend.application.document.dto.*;
 import hello.cluebackend.domain.document.service.DocumentService;
-import hello.cluebackend.application.user.dto.CustomOAuth2User;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

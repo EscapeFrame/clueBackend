@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,21 +34,7 @@ public class RefreshTokenService {
     }
 
     public void reissueRefreshToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationCredentialsNotFoundException {
-//        System.out.println("reissueRefreshToken");
-        String refreshToken = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new AuthenticationCredentialsNotFoundException("refresh token null");
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh_token")) {
-                refreshToken = cookie.getValue();
-            }
-        }
-
-        if (refreshToken == null) {
-            throw new AuthenticationCredentialsNotFoundException("refresh token null");
-        }
+        String refreshToken = getString(request);
 
         jwtUtil.isExpired(refreshToken);
 
@@ -64,10 +51,11 @@ public class RefreshTokenService {
         String username = jwtUtil.getUsername(refreshToken);
         String role = jwtUtil.getRole(refreshToken).name();
         UUID userId = jwtUtil.getUserId(refreshToken);
+        String email = jwtUtil.getEmail(refreshToken);
 
 
-        String newAccessToken = jwtUtil.createJwt("access", userId, username, role, 60 * 10 * 1000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", userId, username, role,24 * 60 * 60 * 1000L);
+        String newAccessToken = jwtUtil.createJwt("access", userId, username, email, role, 60*60*1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", userId, username, email, role,24 * 60 * 60 * 1000L);
 
         saveRefreshToken(newRefreshToken, username);
         deleteByRefresh(refreshToken);
@@ -76,10 +64,29 @@ public class RefreshTokenService {
         response.addCookie(createCookie("refresh_token", newRefreshToken));
     }
 
+    @NotNull
+    private static String getString(HttpServletRequest request) {
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthenticationCredentialsNotFoundException("refresh token null");
+        }
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("refresh_token")) {
+                refreshToken = cookie.getValue();
+            }
+        }
+
+        if (refreshToken == null) {
+            throw new AuthenticationCredentialsNotFoundException("refresh token null");
+        }
+        return refreshToken;
+    }
+
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(7 * 24  * 60 * 60);
-        // cookie.setSecure(true);
+         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 
