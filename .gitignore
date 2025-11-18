@@ -47,6 +47,6 @@ src/main/resources/files
 /src/main/generated
 
 application.log
-application.2025*
+/logs/*
 
 API_SPEC.md
