@@ -48,3 +48,5 @@ src/main/resources/files
 
 application.log
 application.2025*
+
+API_SPEC.md

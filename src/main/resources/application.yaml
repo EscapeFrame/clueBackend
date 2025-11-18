@@ -84,6 +84,10 @@ server:
         same-site: none
         secure: true
         http-only: true
+fastapi:
+  url: ${AI_SERVER_URL}
+linksave:
+  url: ${LINKSAVE_URL}
 
   address: 0.0.0.0
   port: 8080
@@ -92,6 +96,3 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
-
-linksave:
-  url: http://localhost:8081
