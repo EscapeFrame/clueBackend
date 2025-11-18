@@ -101,11 +101,11 @@ public class UserEntity {
     }
 
     public void updateProfile(UpdateUserDto userDto) {
-        if(userDto.getUsername() != null) this.username = userDto.getUsername();
-        if(userDto.getGrade() != null) this.grade = userDto.getGrade();
-        if(userDto.getClassNo() != null) this.classNo = userDto.getClassNo();
-        if(userDto.getNumber() != null) this.number = userDto.getNumber();
-        if(userDto.getDescription() != null) this.description = userDto.getDescription();
+        this.username = userDto.getUsername();
+        this.grade = userDto.getGrade();
+        this.classNo = userDto.getClassNo();
+        this.number = userDto.getNumber();
+        this.description = userDto.getDescription();
     }
 
     public void updateImage(String storedFileName, MultipartFile image) {
