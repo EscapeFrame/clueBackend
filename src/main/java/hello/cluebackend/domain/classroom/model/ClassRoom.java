@@ -2,6 +2,7 @@ package hello.cluebackend.domain.classroom.model;
 
 import hello.cluebackend.application.classroom.dto.ClassRoomCardDto;
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
+import hello.cluebackend.domain.assignment.model.Assignment;
 import hello.cluebackend.domain.classroomuser.model.ClassRoomUser;
 import hello.cluebackend.domain.directory.model.Directory;
 import hello.cluebackend.domain.document.model.Document;
@@ -11,6 +12,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,13 +55,16 @@ public class ClassRoom {
     }
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<ClassRoomUser> classRoomUserList;
+    private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<Directory>  directoryList;
+    private List<Directory>  directoryList = new ArrayList<>();
 
     @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
-    private List<Document> documentList;
+    private List<Document> documentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    private List<Assignment> assignmentList = new ArrayList<>();
 
     public ClassRoomDto toDTO() {
         List<String> teacherNames = classRoomUserList.stream()

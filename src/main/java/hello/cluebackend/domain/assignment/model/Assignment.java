@@ -48,6 +48,9 @@ public class Assignment {
   @JsonIgnore
   private List<Submission> submissions = new ArrayList<>();
 
+  @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private List<AssignmentAttachment> attachments = new ArrayList<>();
+
   // DTO 기반 정적 팩토리 메서드
   public static Assignment create(ClassRoom classRoom, UserEntity user, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
     return Assignment.builder()
