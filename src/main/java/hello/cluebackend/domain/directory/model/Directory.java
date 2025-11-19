@@ -1,11 +1,13 @@
 package hello.cluebackend.domain.directory.model;
 
+import hello.cluebackend.application.directory.dto.RequestDirectoryDto;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.application.directory.dto.DirectoryDto;
 import hello.cluebackend.domain.document.model.Document;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,18 +30,18 @@ public class Directory {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private int directoryOrder;
+    @Column(nullable = true)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL)
     private List<Document> documentList;
 
-    public DirectoryDto  toDto() {
-        return DirectoryDto.builder()
-                .directoryId(directoryId)
-                .classRoom(classRoom)
-                .name(name)
-                .directoryOrder(directoryOrder)
-                .build();
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    public void update(RequestDirectoryDto requestDirectoryDto) {
+        this.name = requestDirectoryDto.getName();
     }
 }

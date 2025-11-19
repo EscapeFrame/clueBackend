@@ -9,5 +9,4 @@ public class RequestDirectoryDto {
     private UUID directoryId;
     private UUID classRoomId;
     private String name;
-    private int directoryOrder;
 }

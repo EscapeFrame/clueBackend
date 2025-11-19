@@ -18,14 +18,4 @@ public class DirectoryDto {
     private UUID directoryId;
     private ClassRoom classRoom;
     private String name;
-    private int directoryOrder;
-
-    public Directory toDto() {
-        return Directory.builder()
-                .directoryId(directoryId)
-                .classRoom(classRoom)
-                .name(name)
-                .directoryOrder(directoryOrder)
-                .build();
-    }
 }

@@ -13,7 +13,7 @@ public class DirectoryMapper {
         return DirectoryAllInfoDto.builder()
                 .directoryId(directory.getDirectoryId())
                 .directoryName(directory.getName())
-                .directoryOrder(directory.getDirectoryOrder())
+//                .directoryOrder(directory.getDirectoryOrder())
                 .documentList(documentDtoList)
                 .build();
     }
