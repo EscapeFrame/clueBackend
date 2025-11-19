@@ -22,21 +22,24 @@ public class ClassRoomQueryController {
     private final ClassRoomQueryService classRoomQueryService;
 
     @GetMapping
-    public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+    public ResponseEntity<List<ClassRoomCardDto>> getAllClassRooms(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
         return ResponseEntity.ok(classRoomQueryService.findMyClassRoomById(customOAuth2User.getUserId()));
     }
 
     @GetMapping("/{classId}/all")
     public ResponseEntity<ClassRoomAllInfoDto> getAllInfo(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable UUID classId
-    ){
+    ) {
         return ResponseEntity.ok(classRoomQueryService.getAllInfo(classId));
     }
 
     @GetMapping("/{classId}")
     public ResponseEntity<ClassRoomDto> findClassRoom(
-            @PathVariable UUID classId,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @PathVariable UUID classId
     ) {
       ClassRoomDto findClassRoomDto = classRoomQueryService.findById(customOAuth2User.getUserId(), classId);
       return ResponseEntity.ok(findClassRoomDto);
