@@ -52,8 +52,4 @@ public class CustomOAuth2User implements OAuth2User {
     public UUID getUserId() {
         return userDTO.getUserId();
     }
-
-    public int getClassCode() {
-        return userDTO.getClassCode();
-    }
 }

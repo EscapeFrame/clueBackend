@@ -7,7 +7,9 @@ import java.util.UUID;
 
 public record SubmissionCheck (
         String userName,
-        int classNumberGrade,
+        int grade,
+        int classNo,
+        int number,
         UUID submissionId,
         boolean isSubmitted,
         LocalDateTime submittedAt
@@ -15,7 +17,9 @@ public record SubmissionCheck (
   public static SubmissionCheck from(Submission submission) {
     return new SubmissionCheck(
             submission.getUser().getUsername(),
-            submission.getUser().getClassCode(),
+            submission.getUser().getGrade(),
+            submission.getUser().getClassNo(),
+            submission.getUser().getNumber(),
             submission.getSubmissionId(),
             submission.getIsSubmitted(),
             submission.getSubmittedAt()
