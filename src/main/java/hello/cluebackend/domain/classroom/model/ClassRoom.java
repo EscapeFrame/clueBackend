@@ -54,16 +54,16 @@ public class ClassRoom {
         createdAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<ClassRoomUser> classRoomUserList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Directory>  directoryList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "classRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Assignment> assignmentList = new ArrayList<>();
 
     public ClassRoomDto toDTO() {
