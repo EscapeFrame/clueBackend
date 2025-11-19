@@ -52,7 +52,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String baseUrl = frontBaseUrl;
 
-        HttpSession session = request.getSession(false); // 세션이 없을 수도 있으면 false로
+        HttpSession session = request.getSession(false); // 세션이 없을 수도 있으면 false
         String clientType = null;
         if (session != null) {
             Object clientTypeObj = session.getAttribute("client_type");
@@ -62,7 +62,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 baseUrl = appBaseUrl;
             }
 
-            // 확인 후 세션에서 삭제
             session.removeAttribute("client_type");
         }
         System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
@@ -71,7 +70,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         int number = userDto.getNumber();
         if (grade == -1 ||  classNo == -1 || number == -1) {
             request.getSession().setAttribute("firstUser", userDto);
-
             if ("app".equals(clientType)) {
                 baseUrl = baseUrl+ appRegisterRedirectUrl ;
             } else {
@@ -92,8 +90,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String refresh = jwtUtil.createJwt("refresh", userId, username, email, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
-
-//            response.setHeader("Authorization", "Bearer " + access);
             response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
             if ("app".equals(clientType)) {
@@ -101,7 +97,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             } else {
                 baseUrl = baseUrl+"/login?access_token=" + access;
             }
-//            response.sendRedirect(baseUrl);
             getRedirectStrategy().sendRedirect(request, response, baseUrl);
         }
     }
