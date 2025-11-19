@@ -82,4 +82,9 @@ public class UserService {
                 .map(userMapper::toUserInfo)
                 .collect(Collectors.toList());
     }
+
+    public void deleteById(UUID userId) {
+        UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
+        userJpaRepository.delete(user);
+    }
 }
