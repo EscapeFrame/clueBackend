@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public record SubmissionResponse(
+        UUID classId,
+        UUID assignmentId,
         String title,
         String content,
         LocalDateTime startDate,
@@ -22,6 +24,8 @@ public record SubmissionResponse(
 ) {
   public static SubmissionResponse from(Submission submission, List<SubmissionAttachmentResponse> sa) {
     return new SubmissionResponse(
+            submission.getClassRoom().getClassRoomId(),
+            submission.getAssignment().getAssignmentId(),
             submission.getAssignment().getTitle(),
             submission.getAssignment().getContent(),
             submission.getAssignment().getStartDate(),
