@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,36 +22,24 @@ public class DirectoryController {
     private final DirectoryService directoryService;
     private final UserService userService;
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping
-    public ResponseEntity<?> createDirectory(
-            @RequestBody RequestDirectoryDto requestDirectoryDto,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
-    ){
-        UserEntity user = userService.findById(customOAuth2User.getUserId());
-        if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> createDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto) {
         directoryService.createDirectory(requestDirectoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PatchMapping
-    public ResponseEntity<?> updateDirectory(
-            @RequestBody RequestDirectoryDto requestDirectoryDto,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
-    ){
-      UserEntity user = userService.findById(customOAuth2User.getUserId());
-      if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Void> updateDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto) {
       directoryService.updateDirectory(requestDirectoryDto);
-      return new ResponseEntity<>(HttpStatus.OK);
+      return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @DeleteMapping
-    public ResponseEntity<?> deleteDirectory(
-            @RequestBody RequestDirectoryDto requestDirectoryDto,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
-    ) {
-      UserEntity user = userService.findById(customOAuth2User.getUserId());
-      if(!user.getRole().equals(Role.TEACHER)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Void> deleteDirectory(@RequestBody RequestDirectoryDto requestDirectoryDto) {
       directoryService.deleteById(requestDirectoryDto.getDirectoryId());
-      return new ResponseEntity<>(HttpStatus.OK);
+      return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

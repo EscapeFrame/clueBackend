@@ -27,11 +27,8 @@ public class DirectoryService {
     }
 
     public void updateDirectory(RequestDirectoryDto requestDirectoryDto) {
-        ClassRoom findClassRoom = classRoomJpaRepository.findById(requestDirectoryDto.getClassRoomId()).orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
         Directory directory = directoryJpaRepository.findById(requestDirectoryDto.getDirectoryId()).orElseThrow(() -> new IllegalArgumentException("해당 디렉토리가 존재하지 않습니다."));
-        directory.setName(requestDirectoryDto.getName());
-        directory.setClassRoom(findClassRoom);
-
+        directory.update(requestDirectoryDto);
         directoryJpaRepository.save(directory);
     }
 

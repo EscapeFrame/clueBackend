@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.directory.model;
 
+import hello.cluebackend.application.directory.dto.RequestDirectoryDto;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.application.directory.dto.DirectoryDto;
 import hello.cluebackend.domain.document.model.Document;
@@ -38,5 +39,9 @@ public class Directory {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    public void update(RequestDirectoryDto requestDirectoryDto) {
+        this.name = requestDirectoryDto.getName();
     }
 }
