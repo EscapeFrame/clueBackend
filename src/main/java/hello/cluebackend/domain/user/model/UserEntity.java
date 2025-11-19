@@ -25,10 +25,6 @@ public class UserEntity {
     @Column(name="user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    @ColumnDefault("-1")
-    @Column(name="class_code")
-    private int classCode;
-
     private Integer grade;
 
     @Column(name="class")
@@ -79,7 +75,6 @@ public class UserEntity {
     public UserDto toUserDTO() {
         return UserDto.builder()
                 .userId(userId)
-                .classCode(classCode)
                 .username(username)
                 .email(email)
                 .role(role)
