@@ -14,6 +14,6 @@ import java.util.UUID;
 public class DirectoryAllInfoDto {
     private UUID directoryId;
     private String directoryName;
-    private int directoryOrder;
+    // private int directoryOrder;
     private List<DocumentAllInfoDto> documentList;
 }

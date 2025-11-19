@@ -57,7 +57,8 @@ public class ClassRoomQueryService {
     ClassRoom classRoom = classRoomJpaRepository.findById(classId)
       .orElseThrow(() -> new IllegalArgumentException("해당 수업이 존재하지 않습니다."));
     List<DirectoryAllInfoDto> directoryDtoList = classRoom.getDirectoryList().stream()
-            .sorted(Comparator.comparingInt(Directory::getDirectoryOrder))
+//            .sorted(Comparator.comparingInt(Directory::getDirectoryOrder))
+            .sorted(Comparator.comparing(Directory::getCreatedAt))
             .map(directory -> {
               List<DocumentAllInfoDto> documentDtoList = directory.getDocumentList().stream()
                       .sorted(Comparator.comparing(Document::getCreatedAt))
