@@ -18,5 +18,4 @@ public class DirectoryDto {
     private UUID directoryId;
     private ClassRoom classRoom;
     private String name;
-//    private int directoryOrder;
 }

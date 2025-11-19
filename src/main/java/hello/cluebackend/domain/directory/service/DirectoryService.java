@@ -33,10 +33,6 @@ public class DirectoryService {
     }
 
     public void deleteById(UUID directoryId) {
-        try {
-            directoryJpaRepository.deleteById(directoryId);
-        } catch(Exception e) {
-            throw e;
-        }
+        directoryJpaRepository.deleteById(directoryId);
     }
 }
