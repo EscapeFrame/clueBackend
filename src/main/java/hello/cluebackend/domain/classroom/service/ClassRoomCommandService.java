@@ -2,6 +2,7 @@ package hello.cluebackend.domain.classroom.service;
 
 import hello.cluebackend.application.classroom.dto.ClassRoomDto;
 import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
+import hello.cluebackend.domain.classroom.exception.AlreadyJoinedClassRoomException;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
@@ -55,6 +56,11 @@ public class ClassRoomCommandService {
   public void joinClassRoom(UUID userId, String code) {
     ClassRoom findClassRoom = classRoomJpaRepository.findByCode(code).orElseThrow(() -> new EntityNotFoundException("classroom not found"));
     UserEntity findUser = userService.findById(userId);
+
+    if (classRoomUserJpaRepository.existsByClassRoomAndUser(findClassRoom, findUser)) {
+      throw new AlreadyJoinedClassRoomException("이미 참여한 교실입니다.");
+    }
+
     ClassRoomUser classRoomUser = ClassRoomUser.create(findClassRoom, findUser);
     classRoomUserJpaRepository.save(classRoomUser);
   }
