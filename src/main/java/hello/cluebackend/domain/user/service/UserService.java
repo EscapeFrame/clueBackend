@@ -2,6 +2,7 @@ package hello.cluebackend.domain.user.service;
 
 import hello.cluebackend.application.user.UserMapper;
 import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.request.UpdateRoleUserDto;
 import hello.cluebackend.application.user.dto.request.UpdateUserDto;
 import hello.cluebackend.application.user.dto.response.UserImage;
 import hello.cluebackend.domain.file.service.FileService;
@@ -66,5 +67,10 @@ public class UserService {
         if(value != null) fileService.deleteFile(value);
         String storedFileName = fileService.storeFile(image);
         user.updateImage(storedFileName, image);
+    }
+
+    public void updateRole(UpdateRoleUserDto updateRoleUserDto) {
+        UserEntity user = userJpaRepository.findById(updateRoleUserDto.getUserId()).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
+        user.updateRole(updateRoleUserDto.getRole());
     }
 }

@@ -112,4 +112,8 @@ public class UserEntity {
         this.value = storedFileName;
         this.contentType = image.getContentType();
     }
+
+    public void updateRole(Role role) {
+        this.role = role;
+    }
 }
