@@ -57,11 +57,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (session != null) {
             Object clientTypeObj = session.getAttribute("client_type");
             clientType = clientTypeObj != null ? clientTypeObj.toString() : null;
-
             if ("app".equals(clientType)) {
                 baseUrl = appBaseUrl;
             }
-
             session.removeAttribute("client_type");
         }
         System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
