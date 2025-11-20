@@ -76,8 +76,8 @@ public class SubmissionCommandService {
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     List<Submission> submissions = submissionJpaRepository.findAllByAssignment(assignment);
     return submissions.stream()
-            .filter(s -> s.getUser().getUserId().equals(userId))
-            .map(s -> SubmissionCheck.from(s))
+            .filter(s -> s.getUser().getRole()==Role.STUDENT)
+            .map(SubmissionCheck::from)
             .toList();
   }
 
