@@ -74,6 +74,6 @@ public class SubmissionQueryController {
           @RequestBody List<SubmissionAttachmentUrlDto> dto
   ) {
     submissionQueryService.linkUpload(userId, submissionId, dto);
-    return ResponseEntity.ok("첨부 파일 삭제");
+    return ResponseEntity.ok("첨부 파일 추가");
   }
 }
