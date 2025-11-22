@@ -67,7 +67,7 @@ public class SubmissionQueryController {
   }
 
   // 과제 제출 첨부 링크 추가
-  @PostMapping("/{submisisonId}/link")
+  @PostMapping("/{submissionId}/link")
   public ResponseEntity<?> linkUpload(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionId,
