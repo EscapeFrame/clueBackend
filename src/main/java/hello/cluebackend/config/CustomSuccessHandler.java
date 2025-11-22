@@ -30,6 +30,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${app.base-url}")
     private String appBaseUrl;
 
+    @Value("${app.redirect-url.login}")
+    private String appLoginRedirectUrl;
+
+    @Value("${app.redirect-url.register}")
+    private String appRegisterRedirectUrl;
+
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
     public CustomSuccessHandler(JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
@@ -46,17 +52,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String baseUrl = frontBaseUrl;
 
-        HttpSession session = request.getSession(false); // 세션이 없을 수도 있으면 false로
+        HttpSession session = request.getSession(false); // 세션이 없을 수도 있으면 false
         String clientType = null;
         if (session != null) {
             Object clientTypeObj = session.getAttribute("client_type");
             clientType = clientTypeObj != null ? clientTypeObj.toString() : null;
-
             if ("app".equals(clientType)) {
                 baseUrl = appBaseUrl;
             }
-
-            // 확인 후 세션에서 삭제
             session.removeAttribute("client_type");
         }
 
@@ -66,12 +69,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         int number = userDto.getNumber();
         if (grade == -1 ||  classNo == -1 || number == -1) {
             request.getSession().setAttribute("firstUser", userDto);
-
-            getRedirectStrategy().sendRedirect(
-                    request,
-                    response,
-                    baseUrl + "/register"
-            );
+            if ("app".equals(clientType)) {
+                baseUrl = baseUrl+ appRegisterRedirectUrl ;
+            } else {
+                baseUrl = baseUrl + "/register";
+            }
+            getRedirectStrategy().sendRedirect(request, response, baseUrl);
         } else {
             String username = customUserDetails.getUsername();
             UUID userId = customUserDetails.getUserId();
@@ -86,17 +89,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String refresh = jwtUtil.createJwt("refresh", userId, username, email, role,7 * 24  * 60 * 60 * 1000L);
 
             refreshTokenService.saveRefreshToken(refresh, username);
-
-//            response.setHeader("Authorization", "Bearer " + access);
             response.addCookie(createCookie("refresh_token", refresh));
             response.setStatus(HttpStatus.OK.value());
             if ("app".equals(clientType)) {
-                baseUrl = baseUrl+"/auth/callback?access_token=" + access;
+                baseUrl = baseUrl+ appLoginRedirectUrl + "?access_token=" + access;
             } else {
-                baseUrl = baseUrl+"/login?access_token=" + access + "&refresh_token=" + refresh;
-                System.out.println("============== web login success ===============");
+                baseUrl = baseUrl+"/login?access_token=" + access;
             }
-//            response.sendRedirect(baseUrl);
             getRedirectStrategy().sendRedirect(request, response, baseUrl);
         }
     }

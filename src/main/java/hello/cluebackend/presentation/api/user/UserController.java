@@ -45,7 +45,7 @@ public class UserController {
     public ResponseEntity<?> processRegistration(
             HttpServletRequest request,
             @RequestPart(value = "user") RegisterUserDto registerUserDto,
-            @RequestPart(value = "image") MultipartFile image) throws IOException {
+            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
         HttpSession session = request.getSession();
         UserDto userDto = (UserDto) session.getAttribute("firstUser");
         session.removeAttribute("firstUser");
@@ -83,7 +83,7 @@ public class UserController {
                 .body(userImage.getResource());
     }
 
-    @PutMapping("/api/user/me/image")
+    @PatchMapping("/api/user/me/image")
     public ResponseEntity<Void> updateImage(
             @AuthenticationPrincipal CustomOAuth2User customUser,
             MultipartFile image) throws IOException {

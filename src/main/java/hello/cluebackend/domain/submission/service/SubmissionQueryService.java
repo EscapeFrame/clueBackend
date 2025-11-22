@@ -81,17 +81,17 @@ public class SubmissionQueryService {
 
   // 첨부 링크 추가
   @Transactional
-  public SubmissionAttachment linkUpload(UUID userId, UUID submissionId, SubmissionAttachmentUrlDto dto) {
+  public void linkUpload(UUID userId, UUID submissionId, List<SubmissionAttachmentUrlDto> urlDtos) {
     Submission submission = submissionCommandService.findByIdOrThrow(submissionId);
+    for(SubmissionAttachmentUrlDto dto : urlDtos) {
+      SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
+              .submission(submission)
+              .type(FileType.URL)
+              .value(dto.url())
+              .build();
 
-    SubmissionAttachment submissionAttachment = SubmissionAttachment.builder()
-            .submission(submission)
-            .type(FileType.URL)
-            .value(dto.url())
-            .build();
-
-    submissionAttachmentJpaRepository.save(submissionAttachment);
-    return submissionAttachment;
+      submissionAttachmentJpaRepository.save(submissionAttachment);
+    }
   }
 
   // 첨부 파일 삭제
