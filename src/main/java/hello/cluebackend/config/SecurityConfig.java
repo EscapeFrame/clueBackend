@@ -1,14 +1,11 @@
 package hello.cluebackend.config;
 
 import hello.cluebackend.domain.user.service.CustomOAuth2UserService;
-import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import hello.cluebackend.common.utils.JWTUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -65,36 +62,6 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .addLogoutHandler((request, response, authentication) -> {
-                            String refreshToken = null;
-                            Cookie[] cookies = request.getCookies();
-                            if (cookies != null) {
-                                for (Cookie cookie : cookies) {
-                                    if ("refresh_token".equals(cookie.getName())) {
-                                        refreshToken = cookie.getValue();
-                                        break;
-                                    }
-                                }
-                            }
-                            if (refreshToken == null) {
-                                throw new AuthenticationCredentialsNotFoundException("refresh_token 쿠키가 존재하지 않습니다.");
-                            }
-                            refreshTokenService.deleteByRefresh(refreshToken);
-
-                            response.setHeader("Authorization", "Bearer ");
-
-                            Cookie refreshTokenCookie = new Cookie("refresh_token", null);
-                            refreshTokenCookie.setMaxAge(0);
-                            refreshTokenCookie.setPath("/");
-                            response.addCookie(refreshTokenCookie);
-                        })
-                        .deleteCookies("JSESSIONID", "refresh_token")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
-                )
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(
                                 "/", "/reissue", "/h2-console/**",
@@ -105,7 +72,7 @@ public class SecurityConfig {
                                 "/ui/**"
                         ).permitAll()
 //                        .requestMatchers("/api/notice").hasRole(Role.TEACHER.name())
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

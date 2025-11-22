@@ -1,6 +1,7 @@
 package hello.cluebackend.application.user;
 
 import hello.cluebackend.application.user.dto.response.UserImage;
+import hello.cluebackend.application.user.dto.response.UserInfoDto;
 import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import org.springframework.core.io.Resource;
@@ -23,6 +24,19 @@ public class UserMapper {
         return UserImage.builder()
                 .contentType(user.getContentType())
                 .resource(resource)
+                .build();
+    }
+
+    public UserInfoDto toUserInfo(UserEntity user) {
+        return UserInfoDto.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .grade(user.getGrade())
+                .classNo(user.getClassNo())
+                .number(user.getNumber())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

@@ -38,9 +38,6 @@ public class NoticeQueryService {
     }
 
     public NoticeInfoDto findById(UUID userId, UUID noticeId) {
-        if(!isMyNotice(userId, noticeId)) {
-            throw new IsNotMyNoticeException("해당 공지사항을 수정할 권한이 없습니다.");
-        }
         Notice notice = noticeJpaRepository.findById(noticeId).orElseThrow(() -> new EntityNotFoundException("해당 공지사항이 찾을 수가 없습니다."));
         List<NoticeDocument> noticeDocument = notice.getNoticeDocuments();
         NoticeInfoDto noticeInfoDto = notice.toInfoDto();

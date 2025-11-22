@@ -57,11 +57,11 @@ public class ClassRoomCommandController {
 
 
   @DeleteMapping("/{classId}")
-  public ResponseEntity<?> deleteClassRoom(
+  public ResponseEntity<Void> deleteClassRoom(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID classId
   ) {
     classRoomCommandService.deleteClassRoom(customOAuth2User.getUserId(), classId);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 }

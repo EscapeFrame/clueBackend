@@ -9,14 +9,16 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @FeignClient(name="LinkSave", url = "${linksave.url}", configuration = FeignOkHttpConfiguration.class)
 public interface LinkSaveClient {
 
     @GetMapping("/linksave")
     List<LinkResponse> getAll(
-            @RequestParam char grade,
-            @RequestParam char clas,
+            @RequestParam UUID userId,
+            @RequestParam int grade,
+            @RequestParam int clas,
             @RequestParam AuthorizationType authorization,
             @RequestParam() SubjectType subjectType,
             @RequestParam(defaultValue = "40") int size,
@@ -24,14 +26,29 @@ public interface LinkSaveClient {
     );
 
     @GetMapping("/linksave/{link_id}") // 링크 단일 조회
-    LinkResponse getLink(@PathVariable Long link_id);
+    LinkResponse getLink(
+            @RequestParam UUID userId,
+            @RequestParam int grade,
+            @RequestParam int clas,
+            @PathVariable Long link_id
+    );
 
     @PostMapping("/linksave")
-    LinkResponse save(@RequestBody LinkRequest linkRequest);
+    LinkResponse save(
+            @RequestParam UUID userId,
+            @RequestBody LinkRequest linkRequest
+    );
 
     @DeleteMapping("/linksave/{link_id}") // 링크 삭제
-    boolean deleteLink(@PathVariable Long link_id);
+    boolean deleteLink(
+            @RequestParam UUID userId,
+            @PathVariable Long link_id
+    );
 
     @PatchMapping("/linksave/{link_id}") // 링크 수정
-    LinkResponse updateLink(@PathVariable Long link_id, @RequestBody LinkRequest linkRequest);
+    LinkResponse updateLink(
+            @RequestParam UUID userId,
+            @PathVariable Long link_id,
+            @RequestBody LinkRequest linkRequest
+    );
 }

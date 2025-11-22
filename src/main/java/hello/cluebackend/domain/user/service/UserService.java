@@ -2,8 +2,10 @@ package hello.cluebackend.domain.user.service;
 
 import hello.cluebackend.application.user.UserMapper;
 import hello.cluebackend.application.user.dto.request.RegisterUserDto;
+import hello.cluebackend.application.user.dto.request.UpdateRoleUserDto;
 import hello.cluebackend.application.user.dto.request.UpdateUserDto;
 import hello.cluebackend.application.user.dto.response.UserImage;
+import hello.cluebackend.application.user.dto.response.UserInfoDto;
 import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
@@ -16,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,5 +70,21 @@ public class UserService {
         if(value != null) fileService.deleteFile(value);
         String storedFileName = fileService.storeFile(image);
         user.updateImage(storedFileName, image);
+    }
+
+    public void updateRole(UpdateRoleUserDto updateRoleUserDto) {
+        UserEntity user = userJpaRepository.findById(updateRoleUserDto.getUserId()).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
+        user.updateRole(updateRoleUserDto.getRole());
+    }
+
+    public List<UserInfoDto> getAllUsers() {
+        return userJpaRepository.findAll().stream()
+                .map(userMapper::toUserInfo)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteById(UUID userId) {
+        UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
+        userJpaRepository.delete(user);
     }
 }
