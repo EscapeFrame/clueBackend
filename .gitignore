@@ -50,3 +50,5 @@ application.log
 /logs/*
 
 API_SPEC.md
+
+CLAUDE.md

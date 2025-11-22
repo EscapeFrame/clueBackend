@@ -100,7 +100,9 @@ public class SecurityConfig {
                                 "/", "/reissue", "/h2-console/**",
                                 "/favicon.ico", "/error",
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
-                                "/test"
+                                "/test",
+                                "/ws-quiz/**", "/ws-quiz-raw/**",
+                                "/ui/**"
                         ).permitAll()
 //                        .requestMatchers("/api/notice").hasRole(Role.TEACHER.name())
                         .anyRequest().authenticated()
