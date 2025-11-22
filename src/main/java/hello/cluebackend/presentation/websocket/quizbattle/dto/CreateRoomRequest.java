@@ -16,4 +16,5 @@ public class CreateRoomRequest {
     private Integer questionCount;
     private Integer timePerQuestion;
     private UUID classRoomId;
+    private UUID documentId;  // RAG 기반 문제 생성을 위한 문서 ID
 }

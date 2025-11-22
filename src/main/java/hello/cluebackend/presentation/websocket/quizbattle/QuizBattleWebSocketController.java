@@ -42,7 +42,8 @@ public class QuizBattleWebSocketController {
                     request.getMaxParticipants(),
                     request.getQuestionCount(),
                     request.getTimePerQuestion(),
-                    request.getClassRoomId()
+                    request.getClassRoomId(),
+                    request.getDocumentId()
             );
 
             log.info("Room created: {} by user {}", room.getRoomCode(), customOAuth2User.getUserId());

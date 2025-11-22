@@ -85,8 +85,7 @@ class QuizBattleServiceTest {
                 .totalQuestions(questionCount)
                 .status("success")
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>();
-        agentResponse.setData(response);
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
@@ -94,7 +93,7 @@ class QuizBattleServiceTest {
         QuizRoom room = quizBattleService.createRoom(
                 hostId, title, topic,
                 50, questionCount, timePerQuestion,
-                null, documentId  // documentId 추가
+                null, documentId
         );
 
         // then
@@ -120,8 +119,7 @@ class QuizBattleServiceTest {
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>();
-        agentResponse.setData(response);
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
@@ -155,8 +153,7 @@ class QuizBattleServiceTest {
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>();
-        agentResponse.setData(response);
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
@@ -214,8 +211,7 @@ class QuizBattleServiceTest {
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>();
-        agentResponse.setData(response);
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 

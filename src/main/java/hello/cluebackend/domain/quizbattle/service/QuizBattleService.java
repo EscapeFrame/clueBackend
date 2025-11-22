@@ -37,7 +37,7 @@ public class QuizBattleService {
   public QuizRoom createRoom(
           UUID hostId, String title, String topic,
           Integer maxParticipants, Integer questionCount,
-          Integer timePerQuestion, UUID classRoomId
+          Integer timePerQuestion, UUID classRoomId, UUID documentId
   ) {
     UserEntity host = userRepository.findById(hostId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + hostId));
@@ -63,7 +63,13 @@ public class QuizBattleService {
             .build();
 
     QuizRoom savedRoom = quizRoomRepository.save(quizRoom);
-    log.info("Created quiz room: {} with code: {}", title, roomCode);
+
+    // 방 생성 시 FastAPI로 문제 생성 후 Redis에 저장
+    int finalQuestionCount = questionCount != null ? questionCount : 10;
+    List<QuizQuestion> questions = generateQuestions(topic, finalQuestionCount, documentId);
+    redisService.storeQuestions(roomCode, questions);
+
+    log.info("Created quiz room: {} with code: {} and {} questions", title, roomCode, questions.size());
 
     return savedRoom;
   }
@@ -108,9 +114,12 @@ public class QuizBattleService {
             throw new IllegalStateException("Quiz already started or finished");
         }
 
-        List<QuizQuestion> questions = generateQuestions(room.getTopic(), room.getQuestionCount());
+        // Redis에서 이미 저장된 문제 가져오기 (방 생성 시 미리 생성됨)
+        List<QuizQuestion> questions = redisService.getAllQuestions(roomCode);
+        if (questions.isEmpty()) {
+            throw new IllegalStateException("No questions found for room: " + roomCode);
+        }
 
-        redisService.storeQuestions(roomCode, questions);
         redisService.setCurrentQuestion(roomCode, 1);
 
         room.start();
@@ -121,13 +130,14 @@ public class QuizBattleService {
         return questions;
     }
 
-    private List<QuizQuestion> generateQuestions(String topic, int count) {
+    private List<QuizQuestion> generateQuestions(String topic, int count, UUID documentId) {
         try {
             QuizGenerationRequest request = QuizGenerationRequest.builder()
                     .topic(topic)
                     .questionCount(count)
                     .difficulty("Medium")
                     .language("ko")
+                    .documentId(documentId)
                     .build();
 
             AgentResponse<QuizGenerationResponse> response = quizClient.generateQuiz(request);

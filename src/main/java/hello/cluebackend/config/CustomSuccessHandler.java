@@ -59,6 +59,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             // 확인 후 세션에서 삭제
             session.removeAttribute("client_type");
         }
+
         System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
         int grade = userDto.getGrade();
         int classNo = userDto.getClassNo();

@@ -8,6 +8,8 @@ Socket(WebSocket)을 이용한 Kahoot 스타일의 실시간 퀴즈 배틀 서�
 - 호스트가 퀴즈 방을 생성
 - 고유한 6자리 방 코드 자동 생성
 - 주제, 문제 수, 제한 시간, 최대 참가자 수 설정
+- **방 생성 시 FastAPI로 문제 미리 생성 (RAG 기반)**
+- documentId를 통한 특정 문서 기반 문제 생성 지원
 
 ### ✅ 2. 방 참여
 - 방 코드로 입장
@@ -75,25 +77,27 @@ ws://localhost:8080/ws-quiz
 ## 게임 플로우
 
 ```
-1. [호스트] 방 생성
+1. [호스트] 방 생성 요청 (topic, documentId 포함)
    ↓
-2. [참가자들] 방 코드로 입장
+2. [시스템] FastAPI에 문제 생성 요청 (RAG 기반)
    ↓
-3. [호스트] 퀴즈 시작
+3. [시스템] 생성된 문제를 Redis에 저장 + 방 코드 반환
    ↓
-4. [시스템] FastAPI에 문제 생성 요청 (RAG)
+4. [참가자들] 방 코드로 입장
    ↓
-5. [시스템] 첫 번째 문제 브로드캐스트 + 타이머 시작
+5. [호스트] 퀴즈 시작
    ↓
-6. [참가자들] 답변 제출
+6. [시스템] Redis에서 문제 조회 + 첫 번째 문제 브로드캐스트 + 타이머 시작
    ↓
-7. [시스템/호스트] 다음 문제로 이동
+7. [참가자들] 답변 제출
+   ↓
+8. [시스템/호스트] 다음 문제로 이동
    - 자동: 제한 시간 종료 시
    - 수동: 호스트가 넘기기 버튼 클릭
    ↓
-8. 5~7 반복 (모든 문제 완료까지)
+9. 6~8 반복 (모든 문제 완료까지)
    ↓
-9. [시스템] 최종 랭킹 발표 및 퀴즈 종료
+10. [시스템] 최종 랭킹 발표 및 퀴즈 종료 + Redis 데이터 정리
 ```
 
 ## 점수 계산
@@ -124,7 +128,8 @@ ws://localhost:8080/ws-quiz
   "maxParticipants": 30,
   "questionCount": 10,
   "timePerQuestion": 30,
-  "classRoomId": "uuid (optional)"
+  "classRoomId": "uuid (optional)",
+  "documentId": "uuid (optional, RAG 기반 문제 생성용)"
 }
 ```
 
@@ -214,7 +219,8 @@ POST /api/v1/quiz/generate
   "topic": "일반 상식과 과학",
   "questionCount": 10,
   "difficulty": "Medium",
-  "language": "ko"
+  "language": "ko",
+  "documentId": "550e8400-e29b-41d4-a716-446655440000 (optional, RAG 기반 문제 생성)"
 }
 ```
 
@@ -363,10 +369,11 @@ fastapi:
 
 ## 주의사항
 
-1. **문제 생성 실패**: FastAPI 서버가 응답하지 않으면 퀴즈 시작 불가
+1. **문제 생성 실패**: FastAPI 서버가 응답하지 않으면 **방 생성 실패** (기존: 퀴즈 시작 불가)
 2. **동시성**: Redis를 통한 실시간 상태 관리로 동시 접속 처리
 3. **타이머 정확도**: 네트워크 지연으로 인해 클라이언트와 서버 타이머가 약간 다를 수 있음
 4. **보안**: 현재 WebSocket 엔드포인트는 인증 없이 접근 가능 (추후 개선 필요)
+5. **데이터 정리**: 퀴즈 종료 시 Redis 데이터 자동 정리됨 (임시 저장)
 
 ## 향후 개선 사항
 
@@ -380,6 +387,42 @@ fastapi:
 ---
 
 ## 변경 이력
+
+### 2025-11-22: 방 생성 시 문제 미리 생성
+
+#### 변경 내용
+기존에는 퀴즈 시작 시점에 FastAPI로 문제를 생성했으나, **방 생성 시점에 문제를 미리 생성**하도록 변경했습니다.
+
+#### 변경 이유
+- 퀴즈 시작 시 대기 시간 제거
+- 방 생성 실패 시 빠른 피드백 제공
+- documentId를 통한 RAG 기반 문제 생성 지원
+
+#### 변경된 플로우
+```
+Before: 방 생성 → 퀴즈 시작 → FastAPI 호출 → 문제 생성
+After:  방 생성 → FastAPI 호출 → Redis 저장 → 퀴즈 시작 → Redis 조회
+```
+
+#### 수정된 파일
+| 파일 | 변경 내용 |
+|------|----------|
+| `QuizBattleService.java` | `createRoom()`에서 FastAPI 호출 후 Redis 저장, `startQuiz()`는 Redis에서 조회 |
+| `QuizGenerationRequest.java` | `documentId` 필드 추가 |
+| `CreateRoomRequest.java` | `documentId` 필드 추가 |
+| `QuizBattleWebSocketController.java` | `createRoom()` 호출 시 `documentId` 전달 |
+
+#### API 변경사항
+방 생성 요청에 `documentId` 파라미터 추가 (Optional):
+```json
+{
+  "title": "과학 퀴즈",
+  "topic": "일반 상식과 과학",
+  "documentId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+---
 
 ### 2025-11-22: UUID 타입 적용
 
@@ -402,6 +445,8 @@ fastapi:
 | DTO | 필드 | 타입 | 설명 |
 |-----|------|------|------|
 | `CreateRoomRequest` | `classRoomId` | `UUID` | 수업 ID (Optional) |
+| `CreateRoomRequest` | `documentId` | `UUID` | RAG 기반 문제 생성용 문서 ID (Optional) |
+| `QuizGenerationRequest` | `documentId` | `UUID` | FastAPI 요청용 문서 ID (Optional) |
 | `RoomCreatedMessage` | `hostId` | `UUID` | 방 생성자 ID |
 | `ParticipantLeftMessage` | `userId` | `UUID` | 퇴장한 사용자 ID |
 | `QuizRoomDetailResponse` | `hostId` | `UUID` | 호스트 ID |
@@ -434,7 +479,8 @@ List<QuizRoom> findByClassRoomIdAndStatusIn(
   "maxParticipants": 30,
   "questionCount": 10,
   "timePerQuestion": 30,
-  "classRoomId": "550e8400-e29b-41d4-a716-446655440000"
+  "classRoomId": "550e8400-e29b-41d4-a716-446655440000",
+  "documentId": "550e8400-e29b-41d4-a716-446655440002"
 }
 
 // 방 생성 응답
