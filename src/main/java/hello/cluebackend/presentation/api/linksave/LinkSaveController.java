@@ -33,7 +33,7 @@ public class LinkSaveController {
             @RequestParam() SubjectType subjectType,
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(defaultValue = "0") int offset
-            ){
+            ) {
         List<LinkResponse> linkResponses = linkSaveClient.getAll(customOAuth2User.getUserId(), customOAuth2User.getUserDTO().getGrade(), customOAuth2User.getUserDTO().getClassNo(),authorization,subjectType,size,offset);
         return ResponseEntity.ok(linkResponses);
     }
