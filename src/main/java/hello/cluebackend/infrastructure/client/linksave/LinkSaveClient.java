@@ -19,8 +19,7 @@ public interface LinkSaveClient {
             @RequestParam UUID userId,
             @RequestParam int grade,
             @RequestParam int clas,
-            @RequestParam AuthorizationType authorization,
-            @RequestParam() SubjectType subjectType,
+            @RequestParam(required = false) SubjectType subjectType,
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(defaultValue = "0") int offset
     );

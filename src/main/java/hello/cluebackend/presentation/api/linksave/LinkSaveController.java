@@ -3,8 +3,10 @@ package hello.cluebackend.presentation.api.linksave;
 import hello.cluebackend.application.linksave.dto.request.LinkRequest;
 import hello.cluebackend.application.linksave.dto.response.LinkResponse;
 import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.domain.linksave.LinkSaveService;
 import hello.cluebackend.domain.linksave.model.AuthorizationType;
 import hello.cluebackend.domain.linksave.model.SubjectType;
+import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.infrastructure.client.linksave.LinkSaveClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +27,16 @@ import java.util.UUID;
 public class LinkSaveController {
 
     private final LinkSaveClient linkSaveClient;
+    private final LinkSaveService linkSaveService;
 
     @GetMapping // 링크 전체 조회
     public ResponseEntity<List<LinkResponse>> getAll(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @RequestParam AuthorizationType authorization,
-            @RequestParam() SubjectType subjectType,
+            @RequestParam(required = false) SubjectType subjectType,
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(defaultValue = "0") int offset
             ){
-        List<LinkResponse> linkResponses = linkSaveClient.getAll(customOAuth2User.getUserId(), customOAuth2User.getUserDTO().getGrade(), customOAuth2User.getUserDTO().getClassNo(),authorization,subjectType,size,offset);
+        List<LinkResponse> linkResponses = linkSaveService.getAll(customOAuth2User.getUserDTO().getUserId(),subjectType,size,offset);
         return ResponseEntity.ok(linkResponses);
     }
 
@@ -51,7 +53,8 @@ public class LinkSaveController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestBody LinkRequest linkRequest
     ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(linkSaveClient.save(customOAuth2User.getUserId(),linkRequest));
+        System.out.println("### customOAuth2User.getUserDTO().getUserId() = " + customOAuth2User.getUserDTO().getUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(linkSaveClient.save(customOAuth2User.getUserDTO().getUserId(),linkRequest));
     }
 
     @DeleteMapping("/{linkId}")
