@@ -1,6 +1,8 @@
 package hello.cluebackend.infrastructure.client.agent;
 
 import hello.cluebackend.application.agent.dto.request.AgentRequest;
+import hello.cluebackend.application.agent.dto.request.DocFeedbackRequest;
+import hello.cluebackend.application.agent.dto.request.FlowFeedbackRequest;
 import hello.cluebackend.application.agent.dto.response.*;
 import hello.cluebackend.config.FeignLoggerConfig;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,14 +16,20 @@ public interface AgentClient {
   AgentResponse<AgentData> createAgent(@RequestBody AgentRequest agentRequest);
 
   @GetMapping("/api/v1/agents/{agent_id}")
-  AgentResponse<AgentAllDataResponse> getAgent(@PathVariable UUID agent_id);
+  AgentResponse<AllAgentData> getAgent(@PathVariable UUID agent_id);
 
   @PostMapping("/api/v1/agents/{agent_id}/flow")
-  AgentResponse<AgentFlowResponse> createFlow(@PathVariable UUID agent_id);
+  AgentResponse<FlowData> createFlow(@PathVariable UUID agent_id);
+
+  @PatchMapping("/api/v1/agents/{agent_id}/flow")
+  AgentResponse<FlowData> updateFlow(@PathVariable UUID agent_id, @RequestBody FlowFeedbackRequest feedback);
 
   @PostMapping("/api/v1/agents/{agent_id}/doc")
-  AgentResponse<AgentDocResponse> createDoc(@PathVariable UUID agent_id);
+  AgentResponse<DocData> createDoc(@PathVariable UUID agent_id);
 
-  @PostMapping("/api/v1/agents/{agent_id}/graph")
-  AgentResponse<AgentGraphResponse> createGraph(@PathVariable UUID agent_id);
+  @PatchMapping("/api/v1/agents/{agent_id}/doc")
+  AgentResponse<DocData> updateDoc(@PathVariable UUID agent_id, @RequestBody DocFeedbackRequest feedback);
+
+  @PostMapping("/api/v1/agents/{agent_id}/complete")
+  AgentResponse<CompleteData> complete(@PathVariable UUID agent_id);
 }

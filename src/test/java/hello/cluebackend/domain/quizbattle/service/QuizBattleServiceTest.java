@@ -85,7 +85,7 @@ class QuizBattleServiceTest {
                 .totalQuestions(questionCount)
                 .status("success")
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(true, "success", response, null);
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
@@ -119,7 +119,7 @@ class QuizBattleServiceTest {
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(true, "success", response, null);
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
@@ -153,7 +153,7 @@ class QuizBattleServiceTest {
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(true, "success", response, null);
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
@@ -211,7 +211,7 @@ class QuizBattleServiceTest {
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
                 .build();
-        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(response, "success");
+        AgentResponse<QuizGenerationResponse> agentResponse = new AgentResponse<>(true, "success", response, null);
 
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 

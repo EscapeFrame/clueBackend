@@ -1,4 +1,4 @@
-package hello.cluebackend.application.agent.dto.response;
+package hello.cluebackend.application.agent.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Doc {
-    private List<DocItem> docs;
+public class ChatRequest {
+    private String message;
+    private List<ChatMessage> history;
 }
