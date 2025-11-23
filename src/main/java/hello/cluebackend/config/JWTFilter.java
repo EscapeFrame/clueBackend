@@ -22,6 +22,9 @@ import java.util.UUID;
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
     private static final AntPathRequestMatcher REFRESH_MATCHER = new AntPathRequestMatcher("/refresh-token", "POST");
+    private static final AntPathRequestMatcher STATIC_MATCHER = new AntPathRequestMatcher("/ui/**");
+    private static final AntPathRequestMatcher WS_MATCHER = new AntPathRequestMatcher("/ws-quiz/**");
+    private static final AntPathRequestMatcher WS_RAW_MATCHER = new AntPathRequestMatcher("/ws-quiz-raw/**");
     private final JWTUtil jwtUtil;
 
     public JWTFilter(JWTUtil jwtUtil) {
@@ -31,7 +34,11 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (REFRESH_MATCHER.matches(request)) {
+        // Skip JWT filter for static resources and WebSocket endpoints
+        if (REFRESH_MATCHER.matches(request) ||
+            STATIC_MATCHER.matches(request) ||
+            WS_MATCHER.matches(request) ||
+            WS_RAW_MATCHER.matches(request)) {
             filterChain.doFilter(request, response);
             return;
         }

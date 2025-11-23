@@ -63,12 +63,14 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(a -> a
-                                .requestMatchers(
-                                        "/", "/reissue", "/logout", "/h2-console/**",
-                                        "/favicon.ico", "/error",
-                                        "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
-                                        "/test"
-                                ).permitAll()
+                        .requestMatchers(
+                                "/", "/reissue", "/h2-console/**",
+                                "/favicon.ico", "/error",
+                                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
+                                "/test",
+                                "/ws-quiz/**", "/ws-quiz-raw/**",
+                                "/ui/**"
+                        ).permitAll()
 //                        .requestMatchers("/api/notice").hasRole(Role.TEACHER.name())
                                 .anyRequest().authenticated()
                 )
