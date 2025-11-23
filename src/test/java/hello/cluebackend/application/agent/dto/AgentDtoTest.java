@@ -110,6 +110,64 @@ class AgentDtoTest {
             assertThat(request.getMessage()).isEqualTo("How does this work?");
             assertThat(request.getHistory()).hasSize(2);
         }
+
+        @Test
+        @DisplayName("ChatRequest history가 null일 때 빈 리스트로 처리") // history Optional 테스트
+        void chatRequest_shouldHandleNullHistory() {
+            ChatRequest request = new ChatRequest("Hello", null);
+
+            assertThat(request.getMessage()).isEqualTo("Hello");
+            assertThat(request.getHistory()).isNull(); // null 허용
+        }
+    }
+
+    @Nested
+    @DisplayName("PATCH Request DTO Tests - Flow/Doc 피드백용")
+    class PatchRequestDtoTests {
+
+        @Test
+        @DisplayName("FlowFeedbackRequest로 목차 순서 변경 테스트") // 사용자가 목차 순서를 변경하는 시나리오
+        void flowFeedbackRequest_shouldAllowReordering() {
+            List<WordItem> reorderedWords = List.of(
+                new WordItem(2, "Chapter 2", 2),  // 원래 2번이 1번으로
+                new WordItem(1, "Chapter 1", 1),  // 원래 1번이 2번으로
+                new WordItem(3, "Chapter 3", 3)
+            );
+            FlowFeedbackRequest request = new FlowFeedbackRequest(reorderedWords);
+
+            assertThat(request.getWords()).hasSize(3);
+            assertThat(request.getWords().get(0).getIndex()).isEqualTo("Chapter 2");
+            assertThat(request.getWords().get(1).getIndex()).isEqualTo("Chapter 1");
+        }
+
+        @Test
+        @DisplayName("DocFeedbackRequest로 본문 내용 수정 테스트") // 사용자가 본문 내용을 수정하는 시나리오
+        void docFeedbackRequest_shouldAllowContentModification() {
+            List<DocItem> modifiedDocs = List.of(
+                new DocItem("Introduction", "Modified introduction content with more details."),
+                new DocItem("Conclusion", "Updated conclusion with summary.")
+            );
+            DocFeedbackRequest request = new DocFeedbackRequest(modifiedDocs);
+
+            assertThat(request.getDocs()).hasSize(2);
+            assertThat(request.getDocs().get(0).getContent()).contains("Modified");
+        }
+
+        @Test
+        @DisplayName("FlowFeedbackRequest 빈 리스트 허용 테스트") // 빈 목차 리스트 처리
+        void flowFeedbackRequest_shouldAllowEmptyList() {
+            FlowFeedbackRequest request = new FlowFeedbackRequest(List.of());
+
+            assertThat(request.getWords()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("DocFeedbackRequest 빈 리스트 허용 테스트") // 빈 문서 리스트 처리
+        void docFeedbackRequest_shouldAllowEmptyList() {
+            DocFeedbackRequest request = new DocFeedbackRequest(List.of());
+
+            assertThat(request.getDocs()).isEmpty();
+        }
     }
 
     @Nested
@@ -218,6 +276,18 @@ class AgentDtoTest {
 
             assertThat(chatData.getMessage()).isEqualTo("I'm doing well!");
             assertThat(chatData.getHistory()).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("Planning 필드 검증 (scrapedContent 제외)") // Planning 데이터 테스트 - PlanningRequest와 동일 구조
+        void planning_shouldHaveCorrectFields() {
+            Planning planning = new Planning("Java Programming", "Learn OOP concepts",
+                List.of("class", "inheritance"), List.of("https://example.com"));
+
+            assertThat(planning.getStudyingName()).isEqualTo("Java Programming");
+            assertThat(planning.getLearningPurpose()).isEqualTo("Learn OOP concepts");
+            assertThat(planning.getMainWords()).containsExactly("class", "inheritance");
+            assertThat(planning.getLinks()).containsExactly("https://example.com");
         }
 
         @Test

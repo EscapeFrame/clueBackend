@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AgentAllDataResponse {
-  private Boolean success;
-  private String message;
-  private AllAgentData data;
-  private String error;
+public class GraphData {
+    private List<GraphNode> nodes;
 }
