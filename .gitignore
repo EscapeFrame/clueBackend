@@ -42,13 +42,13 @@ postgres-data/
 
 src/main/resources/files
 
-/grafana-volume
-
 /src/main/generated
 
 application.log
 /logs/*
 
-API_SPEC.md
 
+### MarkDown ###
 CLAUDE.md
+QUIZ_BATTLE_GUIDE.md
+API_SPEC.md
