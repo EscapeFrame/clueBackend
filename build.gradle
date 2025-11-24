@@ -66,6 +66,14 @@ dependencies {
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.mockito:mockito-junit-jupiter'
 
+    // H2 Database for testing
+    testImplementation 'com.h2database:h2'
+
+    // Embedded Redis for testing
+    testImplementation ('it.ozimov:embedded-redis:0.7.3') {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
+
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
     //AWS S3
