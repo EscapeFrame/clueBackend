@@ -70,6 +70,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (grade == -1 ||  classNo == -1 || number == -1) {
             request.getSession().setAttribute("firstUser", userDto);
             if ("app".equals(clientType)) {
+                appRegisterRedirectUrl = appRegisterRedirectUrl.replace("'","");
                 baseUrl = baseUrl+ appRegisterRedirectUrl ;
             } else {
                 baseUrl = baseUrl + "/register";

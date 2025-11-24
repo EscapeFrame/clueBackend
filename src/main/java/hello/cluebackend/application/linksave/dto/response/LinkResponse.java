@@ -12,6 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class LinkResponse {
+    private Long id;
     private int grade;
     private int clas;
     private String title;

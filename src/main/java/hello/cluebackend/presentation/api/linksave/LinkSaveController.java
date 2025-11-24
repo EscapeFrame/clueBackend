@@ -58,11 +58,12 @@ public class LinkSaveController {
     }
 
     @DeleteMapping("/{linkId}")
-    public ResponseEntity<Boolean> deleteLink(
+    public ResponseEntity<Void> deleteLink(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long linkId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(linkSaveClient.deleteLink(customOAuth2User.getUserId(),linkId));
+        linkSaveClient.deleteLink(customOAuth2User.getUserId(),linkId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/{linkId}") // 링크 수정
