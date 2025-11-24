@@ -20,7 +20,6 @@ public class LinkSaveService {
 
     public List<LinkResponse> getAll(UUID userId, SubjectType subjectType, int size, int offset) {
         UserEntity user = userService.findById(userId);
-        System.out.println("user.getUsername() = " + user.getUsername());
         return linkSaveClient.getAll(userId, user.getGrade(), user.getClassNo(), subjectType, size, offset);
     }
 }

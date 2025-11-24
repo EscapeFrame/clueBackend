@@ -53,7 +53,6 @@ public class LinkSaveController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestBody LinkRequest linkRequest
     ){
-        System.out.println("### customOAuth2User.getUserDTO().getUserId() = " + customOAuth2User.getUserDTO().getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(linkSaveClient.save(customOAuth2User.getUserDTO().getUserId(),linkRequest));
     }
 
