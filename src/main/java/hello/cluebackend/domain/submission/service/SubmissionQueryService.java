@@ -12,6 +12,7 @@ import hello.cluebackend.domain.classroom.model.ClassRoom;
 import hello.cluebackend.domain.classroom.service.ClassRoomQueryService;
 import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
 import hello.cluebackend.infrastructure.persistence.submissionattachment.SubmissionAttachmentJpaRepository;
+import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.domain.user.model.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class SubmissionQueryService {
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId ,classroomId));
     List<UserEntity> users = classroomUserService.findAllClassroomUser(classRoom);
     List<Submission> submissions = users.stream()
+            .filter(u -> !u.getRole().equals(Role.TEACHER))
             .map(u -> new Submission(assignment, u,assignment.getClassRoom(), false, null))
             .toList();
     submissionJpaRepository.saveAll(submissions);
