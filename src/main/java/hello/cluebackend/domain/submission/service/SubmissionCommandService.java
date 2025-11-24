@@ -59,8 +59,9 @@ public class SubmissionCommandService {
   // 과제 제출 단일 조회
   public SubmissionResponse findByAssignmentId(UUID userId, UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
+    UserEntity requestUser = userService.findById(userId);
 
-    if (!submission.getUser().getUserId().equals(userId) || !submission.getUser().getRole().equals(Role.TEACHER)) {
+    if (!submission.getUser().getUserId().equals(userId) && !requestUser.getRole().equals(Role.TEACHER)) {
       throw new AccessDeniedException("사용자가 제출한 과제가 아닙니다.");
     }
 
