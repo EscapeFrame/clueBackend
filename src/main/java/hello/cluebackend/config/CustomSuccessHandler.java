@@ -69,7 +69,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (userDto.getRole() == Role.STUDENT && (grade == -1 ||  classNo == -1 || number == -1)) {
             request.getSession().setAttribute("firstUser", userDto);
             if ("app".equals(clientType)) {
-                baseUrl = baseUrl+ appRegisterRedirectUrl ;
+                baseUrl = baseUrl + appRegisterRedirectUrl + "&session_id=" + request.getSession().getId();
             } else {
                 baseUrl = baseUrl + "/register";
             }
