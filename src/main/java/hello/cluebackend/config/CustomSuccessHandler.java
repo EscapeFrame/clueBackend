@@ -2,6 +2,7 @@ package hello.cluebackend.config;
 
 import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.application.user.dto.response.UserDto;
+import hello.cluebackend.domain.user.model.Role;
 import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.ServletException;
@@ -62,16 +63,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             }
             session.removeAttribute("client_type");
         }
-
-        System.out.println("SUCCESS!!! baseUrl: " + baseUrl);
         int grade = userDto.getGrade();
         int classNo = userDto.getClassNo();
         int number = userDto.getNumber();
-        if (grade == -1 ||  classNo == -1 || number == -1) {
+        if (userDto.getRole() == Role.STUDENT && (grade == -1 ||  classNo == -1 || number == -1)) {
             request.getSession().setAttribute("firstUser", userDto);
             if ("app".equals(clientType)) {
-                appRegisterRedirectUrl = appRegisterRedirectUrl.replace("'","");
-                baseUrl = baseUrl+ appRegisterRedirectUrl ;
+                baseUrl = baseUrl + appRegisterRedirectUrl + "&session_id=" + request.getSession().getId();
             } else {
                 baseUrl = baseUrl + "/register";
             }
