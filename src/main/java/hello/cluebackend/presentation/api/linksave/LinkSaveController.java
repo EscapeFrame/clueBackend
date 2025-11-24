@@ -32,11 +32,12 @@ public class LinkSaveController {
     @GetMapping // 링크 전체 조회
     public ResponseEntity<List<LinkResponse>> getAll(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @RequestParam(required = false) AuthorizationType authorizationType,
             @RequestParam(required = false) SubjectType subjectType,
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(defaultValue = "0") int offset
             ){
-        List<LinkResponse> linkResponses = linkSaveService.getAll(customOAuth2User.getUserDTO().getUserId(),subjectType,size,offset);
+        List<LinkResponse> linkResponses = linkSaveService.getAll(customOAuth2User.getUserDTO().getUserId(),subjectType,authorizationType,size,offset);
         return ResponseEntity.ok(linkResponses);
     }
 

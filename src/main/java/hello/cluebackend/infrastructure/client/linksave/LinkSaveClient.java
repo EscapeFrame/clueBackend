@@ -20,6 +20,7 @@ public interface LinkSaveClient {
             @RequestParam int grade,
             @RequestParam int clas,
             @RequestParam(required = false) SubjectType subjectType,
+            @RequestParam(required = false) AuthorizationType authorizationType,
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(defaultValue = "0") int offset
     );
