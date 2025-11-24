@@ -32,8 +32,9 @@ public class UserService {
     private final UserMapper userMapper;
 
     public void registerUser(UserDto userDto, RegisterUserDto registerUserDto, MultipartFile image) throws IOException {
+        String storedFileName = null;
         if(image != null) {
-            String storedFileName = fileService.storeFile(image);
+            storedFileName = fileService.storeFile(image);
         }
         UserEntity userEntity = UserEntity.create(userDto, registerUserDto, storedFileName, image);
         userJpaRepository.save(userEntity);
