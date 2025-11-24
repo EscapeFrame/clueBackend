@@ -1,6 +1,8 @@
 package hello.cluebackend.presentation.api.agent;
 
 import hello.cluebackend.application.agent.dto.request.AgentRequest;
+import hello.cluebackend.application.agent.dto.request.DocFeedbackRequest;
+import hello.cluebackend.application.agent.dto.request.FlowFeedbackRequest;
 import hello.cluebackend.application.agent.dto.response.*;
 import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.infrastructure.client.agent.AgentClient;
@@ -20,50 +22,74 @@ import java.util.UUID;
 public class AgentController {
   private final AgentClient agentClient;
 
-  // 에이전트 생성
+  // 1단계: 에이전트 생성 (Planning 단계)
   @PostMapping
   public ResponseEntity<AgentResponse<AgentData>> createAgent(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @RequestBody AgentRequest agentRequest
   ) {
-    AgentResponse agentResponse = agentClient.createAgent(agentRequest);
+    AgentResponse<AgentData> agentResponse = agentClient.createAgent(agentRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(agentResponse);
   }
 
+  // Agent 전체 상태 조회
   @GetMapping("/{agentId}")
-  public ResponseEntity<AgentResponse<AgentAllDataResponse>> getAgent(
+  public ResponseEntity<AgentResponse<AllAgentData>> getAgent(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agentId
   ) {
-    AgentResponse getAgent = agentClient.getAgent(agentId);
+    AgentResponse<AllAgentData> getAgent = agentClient.getAgent(agentId);
     return ResponseEntity.status(HttpStatus.OK).body(getAgent);
   }
 
-  // 플로우 생성
+  // 2단계: Flow 생성 (목차 생성)
   @PostMapping("/{agent_id}/flow")
-  public ResponseEntity<AgentResponse<AgentFlowResponse>> createFlow(
+  public ResponseEntity<AgentResponse<FlowData>> createFlow(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agent_id
   ) {
-    AgentResponse agentFlowResponse = agentClient.createFlow(agent_id);
-    return ResponseEntity.status(HttpStatus.CREATED).body(agentFlowResponse);
+    AgentResponse<FlowData> flowResponse = agentClient.createFlow(agent_id);
+    return ResponseEntity.status(HttpStatus.CREATED).body(flowResponse);
   }
 
+  // 3단계: Flow 피드백
+  @PatchMapping("/{agent_id}/flow")
+  public ResponseEntity<AgentResponse<FlowData>> updateFlow(
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+          @PathVariable UUID agent_id,
+          @RequestBody FlowFeedbackRequest feedback
+  ) {
+    AgentResponse<FlowData> flowResponse = agentClient.updateFlow(agent_id, feedback);
+    return ResponseEntity.status(HttpStatus.OK).body(flowResponse);
+  }
+
+  // 4단계: Doc 생성 (본문 생성)
   @PostMapping("/{agent_id}/doc")
-  public ResponseEntity<AgentResponse<AgentDocResponse>> createDoc(
+  public ResponseEntity<AgentResponse<DocData>> createDoc(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agent_id
   ) {
-    AgentResponse agentDocResponse = agentClient.createDoc(agent_id);
-    return ResponseEntity.status(HttpStatus.CREATED).body(agentDocResponse);
+    AgentResponse<DocData> docResponse = agentClient.createDoc(agent_id);
+    return ResponseEntity.status(HttpStatus.CREATED).body(docResponse);
   }
 
-  @PostMapping("/{agent_id}/graph")
-  public ResponseEntity<AgentResponse<AgentGraphResponse>> createGraph(
+  // 5단계: Doc 피드백
+  @PatchMapping("/{agent_id}/doc")
+  public ResponseEntity<AgentResponse<DocData>> updateDoc(
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+          @PathVariable UUID agent_id,
+          @RequestBody DocFeedbackRequest feedback
+  ) {
+    AgentResponse<DocData> docResponse = agentClient.updateDoc(agent_id, feedback);
+    return ResponseEntity.status(HttpStatus.OK).body(docResponse);
+  }
+
+  @PostMapping("/{agent_id}/complete")
+  public ResponseEntity<AgentResponse<CompleteData>> complete(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID agent_id
   ) {
-    AgentResponse agentGraphResponse = agentClient.createGraph(agent_id);
-    return ResponseEntity.status(HttpStatus.CREATED).body(agentGraphResponse);
+    AgentResponse<CompleteData> completeResponse = agentClient.complete(agent_id);
+    return ResponseEntity.status(HttpStatus.OK).body(completeResponse);
   }
 }
