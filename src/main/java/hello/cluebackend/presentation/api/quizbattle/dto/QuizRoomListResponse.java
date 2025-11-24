@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class QuizRoomListResponse {
     private String roomCode;
-    private String title;
     private String hostName;
     private String status;
     private Integer maxParticipants;

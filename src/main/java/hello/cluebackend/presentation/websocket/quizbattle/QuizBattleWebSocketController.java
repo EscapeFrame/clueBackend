@@ -34,11 +34,8 @@ public class QuizBattleWebSocketController {
             @Payload CreateRoomRequest request
     ) {
         try {
-
             QuizRoom room = quizBattleService.createRoom(
                     customOAuth2User.getUserId(),
-                    request.getTitle(),
-                    request.getTopic(),
                     request.getMaxParticipants(),
                     request.getQuestionCount(),
                     request.getTimePerQuestion(),
@@ -50,7 +47,6 @@ public class QuizBattleWebSocketController {
 
             return RoomCreatedMessage.builder()
                     .roomCode(room.getRoomCode())
-                    .title(room.getTitle())
                     .hostId(room.getHost().getUserId())
                     .maxParticipants(room.getMaxParticipants())
                     .questionCount(room.getQuestionCount())

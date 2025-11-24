@@ -13,7 +13,6 @@ import java.util.List;
 public class QuizGenerationResponse {
 
     private List<QuizQuestion> questions;
-    private String topic;
     private Integer totalQuestions;
     private String status;
 }

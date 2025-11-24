@@ -11,7 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RoomCreatedMessage {
     private String roomCode;
-    private String title;
     private UUID hostId;
     private Integer maxParticipants;
     private Integer questionCount;

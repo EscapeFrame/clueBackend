@@ -14,8 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class QuizRoomDetailResponse {
     private String roomCode;
-    private String title;
-    private String topic;
     private UUID hostId;
     private String hostName;
     private String status;

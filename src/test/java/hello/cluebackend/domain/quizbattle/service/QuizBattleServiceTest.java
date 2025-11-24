@@ -63,13 +63,11 @@ class QuizBattleServiceTest {
                 .build();
     }
 
-    // 테스트 1: 방 생성 시 documentId와 topic을 전달하면 FastAPI로 문제 생성 요청이 호출되어야 함
+    // 테스트 1: 방 생성 시 documentId를 전달하면 FastAPI로 문제 생성 요청이 호출되어야 함
     @Test
     @DisplayName("방 생성 시 FastAPI로 문제 생성 요청이 호출되어야 한다")
     void createRoom_shouldCallFastAPIToGenerateQuestions() {
         // given
-        String title = "테스트 퀴즈";
-        String topic = "한국사";
         Integer questionCount = 10;
         Integer timePerQuestion = 30;
 
@@ -81,7 +79,6 @@ class QuizBattleServiceTest {
         List<QuizQuestion> mockQuestions = createMockQuestions(questionCount);
         QuizGenerationResponse response = QuizGenerationResponse.builder()
                 .questions(mockQuestions)
-                .topic(topic)
                 .totalQuestions(questionCount)
                 .status("success")
                 .build();
@@ -91,8 +88,7 @@ class QuizBattleServiceTest {
 
         // when
         QuizRoom room = quizBattleService.createRoom(
-                hostId, title, topic,
-                50, questionCount, timePerQuestion,
+                hostId, 50, questionCount, timePerQuestion,
                 null, documentId
         );
 
@@ -107,8 +103,6 @@ class QuizBattleServiceTest {
     @DisplayName("FastAPI 요청에 documentId가 포함되어야 한다")
     void createRoom_shouldIncludeDocumentIdInFastAPIRequest() {
         // given
-        String title = "테스트 퀴즈";
-        String topic = "수학";
         Integer questionCount = 5;
 
         when(userRepository.findById(hostId)).thenReturn(Optional.of(hostUser));
@@ -124,7 +118,7 @@ class QuizBattleServiceTest {
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
         // when
-        quizBattleService.createRoom(hostId, title, topic, 50, questionCount, 30, null, documentId);
+        quizBattleService.createRoom(hostId, 50, questionCount, 30, null, documentId);
 
         // then
         ArgumentCaptor<QuizGenerationRequest> requestCaptor = ArgumentCaptor.forClass(QuizGenerationRequest.class);
@@ -132,7 +126,6 @@ class QuizBattleServiceTest {
 
         QuizGenerationRequest capturedRequest = requestCaptor.getValue();
         assertThat(capturedRequest.getDocumentId()).isEqualTo(documentId);
-        assertThat(capturedRequest.getTopic()).isEqualTo(topic);
         assertThat(capturedRequest.getQuestionCount()).isEqualTo(questionCount);
     }
 
@@ -141,8 +134,6 @@ class QuizBattleServiceTest {
     @DisplayName("방 생성 시 생성된 문제가 Redis에 저장되어야 한다")
     void createRoom_shouldStoreQuestionsInRedis() {
         // given
-        String title = "테스트 퀴즈";
-        String topic = "과학";
         Integer questionCount = 3;
 
         when(userRepository.findById(hostId)).thenReturn(Optional.of(hostUser));
@@ -158,7 +149,7 @@ class QuizBattleServiceTest {
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
         // when
-        QuizRoom room = quizBattleService.createRoom(hostId, title, topic, 50, questionCount, 30, null, documentId);
+        QuizRoom room = quizBattleService.createRoom(hostId, 50, questionCount, 30, null, documentId);
 
         // then
         verify(redisService, times(1)).storeQuestions(eq(room.getRoomCode()), eq(mockQuestions));
@@ -176,7 +167,6 @@ class QuizBattleServiceTest {
                 .roomCode(roomCode)
                 .status(QuizRoomStatus.WAITING)
                 .questionCount(questionCount)
-                .topic("테스트")
                 .build();
 
         List<QuizQuestion> storedQuestions = createMockQuestions(questionCount);
@@ -194,13 +184,11 @@ class QuizBattleServiceTest {
         assertThat(questions).hasSize(questionCount);
     }
 
-    // 테스트 5: documentId 없이 방 생성 시에도 topic만으로 문제 생성 가능해야 함
+    // 테스트 5: documentId 없이 방 생성 시에도 문제 생성 가능해야 함
     @Test
-    @DisplayName("documentId 없이 방 생성 시에도 topic만으로 문제 생성 가능해야 한다")
+    @DisplayName("documentId 없이 방 생성 시에도 문제 생성 가능해야 한다")
     void createRoom_shouldWorkWithoutDocumentId() {
         // given
-        String title = "일반 퀴즈";
-        String topic = "일반상식";
         Integer questionCount = 5;
 
         when(userRepository.findById(hostId)).thenReturn(Optional.of(hostUser));
@@ -216,7 +204,7 @@ class QuizBattleServiceTest {
         when(quizClient.generateQuiz(any(QuizGenerationRequest.class))).thenReturn(agentResponse);
 
         // when
-        QuizRoom room = quizBattleService.createRoom(hostId, title, topic, 50, questionCount, 30, null, null); // documentId = null
+        QuizRoom room = quizBattleService.createRoom(hostId, 50, questionCount, 30, null, null); // documentId = null
 
         // then
         ArgumentCaptor<QuizGenerationRequest> requestCaptor = ArgumentCaptor.forClass(QuizGenerationRequest.class);
@@ -224,7 +212,6 @@ class QuizBattleServiceTest {
 
         QuizGenerationRequest capturedRequest = requestCaptor.getValue();
         assertThat(capturedRequest.getDocumentId()).isNull();
-        assertThat(capturedRequest.getTopic()).isEqualTo(topic);
         assertThat(room).isNotNull();
     }
 
