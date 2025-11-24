@@ -18,6 +18,4 @@ public class Planning {
     @JsonProperty("main_words")
     private List<String> mainWords;
     private List<String> links;
-    @JsonProperty("scraped_content")
-    private String scrapedContent;
 }

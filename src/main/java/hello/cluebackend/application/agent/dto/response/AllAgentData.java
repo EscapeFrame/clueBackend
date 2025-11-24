@@ -10,9 +10,12 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AgentDocResponse {
-  @JsonProperty("agent_id")
-  private UUID agentId;
-  private String status;
-  private Doc doc;
+public class AllAgentData {
+    @JsonProperty("agent_id")
+    private UUID agentId;
+    private String status;
+    private Planning planning;
+    private FlowData flow;
+    private DocData doc;
+    private GraphData graph;
 }
