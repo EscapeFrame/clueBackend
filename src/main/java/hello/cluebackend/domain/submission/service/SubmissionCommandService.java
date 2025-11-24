@@ -59,8 +59,9 @@ public class SubmissionCommandService {
   // 과제 제출 단일 조회
   public SubmissionResponse findByAssignmentId(UUID userId, UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
+    UserEntity requestUser = userService.findById(userId);
 
-    if (!submission.getUser().getUserId().equals(userId) && !submission.getUser().getRole().equals(Role.TEACHER)) {
+    if (!submission.getUser().getUserId().equals(userId) && !requestUser.getRole().equals(Role.TEACHER)) {
       throw new AccessDeniedException("사용자가 제출한 과제가 아닙니다.");
     }
 
@@ -73,6 +74,11 @@ public class SubmissionCommandService {
 
   // 전체 학생 과제 제출 여부 (선생)
   public List<SubmissionCheck> checkAssignment(UUID userId, UUID assignmentId) {
+    UserEntity requestUser = userService.findById(userId);
+    if (!requestUser.getRole().equals(Role.TEACHER)) {
+      throw new AccessDeniedException("선생님만 조회할 수 있습니다.");
+    }
+
     Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
     List<Submission> submissions = submissionJpaRepository.findAllByAssignment(assignment);
     return submissions.stream()
@@ -84,6 +90,12 @@ public class SubmissionCommandService {
   // 첨부 파일 혹은 링크 전체 조회 (학생)
   public List<SubmissionAttachmentResponse> findAllAssignmentStudent(UUID userId, UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
+    UserEntity requestUser = userService.findById(userId);
+
+    if (!submission.getUser().getUserId().equals(userId) && !requestUser.getRole().equals(Role.TEACHER)) {
+      throw new AccessDeniedException("사용자가 제출한 과제가 아닙니다.");
+    }
+
     List<SubmissionAttachment> attachments = submissionAttachmentJpaRepository.findAllBySubmission(submission);
     return attachments.stream()
             .filter(sa -> sa.getUser().getUserId().equals(userId))
@@ -92,7 +104,12 @@ public class SubmissionCommandService {
   }
 
   // 첨부 파일 혹은 링크 전체 조회 (선생)
-  public List<SubmissionAttachmentResponse> findAllAssignmentTeacher(UUID submissionId) {
+  public List<SubmissionAttachmentResponse> findAllAssignmentTeacher(UUID userId, UUID submissionId) {
+    UserEntity requestUser = userService.findById(userId);
+    if (!requestUser.getRole().equals(Role.TEACHER)) {
+      throw new AccessDeniedException("선생님만 조회할 수 있습니다.");
+    }
+
     Submission submission = findByIdOrThrow(submissionId);
     List<SubmissionAttachment> attachments = submissionAttachmentJpaRepository.findAllBySubmission(submission);
     return attachments.stream()
