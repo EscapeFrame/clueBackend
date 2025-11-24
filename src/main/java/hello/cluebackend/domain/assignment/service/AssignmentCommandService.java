@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.assignment.service;
 
+import hello.cluebackend.application.assignment.dto.response.AssignmentAttachmentDto;
 import hello.cluebackend.application.assignment.dto.response.AssignmentDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
 import hello.cluebackend.application.classroom.mapper.ClassRoomMapper;
@@ -82,5 +83,14 @@ public class AssignmentCommandService {
   public Resource downloadAttachment(AssignmentAttachment assignmentAttachment) throws IOException {
     String path = assignmentAttachment.getValue();
     return fileService.downloadFile(path);
+  }
+
+  // 과제 첨부 파일 목록 조회
+  public List<AssignmentAttachmentDto> findAttachmentsByAssignmentId(UUID assignmentId) {
+    Assignment assignment = findByIdOrThrow(assignmentId);
+    List<AssignmentAttachment> attachments = assignmentAttachmentJpaRepository.findAllByAssignment(assignment);
+    return attachments.stream()
+            .map(AssignmentAttachmentDto::from)
+            .toList();
   }
 }

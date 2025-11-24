@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hello.cluebackend.application.assignment.dto.response.AssignmentAttachmentDto;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -68,6 +70,21 @@ public class AssignmentCommandController {
   }
 
   // ------------------------------------------ 첨부 파일 ------------------------------------------ //
+
+  // 첨부 파일 목록 조회
+  @GetMapping("/{assignmentId}/attachment")
+  public ResponseEntity<List<AssignmentAttachmentDto>> getAttachments(
+          @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+          @PathVariable UUID assignmentId
+  ) {
+    Assignment assignment = assignmentCommandService.findByIdOrThrow(assignmentId);
+    UUID classroomId = assignment.getClassRoom().getClassRoomId();
+    if (!classroomUserService.isUserInClassroom(classroomId, customOAuth2User.getUserId())) {
+      throw new AccessDeniedException("해당 수업실에 속하지 않은 유저입니다.");
+    }
+    List<AssignmentAttachmentDto> attachments = assignmentCommandService.findAttachmentsByAssignmentId(assignmentId);
+    return ResponseEntity.ok(attachments);
+  }
 
   // 첨부 파일 다운로드
   @GetMapping("/{assignmentAttachmentId}/download")

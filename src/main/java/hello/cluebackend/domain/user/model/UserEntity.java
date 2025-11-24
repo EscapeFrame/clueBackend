@@ -68,7 +68,7 @@ public class UserEntity {
         user.classNo = registerUserDto.getClassNo();
         user.number = registerUserDto.getNumber();
         user.value = storedFileName;
-        user.contentType = image.getContentType();
+        user.contentType = image != null ? image.getContentType() : null;
         return user;
     }
 
