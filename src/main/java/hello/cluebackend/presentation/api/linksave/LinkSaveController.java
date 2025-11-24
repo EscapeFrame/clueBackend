@@ -37,7 +37,11 @@ public class LinkSaveController {
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(defaultValue = "0") int offset
             ){
+<<<<<<< HEAD
         List<LinkResponse> linkResponses = linkSaveService.getAll(customOAuth2User.getUserDTO().getUserId(),subjectType,authorizationType,size,offset);
+=======
+        List<LinkResponse> linkResponses = linkSaveService.getAll(customOAuth2User.getUserDTO().getUserId(),subjectType,size,offset);
+>>>>>>> 099074e16c39fb62bbc7f2dc8cd7dbefe9f21417
         return ResponseEntity.ok(linkResponses);
     }
 
