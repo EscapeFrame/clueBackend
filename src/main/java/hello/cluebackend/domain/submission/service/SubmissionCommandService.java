@@ -60,7 +60,7 @@ public class SubmissionCommandService {
   public SubmissionResponse findByAssignmentId(UUID userId, UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
 
-    if (!submission.getUser().getUserId().equals(userId) && !submission.getUser().getRole().equals(Role.TEACHER)) {
+    if (!submission.getUser().getUserId().equals(userId) || !submission.getUser().getRole().equals(Role.TEACHER)) {
       throw new AccessDeniedException("사용자가 제출한 과제가 아닙니다.");
     }
 
