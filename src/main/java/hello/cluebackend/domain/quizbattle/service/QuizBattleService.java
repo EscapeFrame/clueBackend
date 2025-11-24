@@ -35,8 +35,7 @@ public class QuizBattleService {
   private static final Random random = new Random();
 
   public QuizRoom createRoom(
-          UUID hostId, String title, String topic,
-          Integer maxParticipants, Integer questionCount,
+          UUID hostId, Integer maxParticipants, Integer questionCount,
           Integer timePerQuestion, UUID classRoomId, UUID documentId
   ) {
     UserEntity host = userRepository.findById(hostId)
@@ -51,7 +50,6 @@ public class QuizBattleService {
     String roomCode = generateUniqueRoomCode();
 
     QuizRoom quizRoom = QuizRoom.builder()
-            .title(title)
             .roomCode(roomCode)
             .host(host)
             .classRoom(classRoom)
@@ -59,17 +57,15 @@ public class QuizBattleService {
             .maxParticipants(maxParticipants != null ? maxParticipants : 50)
             .questionCount(questionCount != null ? questionCount : 10)
             .timePerQuestion(timePerQuestion != null ? timePerQuestion : 30)
-            .topic(topic)
             .build();
 
     QuizRoom savedRoom = quizRoomRepository.save(quizRoom);
 
-    // 방 생성 시 FastAPI로 문제 생성 후 Redis에 저장
     int finalQuestionCount = questionCount != null ? questionCount : 10;
-    List<QuizQuestion> questions = generateQuestions(topic, finalQuestionCount, documentId);
+    List<QuizQuestion> questions = generateQuestions(finalQuestionCount, documentId);
     redisService.storeQuestions(roomCode, questions);
 
-    log.info("Created quiz room: {} with code: {} and {} questions", title, roomCode, questions.size());
+    log.info("with code: {} and {} questions", roomCode, questions.size());
 
     return savedRoom;
   }
@@ -114,7 +110,6 @@ public class QuizBattleService {
             throw new IllegalStateException("Quiz already started or finished");
         }
 
-        // Redis에서 이미 저장된 문제 가져오기 (방 생성 시 미리 생성됨)
         List<QuizQuestion> questions = redisService.getAllQuestions(roomCode);
         if (questions.isEmpty()) {
             throw new IllegalStateException("No questions found for room: " + roomCode);
@@ -130,10 +125,9 @@ public class QuizBattleService {
         return questions;
     }
 
-    private List<QuizQuestion> generateQuestions(String topic, int count, UUID documentId) {
+    private List<QuizQuestion> generateQuestions(int count, UUID documentId) {
         try {
             QuizGenerationRequest request = QuizGenerationRequest.builder()
-                    .topic(topic)
                     .questionCount(count)
                     .difficulty("Medium")
                     .language("ko")

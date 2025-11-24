@@ -89,8 +89,6 @@ class QuizBattleWebSocketTest {
 
         // When - Create room request
         CreateRoomRequest request = CreateRoomRequest.builder()
-                .title("Test Quiz Room")
-                .topic("Science and Technology")
                 .maxParticipants(10)
                 .questionCount(5)
                 .timePerQuestion(30)
@@ -109,7 +107,6 @@ class QuizBattleWebSocketTest {
             if ("success".equals(response.getStatus())) {
                 assertThat(response.getRoomCode()).isNotNull();
                 assertThat(response.getRoomCode()).hasSize(6);
-                assertThat(response.getTitle()).isEqualTo("Test Quiz Room");
                 createdRoomCode = response.getRoomCode();
                 System.out.println("Room created with code: " + createdRoomCode);
             } else {

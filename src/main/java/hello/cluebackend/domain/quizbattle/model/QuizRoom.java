@@ -21,9 +21,6 @@ public class QuizRoom {
     @Column(name = "quiz_room_id", nullable = false, updatable = false)
     private UUID quizRoomId;
 
-    @Column(nullable = false, length = 100)
-    private String title;
-
     @Column(nullable = false, length = 20)
     private String roomCode;
 
@@ -47,9 +44,6 @@ public class QuizRoom {
 
     @Column(nullable = false)
     private Integer timePerQuestion;
-
-    @Column(length = 500)
-    private String topic;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
