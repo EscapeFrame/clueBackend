@@ -40,7 +40,7 @@ public interface LinkSaveClient {
     );
 
     @DeleteMapping("/linksave/{link_id}") // 링크 삭제
-    boolean deleteLink(
+    void deleteLink(
             @RequestParam UUID userId,
             @PathVariable Long link_id
     );
