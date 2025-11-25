@@ -69,6 +69,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
                                 "/test",
                                 "/ws-quiz/**", "/ws-quiz-raw/**",
+                                "/topic/**", "/queue/**", "/app/**",
                                 "/ui/**"
                         ).permitAll()
 //                        .requestMatchers("/api/notice").hasRole(Role.TEACHER.name())
