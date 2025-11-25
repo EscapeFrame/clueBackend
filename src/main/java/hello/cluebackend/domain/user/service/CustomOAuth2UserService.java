@@ -30,9 +30,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuth2User.getAttribute("email");
         String isTeacher = email.split("@")[0];
-
+//        String isBssm = email.split("@")[1];
         Role role;
-        if(isTeacher.equals("teacher")) role = Role.TEACHER;
+
+//        if(isTeacher.startsWith("teacher") && isBssm.equals("bssm.hs.kr")) role = Role.TEACHER;
+        if(isTeacher.startsWith("teacher")) role = Role.TEACHER;
         else role = Role.STUDENT;
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
