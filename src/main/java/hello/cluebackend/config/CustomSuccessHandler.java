@@ -2,7 +2,9 @@ package hello.cluebackend.config;
 
 import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import hello.cluebackend.application.user.dto.response.UserDto;
+import hello.cluebackend.application.user.dto.response.UserRedisDto;
 import hello.cluebackend.domain.user.model.Role;
+import hello.cluebackend.infrastructure.persistence.user.RegisterUserRedisRepository;
 import hello.cluebackend.infrastructure.security.jwt.RefreshTokenService;
 import hello.cluebackend.common.utils.JWTUtil;
 import jakarta.servlet.ServletException;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -23,6 +26,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${front.base-url}")
@@ -39,11 +43,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
-    public CustomSuccessHandler(JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
-        this.jwtUtil = jwtUtil;
-        this.refreshTokenService = refreshTokenService;
-    }
-
+    private final RegisterUserRedisRepository registerUserRedisRepository;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // OAuth2User
@@ -67,10 +67,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         int classNo = userDto.getClassNo();
         int number = userDto.getNumber();
         if (userDto.getRole() == Role.STUDENT && (grade == -1 ||  classNo == -1 || number == -1)) {
-            request.getSession().setAttribute("firstUser", userDto);
+
             if ("app".equals(clientType)) {
-                baseUrl = baseUrl + appRegisterRedirectUrl + "&session_id=" + request.getSession().getId();
+                String token = UUID.randomUUID().toString();
+                UserRedisDto userRedisDto = UserRedisDto.builder()
+                        .token(token)
+                        .username(userDto.getUsername())
+                        .email(userDto.getEmail())
+                        .role(userDto.getRole())
+                        .build();
+                registerUserRedisRepository.save(userRedisDto);
+                baseUrl = baseUrl + appRegisterRedirectUrl + "&token=" + token;
             } else {
+                request.getSession().setAttribute("firstUser", userDto);
                 baseUrl = baseUrl + "/register";
             }
             getRedirectStrategy().sendRedirect(request, response, baseUrl);

@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(
-                                "/", "/reissue", "/h2-console/**",
+                                "/", "/reissue", "/app/register",
                                 "/favicon.ico", "/error",
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
                                 "/test",

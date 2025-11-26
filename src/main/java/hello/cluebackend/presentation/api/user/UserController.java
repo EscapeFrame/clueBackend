@@ -6,8 +6,10 @@ import hello.cluebackend.application.user.dto.request.RegisterUserDto;
 import hello.cluebackend.application.user.dto.request.UpdateUserDto;
 import hello.cluebackend.application.user.dto.response.UserDto;
 import hello.cluebackend.application.user.dto.response.UserImage;
+import hello.cluebackend.application.user.dto.response.UserRedisDto;
 import hello.cluebackend.domain.user.service.UserService;
 import hello.cluebackend.common.utils.JWTUtil;
+import hello.cluebackend.infrastructure.persistence.user.RegisterUserRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -29,6 +31,7 @@ public class UserController {
 
     private final JWTUtil jwtUtil;
     private final UserService userService;
+    private final RegisterUserRedisRepository registerUserRedisRepository;
 
     @GetMapping("/first-register")
     public DefaultRegisterUserDto showRegistrationForm(HttpServletRequest request) {
@@ -50,6 +53,41 @@ public class UserController {
         UserDto userDto = (UserDto) session.getAttribute("firstUser");
         session.removeAttribute("firstUser");
         userService.registerUser(userDto, registerUserDto, image);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/app/first-register")
+    public ResponseEntity<DefaultRegisterUserDto> showAppRegistrationForm(@RequestParam String token) {
+        UserRedisDto userRedisDto = registerUserRedisRepository.findById(token)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
+
+        DefaultRegisterUserDto response = DefaultRegisterUserDto.builder()
+                .username(userRedisDto.getUsername())
+                .email(userRedisDto.getEmail())
+                .role(userRedisDto.getRole())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/app/register")
+    public ResponseEntity<?> processAppRegistration(
+            @RequestParam String token,
+            @RequestPart(value = "user") RegisterUserDto registerUserDto,
+            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+
+        UserRedisDto userRedisDto = registerUserRedisRepository.findById(token)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
+
+        UserDto userDto = UserDto.builder()
+                .username(userRedisDto.getUsername())
+                .email(userRedisDto.getEmail())
+                .role(userRedisDto.getRole())
+                .build();
+
+        registerUserRedisRepository.deleteById(token);
+        userService.registerUser(userDto, registerUserDto, image);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
