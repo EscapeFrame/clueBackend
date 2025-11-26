@@ -154,6 +154,7 @@ public class QuizBattleService {
                     .documentId(documentId)
                     .build();
 
+            log.info("Requesting {} quiz questions for document {}", count, documentId);
             AgentResponse<QuizGenerationResponse> response = quizClient.generateQuiz(request);
 
             if (response.getData() != null && response.getData().getQuestions() != null) {
