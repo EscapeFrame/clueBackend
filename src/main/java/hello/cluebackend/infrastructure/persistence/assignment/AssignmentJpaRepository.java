@@ -22,4 +22,6 @@ public interface AssignmentJpaRepository extends JpaRepository<Assignment, UUID>
   List<Assignment> findAllByClassRoom(ClassRoom classRoom);
 
   List<Assignment> findAllByUserAndClassRoom(UserEntity user, ClassRoom classRoom);
+
+  void deleteByUser(UserEntity user);
 }

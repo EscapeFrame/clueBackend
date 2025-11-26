@@ -33,4 +33,6 @@ public interface ClassRoomUserJpaRepository extends JpaRepository<ClassRoomUser,
   boolean existsByClassRoomAndUser(ClassRoom classRoom, UserEntity user);
 
   Optional<Object> findByUser_UserIdAndClassRoom_ClassRoomId(UUID userId, UUID classId);
+
+  void deleteByUser(UserEntity user);
 }

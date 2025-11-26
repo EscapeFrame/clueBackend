@@ -30,6 +30,7 @@ public class UserService {
     private final UserJpaRepository userJpaRepository;
     private final FileService fileService;
     private final UserMapper userMapper;
+    private final UserDeletionFacade userDeletionFacade;
 
     public void registerUser(UserDto userDto, RegisterUserDto registerUserDto, MultipartFile image) throws IOException {
         String storedFileName = null;
@@ -87,7 +88,6 @@ public class UserService {
     }
 
     public void deleteById(UUID userId) {
-        UserEntity user = userJpaRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
-        userJpaRepository.delete(user);
+        userDeletionFacade.deleteUser(userId);
     }
 }

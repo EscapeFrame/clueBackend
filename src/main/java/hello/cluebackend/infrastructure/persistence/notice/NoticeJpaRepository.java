@@ -1,6 +1,7 @@
 package hello.cluebackend.infrastructure.persistence.notice;
 
 import hello.cluebackend.domain.notice.model.Notice;
+import hello.cluebackend.domain.user.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,6 @@ public interface NoticeJpaRepository extends JpaRepository<Notice, UUID> {
     Long findMyNoticeByUserId(UUID userId, UUID noticeId);
 
 //    Boolean existsByNoticeDocument_noticeDocumentId(UUID noticeDocumentId);
+
+    void deleteByUser(UserEntity user);
 }

@@ -2,6 +2,7 @@ package hello.cluebackend.infrastructure.persistence.quizroom;
 
 import hello.cluebackend.domain.quizbattle.model.QuizRoom;
 import hello.cluebackend.domain.quizbattle.model.QuizRoomStatus;
+import hello.cluebackend.domain.user.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +33,6 @@ public interface QuizRoomJpaRepository extends JpaRepository<QuizRoom, UUID> {
 
     @Query("SELECT q FROM QuizRoom q JOIN FETCH q.host WHERE q.roomCode = :roomCode")
     Optional<QuizRoom> findByRoomCodeWithHost(@Param("roomCode") String roomCode);
+
+    void deleteByHost(UserEntity host);
 }

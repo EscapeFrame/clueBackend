@@ -15,4 +15,6 @@ public interface SubmissionJpaRepository extends JpaRepository<Submission, UUID>
   List<Submission> findAllByAssignment(Assignment assignment);
 
   List<Submission> findAllByClassRoomAndUser(ClassRoom classRoom, UserEntity user);
+
+  void deleteByUser(UserEntity user);
 }
