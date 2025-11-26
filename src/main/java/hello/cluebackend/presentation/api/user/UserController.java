@@ -87,7 +87,7 @@ public class UserController {
 
         registerUserRedisRepository.deleteById(token);
         UUID userId = userService.registerUser(userDto, registerUserDto, image);
-        String access = jwtUtil.createJwt("access", userId, userDto.getUsername(), userDto.getEmail(), String.valueOf(userDto.getRole()), 60*60*1000L);
+        String access = jwtUtil.createJwt("access", userId, userDto.getUsername(), userDto.getEmail(), String.valueOf(userDto.getRole()), 24*60*60*1000L);
         return ResponseEntity.status(HttpStatus.CREATED).body(access);
     }
 
