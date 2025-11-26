@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("/app/register")
-    public ResponseEntity<?> processAppRegistration(
+    public ResponseEntity<String> processAppRegistration(
             @RequestParam String token,
             @RequestPart(value = "user") RegisterUserDto registerUserDto,
             @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
@@ -86,9 +86,9 @@ public class UserController {
                 .build();
 
         registerUserRedisRepository.deleteById(token);
-        userService.registerUser(userDto, registerUserDto, image);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        UUID userId = userService.registerUser(userDto, registerUserDto, image);
+        String access = jwtUtil.createJwt("access", userId, userDto.getUsername(), userDto.getEmail(), String.valueOf(userDto.getRole()), 60*60*1000L);
+        return ResponseEntity.status(HttpStatus.CREATED).body(access);
     }
 
     @PatchMapping("/api/user")

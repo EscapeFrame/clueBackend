@@ -32,13 +32,14 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserDeletionFacade userDeletionFacade;
 
-    public void registerUser(UserDto userDto, RegisterUserDto registerUserDto, MultipartFile image) throws IOException {
+    public UUID registerUser(UserDto userDto, RegisterUserDto registerUserDto, MultipartFile image) throws IOException {
         String storedFileName = null;
         if(image != null) {
             storedFileName = fileService.storeFile(image);
         }
         UserEntity userEntity = UserEntity.create(userDto, registerUserDto, storedFileName, image);
         userJpaRepository.save(userEntity);
+        return userEntity.getUserId();
     }
 
     public UserDto findByIdToUserDto(UUID userId) {
