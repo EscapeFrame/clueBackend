@@ -69,13 +69,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (userDto.getRole() == Role.STUDENT && (grade == -1 ||  classNo == -1 || number == -1)) {
 
             if ("app".equals(clientType)) {
+                String token = UUID.randomUUID().toString();
                 UserRedisDto userRedisDto = UserRedisDto.builder()
+                        .token(token)
                         .username(userDto.getUsername())
                         .email(userDto.getEmail())
                         .role(userDto.getRole())
                         .build();
                 registerUserRedisRepository.save(userRedisDto);
-                baseUrl = baseUrl + appRegisterRedirectUrl + "&session_id=" + request.getSession().getId();
+                baseUrl = baseUrl + appRegisterRedirectUrl + "&token=" + token;
             } else {
                 request.getSession().setAttribute("firstUser", userDto);
                 baseUrl = baseUrl + "/register";

@@ -14,8 +14,9 @@ import org.springframework.data.redis.core.RedisHash;
 public class UserRedisDto {
 
     @Id
-    private String email;
+    private String token;
 
+    private String email;
     private String username;
     private Role role;
 }
