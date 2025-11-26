@@ -20,4 +20,5 @@ public class LinkResponse {
     private String link;
     private AuthorizationType authorizationType;
     private SubjectType subjectType;
+    private boolean isMine;
 }

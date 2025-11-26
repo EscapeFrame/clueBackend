@@ -1,5 +1,6 @@
 package hello.cluebackend.common.handler;
 
+import feign.FeignException;
 import hello.cluebackend.common.ErrorResponse;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.file.exception.S3FileNotFoundException;
@@ -77,6 +78,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleWebClientResponseException(WebClientResponseException ex) {
         ErrorResponse errorResponse = new ErrorResponse("WEBCLIENT_RESPONSE_ERROR", ex.getMessage());
         return new ResponseEntity<>(errorResponse, ex.getStatusCode());
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ErrorResponse> handleFeignException(FeignException ex) {
+        int status = ex.status();
+        String message = ex.getMessage();
+
+        if (status >= 400 && status < 500) {
+            ErrorResponse errorResponse = new ErrorResponse("FEIGN_CLIENT_ERROR", message);
+            return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(status));
+        }
+
+        ErrorResponse errorResponse = new ErrorResponse("FEIGN_SERVER_ERROR", message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(RuntimeException.class)
