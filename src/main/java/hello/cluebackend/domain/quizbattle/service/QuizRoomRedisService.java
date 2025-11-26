@@ -25,6 +25,8 @@ public class QuizRoomRedisService {
     private static final String ANSWER_KEY_SUFFIX = ":answers";
     private static final String CURRENT_QUESTION_KEY_PREFIX = "quiz:room:";
     private static final String CURRENT_QUESTION_KEY_SUFFIX = ":current";
+    private static final String QUESTION_STATUS_KEY_PREFIX = "quiz:room:";
+    private static final String QUESTION_STATUS_KEY_SUFFIX = ":status";
     private static final String SESSION_MAPPING_PREFIX = "quiz:session:";
     private static final long DEFAULT_EXPIRATION_HOURS = 24;
 
@@ -103,7 +105,15 @@ public class QuizRoomRedisService {
     public QuizQuestion getQuestion(String roomCode, int questionNumber) {
         String key = getQuestionKey(roomCode);
         Object question = redisTemplate.opsForList().index(key, questionNumber - 1);
-        return question != null ? (QuizQuestion) question : null;
+        if (question != null) {
+            QuizQuestion q = (QuizQuestion) question;
+            log.debug("Retrieved question {} from Redis: text={}, options={}, correctAnswer={}",
+                questionNumber, q.getQuestionText(),
+                q.getOptions() != null ? q.getOptions().size() : "null",
+                q.getCorrectAnswer());
+            return q;
+        }
+        return null;
     }
 
     public List<QuizQuestion> getAllQuestions(String roomCode) {
@@ -236,5 +246,33 @@ public class QuizRoomRedisService {
                 .map(QuizParticipant::getUserId)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void setQuestionStatus(String roomCode, int questionNumber, String status) {
+        String key = getQuestionStatusKey(roomCode, questionNumber);
+        redisTemplate.opsForValue().set(key, status, DEFAULT_EXPIRATION_HOURS, TimeUnit.HOURS);
+        log.info("Set question {} status to {} for room {}", questionNumber, status, roomCode);
+    }
+
+    public String getQuestionStatus(String roomCode, int questionNumber) {
+        String key = getQuestionStatusKey(roomCode, questionNumber);
+        Object status = redisTemplate.opsForValue().get(key);
+        return status != null ? (String) status : "ACTIVE";
+    }
+
+    public Map<Integer, Integer> getAnswerStatistics(String roomCode, int questionNumber) {
+        List<QuizAnswer> answers = getAnswersForQuestion(roomCode, questionNumber);
+        Map<Integer, Integer> statistics = new HashMap<>();
+
+        for (QuizAnswer answer : answers) {
+            int answerIndex = answer.getAnswerIndex();
+            statistics.put(answerIndex, statistics.getOrDefault(answerIndex, 0) + 1);
+        }
+
+        return statistics;
+    }
+
+    private String getQuestionStatusKey(String roomCode, int questionNumber) {
+        return QUESTION_STATUS_KEY_PREFIX + roomCode + QUESTION_STATUS_KEY_SUFFIX + ":" + questionNumber;
     }
 }

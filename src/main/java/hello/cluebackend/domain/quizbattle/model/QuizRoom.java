@@ -90,4 +90,8 @@ public class QuizRoom {
     public boolean isActive() {
         return this.status == QuizRoomStatus.WAITING || this.status == QuizRoomStatus.IN_PROGRESS;
     }
+
+    public void updateQuestionCount(int count) {
+        this.questionCount = count;
+    }
 }

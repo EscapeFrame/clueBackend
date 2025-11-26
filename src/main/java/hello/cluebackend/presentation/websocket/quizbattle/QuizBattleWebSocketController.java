@@ -243,6 +243,52 @@ public class QuizBattleWebSocketController {
         }
     }
 
+    @MessageMapping("/quiz/reveal-answer/{roomCode}")
+    public void revealAnswer(
+            @DestinationVariable String roomCode,
+            SimpMessageHeaderAccessor headerAccessor
+    ) {
+        try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
+            QuizRoom room = quizBattleService.getRoom(roomCode);
+
+            if (!room.isHost(userId)) {
+                throw new IllegalStateException("Only the host can reveal answers");
+            }
+
+            Integer currentQuestionNum = quizBattleService.getCurrentQuestionNumber(roomCode);
+            if (currentQuestionNum == null) {
+                throw new IllegalStateException("No active question");
+            }
+
+            quizTimerService.cancelQuestionTimer(roomCode, currentQuestionNum);
+
+            Map<String, Object> result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
+
+            AnswerRevealMessage message = AnswerRevealMessage.builder()
+                    .questionNumber(currentQuestionNum)
+                    .correctAnswer((Integer) result.get("correctAnswer"))
+                    .explanation((String) result.get("explanation"))
+                    .statistics((Map<Integer, Integer>) result.get("statistics"))
+                    .totalAnswers((Integer) result.get("totalAnswers"))
+                    .status("success")
+                    .message("Answer revealed")
+                    .build();
+
+            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", message);
+
+            log.info("Answer revealed for question {} in room {}", currentQuestionNum, roomCode);
+
+        } catch (Exception e) {
+            log.error("Error revealing answer", e);
+            ErrorMessage error = ErrorMessage.builder()
+                    .status("error")
+                    .message(e.getMessage())
+                    .build();
+            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", error);
+        }
+    }
+
     @MessageMapping("/quiz/next/{roomCode}")
     public void nextQuestion(
             @DestinationVariable String roomCode,
@@ -366,6 +412,8 @@ public class QuizBattleWebSocketController {
     }
 
     private void sendQuestionToRoom(String roomCode, QuizQuestion question) {
+        quizBattleService.setQuestionActive(roomCode, question.getQuestionNumber());
+
         QuizQuestionMessage questionMessage = QuizQuestionMessage.builder()
                 .questionNumber(question.getQuestionNumber())
                 .questionText(question.getQuestionText())

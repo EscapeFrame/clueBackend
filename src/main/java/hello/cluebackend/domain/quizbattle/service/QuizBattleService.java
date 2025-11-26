@@ -17,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -75,7 +77,15 @@ public class QuizBattleService {
     List<QuizQuestion> questions = generateQuestions(finalQuestionCount, documentId, finalTimePerQuestion);
     redisService.storeQuestions(roomCode, questions);
 
-    log.info("with code: {} and {} questions", roomCode, questions.size());
+    // 실제 생성된 문제 개수가 요청한 개수와 다를 경우 업데이트
+    if (questions.size() != finalQuestionCount) {
+        savedRoom.updateQuestionCount(questions.size());
+        quizRoomRepository.save(savedRoom);
+        log.info("Updated question count from {} to {} for room {}",
+            finalQuestionCount, questions.size(), roomCode);
+    }
+
+    log.info("Created room {} with {} questions", roomCode, questions.size());
 
     return savedRoom;
   }
@@ -148,12 +158,38 @@ public class QuizBattleService {
 
             if (response.getData() != null && response.getData().getQuestions() != null) {
                 List<QuizQuestion> questions = response.getData().getQuestions();
+
+                // 반환된 문제 개수 확인
+                if (questions.isEmpty()) {
+                    log.error("No questions generated from FastAPI");
+                    throw new RuntimeException("No questions were generated");
+                }
+
+                // 요청한 개수보다 많으면 자르기
+                if (questions.size() > count) {
+                    log.warn("Generated {} questions but only {} were requested. Trimming...",
+                        questions.size(), count);
+                    questions = questions.subList(0, count);
+                }
+
+                // 요청한 개수보다 적으면 경고
+                if (questions.size() < count) {
+                    log.warn("Only {} questions generated, but {} were requested",
+                        questions.size(), count);
+                }
+
                 // Manually set question numbers and time limits
                 for (int i = 0; i < questions.size(); i++) {
                     QuizQuestion question = questions.get(i);
                     question.setQuestionNumber(i + 1);
                     question.setTimeLimit(timePerQuestion);
+                    log.debug("Question {} generated: text={}, options={}, correctAnswer={}",
+                        i + 1, question.getQuestionText(),
+                        question.getOptions() != null ? question.getOptions().size() : "null",
+                        question.getCorrectAnswer());
                 }
+
+                log.info("Successfully generated {} questions (requested: {})", questions.size(), count);
                 return questions;
             } else {
                 log.error("Failed to generate questions from FastAPI: {}", response.getMessage());
@@ -168,6 +204,23 @@ public class QuizBattleService {
     public QuizAnswer submitAnswer(
             String roomCode, UUID userId, int questionNumber,
             int answerIndex, long submittedAt, int timeSpent) {
+        QuizRoom room = quizRoomRepository.findByRoomCode(roomCode)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomCode));
+
+        if (room.getStatus() != QuizRoomStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Quiz is not in progress");
+        }
+
+        Integer currentQuestionNum = redisService.getCurrentQuestionNumber(roomCode);
+        if (currentQuestionNum == null || currentQuestionNum != questionNumber) {
+            throw new IllegalStateException("Not the current question");
+        }
+
+        String questionStatus = redisService.getQuestionStatus(roomCode, questionNumber);
+        if ("REVEALED".equals(questionStatus)) {
+            throw new IllegalStateException("Answer already revealed, cannot submit");
+        }
+
         if (redisService.hasAnswered(roomCode, questionNumber, userId)) {
             throw new IllegalStateException("Already answered this question");
         }
@@ -273,6 +326,38 @@ public class QuizBattleService {
 
     public Integer getCurrentQuestionNumber(String roomCode) {
         return redisService.getCurrentQuestionNumber(roomCode);
+    }
+
+    public void setQuestionActive(String roomCode, int questionNumber) {
+        redisService.setQuestionStatus(roomCode, questionNumber, "ACTIVE");
+        log.info("Set question {} to ACTIVE in room {}", questionNumber, roomCode);
+    }
+
+    public Map<String, Object> revealAnswer(String roomCode, int questionNumber) {
+        QuizQuestion question = redisService.getQuestion(roomCode, questionNumber);
+        if (question == null) {
+            throw new IllegalArgumentException("Question not found: " + questionNumber);
+        }
+
+        String currentStatus = redisService.getQuestionStatus(roomCode, questionNumber);
+        if ("REVEALED".equals(currentStatus)) {
+            throw new IllegalStateException("Answer already revealed for question " + questionNumber);
+        }
+
+        redisService.setQuestionStatus(roomCode, questionNumber, "REVEALED");
+
+        Map<Integer, Integer> statistics = redisService.getAnswerStatistics(roomCode, questionNumber);
+        int totalAnswers = statistics.values().stream().mapToInt(Integer::intValue).sum();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("correctAnswer", question.getCorrectAnswer());
+        result.put("explanation", question.getExplanation());
+        result.put("statistics", statistics);
+        result.put("totalAnswers", totalAnswers);
+
+        log.info("Revealed answer for question {} in room {}", questionNumber, roomCode);
+
+        return result;
     }
 
     public void nextQuestion(String roomCode) {
