@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import java.util.stream.Collectors;
+
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -159,11 +161,30 @@ public class QuizBattleWebSocketController {
                 throw new IllegalStateException("Only the host can start the quiz");
             }
 
-            List<QuizQuestion> questions = quizBattleService.startQuiz(roomCode);
-            QuizQuestion firstQuestion = questions.get(0);
-            sendQuestionToRoom(roomCode, firstQuestion);
+            // Announce that the quiz is starting
+            QuizStatusMessage startingMessage = QuizStatusMessage.builder()
+                    .status("QUIZ_STARTING")
+                    .message("Quiz will start in 3 seconds...")
+                    .build();
+            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", startingMessage);
 
-            log.info("Quiz started in room {}", roomCode);
+
+            // Schedule the first question to be sent after a delay
+            quizTimerService.scheduleTask(() -> {
+                List<QuizQuestion> questions = quizBattleService.startQuiz(roomCode);
+                if (questions != null && !questions.isEmpty()) {
+                    QuizQuestion firstQuestion = questions.get(0);
+                    sendQuestionToRoom(roomCode, firstQuestion);
+                    log.info("Quiz started in room {} and first question sent", roomCode);
+                } else {
+                    log.error("No questions found for room {} after starting quiz.", roomCode);
+                     ErrorMessage error = ErrorMessage.builder()
+                        .status("error")
+                        .message("Failed to start quiz: No questions were found.")
+                        .build();
+                    messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", error);
+                }
+            }, 3, java.util.concurrent.TimeUnit.SECONDS);
 
         } catch (Exception e) {
             log.error("Error starting quiz", e);
@@ -348,7 +369,7 @@ public class QuizBattleWebSocketController {
         QuizQuestionMessage questionMessage = QuizQuestionMessage.builder()
                 .questionNumber(question.getQuestionNumber())
                 .questionText(question.getQuestionText())
-                .options(question.getOptions())
+                .options(question.getOptions().stream().map(QuizOption::getText).collect(Collectors.toList()))
                 .timeLimit(question.getTimeLimit())
                 .difficulty(question.getDifficulty())
                 .status("success")

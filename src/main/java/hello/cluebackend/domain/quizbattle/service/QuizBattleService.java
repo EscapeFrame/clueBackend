@@ -4,10 +4,12 @@ import hello.cluebackend.application.agent.dto.response.AgentResponse;
 import hello.cluebackend.application.quizbattle.dto.QuizGenerationRequest;
 import hello.cluebackend.application.quizbattle.dto.QuizGenerationResponse;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
+import hello.cluebackend.domain.document.model.Document;
 import hello.cluebackend.domain.quizbattle.model.*;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.client.quiz.QuizClient;
 import hello.cluebackend.infrastructure.persistence.classroom.ClassRoomJpaRepository;
+import hello.cluebackend.infrastructure.persistence.document.DocumentJpaRepository;
 import hello.cluebackend.infrastructure.persistence.quizroom.QuizRoomJpaRepository;
 import hello.cluebackend.infrastructure.persistence.user.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class QuizBattleService {
   private final QuizRoomJpaRepository quizRoomRepository;
   private final UserJpaRepository userRepository;
   private final ClassRoomJpaRepository classRoomRepository;
+  private final DocumentJpaRepository documentRepository;
   private final QuizRoomRedisService redisService;
   private final QuizClient quizClient;
 
@@ -47,22 +50,29 @@ public class QuizBattleService {
               .orElseThrow(() -> new IllegalArgumentException("Classroom not found: " + classRoomId));
     }
 
+    Document document = documentRepository.findById(documentId)
+            .orElseThrow(() -> new IllegalArgumentException("Document not found: " + documentId));
+
+
     String roomCode = generateUniqueRoomCode();
 
+    int finalTimePerQuestion = timePerQuestion != null ? timePerQuestion : 30;
+
     QuizRoom quizRoom = QuizRoom.builder()
+            .title(document.getTitle())
             .roomCode(roomCode)
             .host(host)
             .classRoom(classRoom)
             .status(QuizRoomStatus.WAITING)
             .maxParticipants(maxParticipants != null ? maxParticipants : 50)
             .questionCount(questionCount != null ? questionCount : 10)
-            .timePerQuestion(timePerQuestion != null ? timePerQuestion : 30)
+            .timePerQuestion(finalTimePerQuestion)
             .build();
 
     QuizRoom savedRoom = quizRoomRepository.save(quizRoom);
 
     int finalQuestionCount = questionCount != null ? questionCount : 10;
-    List<QuizQuestion> questions = generateQuestions(finalQuestionCount, documentId);
+    List<QuizQuestion> questions = generateQuestions(finalQuestionCount, documentId, finalTimePerQuestion);
     redisService.storeQuestions(roomCode, questions);
 
     log.info("with code: {} and {} questions", roomCode, questions.size());
@@ -125,7 +135,7 @@ public class QuizBattleService {
         return questions;
     }
 
-    private List<QuizQuestion> generateQuestions(int count, UUID documentId) {
+    private List<QuizQuestion> generateQuestions(int count, UUID documentId, int timePerQuestion) {
         try {
             QuizGenerationRequest request = QuizGenerationRequest.builder()
                     .questionCount(count)
@@ -137,7 +147,14 @@ public class QuizBattleService {
             AgentResponse<QuizGenerationResponse> response = quizClient.generateQuiz(request);
 
             if (response.getData() != null && response.getData().getQuestions() != null) {
-                return response.getData().getQuestions();
+                List<QuizQuestion> questions = response.getData().getQuestions();
+                // Manually set question numbers and time limits
+                for (int i = 0; i < questions.size(); i++) {
+                    QuizQuestion question = questions.get(i);
+                    question.setQuestionNumber(i + 1);
+                    question.setTimeLimit(timePerQuestion);
+                }
+                return questions;
             } else {
                 log.error("Failed to generate questions from FastAPI: {}", response.getMessage());
                 throw new RuntimeException("Failed to generate questions");

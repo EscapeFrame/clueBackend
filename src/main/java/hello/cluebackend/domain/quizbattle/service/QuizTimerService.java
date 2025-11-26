@@ -61,6 +61,16 @@ public class QuizTimerService {
         return 0;
     }
 
+    public void scheduleTask(Runnable task, long delay, TimeUnit unit) {
+        scheduler.schedule(() -> {
+            try {
+                task.run();
+            } catch (Exception e) {
+                log.error("Error executing scheduled task", e);
+            }
+        }, delay, unit);
+    }
+
     public void shutdown() {
         log.info("Shutting down quiz timer service");
         activeTimers.values().forEach(future -> future.cancel(false));

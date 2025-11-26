@@ -14,7 +14,7 @@ public class QuizQuestion implements Serializable {
 
     private Integer questionNumber;
     private String questionText;
-    private List<String> options;
+    private List<QuizOption> options;
     private Integer correctAnswer;
     private Integer timeLimit;
     private String explanation;

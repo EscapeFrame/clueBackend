@@ -21,6 +21,9 @@ public class QuizRoom {
     @Column(name = "quiz_room_id", nullable = false, updatable = false)
     private UUID quizRoomId;
 
+    @Column(nullable = false)
+    private String title;
+
     @Column(nullable = false, length = 20)
     private String roomCode;
 

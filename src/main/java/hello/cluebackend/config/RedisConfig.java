@@ -31,15 +31,14 @@ public class RedisConfig {
     RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
 
+    // Use StringRedisSerializer for keys
     redisTemplate.setKeySerializer(new StringRedisSerializer());
-    redisTemplate.setValueSerializer(new StringRedisSerializer());
-
     redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-    redisTemplate.setHashValueSerializer(new StringRedisSerializer());
 
+    // Use GenericJackson2JsonRedisSerializer for values
     redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+    redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 
-    redisTemplate.setDefaultSerializer(new StringRedisSerializer());
     return redisTemplate;
   }
 }
