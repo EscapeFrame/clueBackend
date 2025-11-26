@@ -25,18 +25,33 @@ public class QuizRoomRedisService {
     private static final String ANSWER_KEY_SUFFIX = ":answers";
     private static final String CURRENT_QUESTION_KEY_PREFIX = "quiz:room:";
     private static final String CURRENT_QUESTION_KEY_SUFFIX = ":current";
+    private static final String SESSION_MAPPING_PREFIX = "quiz:session:";
     private static final long DEFAULT_EXPIRATION_HOURS = 24;
 
     public void addParticipant(String roomCode, QuizParticipant participant) {
         String key = getParticipantKey(roomCode);
         redisTemplate.opsForHash().put(key, participant.getUserId().toString(), participant);
         redisTemplate.expire(key, DEFAULT_EXPIRATION_HOURS, TimeUnit.HOURS);
+
+        // Store session to room mapping
+        if (participant.getSessionId() != null) {
+            addSessionMapping(participant.getSessionId(), roomCode);
+        }
+
         log.info("Added participant {} to room {}", participant.getUsername(), roomCode);
     }
 
     public void removeParticipant(String roomCode, UUID userId) {
         String key = getParticipantKey(roomCode);
+        QuizParticipant participant = getParticipant(roomCode, userId);
+
         redisTemplate.opsForHash().delete(key, userId.toString());
+
+        // Remove session to room mapping
+        if (participant != null && participant.getSessionId() != null) {
+            removeSessionMapping(participant.getSessionId());
+        }
+
         log.info("Removed participant {} from room {}", userId, roomCode);
     }
 
@@ -190,5 +205,36 @@ public class QuizRoomRedisService {
 
     private String getCurrentQuestionKey(String roomCode) {
         return CURRENT_QUESTION_KEY_PREFIX + roomCode + CURRENT_QUESTION_KEY_SUFFIX;
+    }
+
+    private String getSessionMappingKey(String sessionId) {
+        return SESSION_MAPPING_PREFIX + sessionId;
+    }
+
+    public void addSessionMapping(String sessionId, String roomCode) {
+        String key = getSessionMappingKey(sessionId);
+        redisTemplate.opsForValue().set(key, roomCode, DEFAULT_EXPIRATION_HOURS, TimeUnit.HOURS);
+        log.info("Mapped session {} to room {}", sessionId, roomCode);
+    }
+
+    public String getRoomCodeBySessionId(String sessionId) {
+        String key = getSessionMappingKey(sessionId);
+        Object roomCode = redisTemplate.opsForValue().get(key);
+        return roomCode != null ? (String) roomCode : null;
+    }
+
+    public void removeSessionMapping(String sessionId) {
+        String key = getSessionMappingKey(sessionId);
+        redisTemplate.delete(key);
+        log.info("Removed session mapping for {}", sessionId);
+    }
+
+    public UUID getUserIdBySessionId(String roomCode, String sessionId) {
+        List<QuizParticipant> participants = getAllParticipants(roomCode);
+        return participants.stream()
+                .filter(p -> sessionId.equals(p.getSessionId()))
+                .map(QuizParticipant::getUserId)
+                .findFirst()
+                .orElse(null);
     }
 }

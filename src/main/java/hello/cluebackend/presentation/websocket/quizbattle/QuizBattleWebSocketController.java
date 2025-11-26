@@ -1,6 +1,6 @@
 package hello.cluebackend.presentation.websocket.quizbattle;
 
-import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
+import hello.cluebackend.common.utils.JWTUtil;
 import hello.cluebackend.domain.quizbattle.model.*;
 import hello.cluebackend.domain.quizbattle.service.QuizBattleService;
 import hello.cluebackend.domain.quizbattle.service.QuizTimerService;
@@ -13,10 +13,10 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -26,16 +26,60 @@ public class QuizBattleWebSocketController {
     private final QuizBattleService quizBattleService;
     private final QuizTimerService quizTimerService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final JWTUtil jwtUtil;
+
+    private UUID getUserIdFromHeader(SimpMessageHeaderAccessor headerAccessor) {
+        try {
+            // First, try to get from session attributes (set during STOMP CONNECT)
+            Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+            if (sessionAttributes != null && sessionAttributes.containsKey("userId")) {
+                Object userId = sessionAttributes.get("userId");
+                if (userId instanceof UUID) {
+                    log.debug("Extracted userId from session attributes: {}", userId);
+                    return (UUID) userId;
+                }
+            }
+
+            // Fallback: Try to get from message headers
+            Map<String, Object> nativeHeaders = (Map<String, Object>) headerAccessor.getHeader("nativeHeaders");
+
+            if (nativeHeaders != null && nativeHeaders.containsKey("Authorization")) {
+                List<String> authHeaders = (List<String>) nativeHeaders.get("Authorization");
+                if (authHeaders != null && !authHeaders.isEmpty()) {
+                    String token = authHeaders.get(0);
+                    // Remove "Bearer " prefix if present
+                    if (token.startsWith("Bearer ")) {
+                        token = token.substring(7);
+                    }
+                    log.debug("Extracted token from nativeHeaders: {}", token.substring(0, Math.min(20, token.length())) + "...");
+                    UUID userId = jwtUtil.getUserId(token);
+                    // Store in session for future requests
+                    if (sessionAttributes != null) {
+                        sessionAttributes.put("userId", userId);
+                    }
+                    return userId;
+                }
+            }
+
+            log.error("Authorization not found. Session attrs: {}, Native headers: {}",
+                    sessionAttributes != null ? sessionAttributes.keySet() : "null",
+                    nativeHeaders != null ? nativeHeaders.keySet() : "null");
+        } catch (Exception e) {
+            log.error("Error extracting userId from header", e);
+        }
+        throw new IllegalArgumentException("Authorization token not found in message headers");
+    }
 
     @MessageMapping("/quiz/create")
     @SendTo("/topic/quiz/rooms")
     public RoomCreatedMessage createRoom(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @Payload CreateRoomRequest request
+            @Payload CreateRoomRequest request,
+            SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
             QuizRoom room = quizBattleService.createRoom(
-                    customOAuth2User.getUserId(),
+                    userId,
                     request.getMaxParticipants(),
                     request.getQuestionCount(),
                     request.getTimePerQuestion(),
@@ -43,7 +87,7 @@ public class QuizBattleWebSocketController {
                     request.getDocumentId()
             );
 
-            log.info("Room created: {} by user {}", room.getRoomCode(), customOAuth2User.getUserId());
+            log.info("Room created: {} by user {}", room.getRoomCode(), userId);
 
             return RoomCreatedMessage.builder()
                     .roomCode(room.getRoomCode())
@@ -66,14 +110,14 @@ public class QuizBattleWebSocketController {
 
     @MessageMapping("/quiz/join/{roomCode}")
     public void joinRoom(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @DestinationVariable String roomCode,
             SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
             String sessionId = headerAccessor.getSessionId();
 
-            QuizParticipant participant = quizBattleService.joinRoom(roomCode, customOAuth2User.getUserId(), sessionId);
+            QuizParticipant participant = quizBattleService.joinRoom(roomCode, userId, sessionId);
             List<QuizParticipant> allParticipants = quizBattleService.getParticipants(roomCode);
 
             ParticipantJoinedMessage message = ParticipantJoinedMessage.builder()
@@ -104,13 +148,14 @@ public class QuizBattleWebSocketController {
 
     @MessageMapping("/quiz/start/{roomCode}")
     public void startQuiz(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @DestinationVariable String roomCode
+            @DestinationVariable String roomCode,
+            SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
             QuizRoom room = quizBattleService.getRoom(roomCode);
 
-            if (!room.isHost(customOAuth2User.getUserId())) {
+            if (!room.isHost(userId)) {
                 throw new IllegalStateException("Only the host can start the quiz");
             }
 
@@ -132,15 +177,15 @@ public class QuizBattleWebSocketController {
 
     @MessageMapping("/quiz/answer/{roomCode}")
     public void submitAnswer(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @DestinationVariable String roomCode,
             @Payload SubmitAnswerRequest request,
             SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
             QuizAnswer answer = quizBattleService.submitAnswer(
                     roomCode,
-                    customOAuth2User.getUserId(),
+                    userId,
                     request.getQuestionNumber(),
                     request.getAnswerIndex(),
                     request.getSubmittedAt(),
@@ -161,7 +206,7 @@ public class QuizBattleWebSocketController {
             );
 
             log.info("User {} submitted answer for question {} in room {}",
-                    customOAuth2User.getUserDTO(), request.getQuestionNumber(), roomCode);
+                    userId, request.getQuestionNumber(), roomCode);
 
         } catch (Exception e) {
             log.error("Error submitting answer", e);
@@ -179,13 +224,15 @@ public class QuizBattleWebSocketController {
 
     @MessageMapping("/quiz/next/{roomCode}")
     public void nextQuestion(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @DestinationVariable String roomCode
+            @DestinationVariable String roomCode,
+            SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
+
             QuizRoom room = quizBattleService.getRoom(roomCode);
 
-            if (!room.isHost(customOAuth2User.getUserId())) {
+            if (!room.isHost(userId)) {
                 throw new IllegalStateException("Only the host can move to next question");
             }
 
@@ -235,16 +282,17 @@ public class QuizBattleWebSocketController {
 
     @MessageMapping("/quiz/leave/{roomCode}")
     public void leaveRoom(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @DestinationVariable String roomCode
+            @DestinationVariable String roomCode,
+            SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
-            quizBattleService.leaveRoom(roomCode, customOAuth2User.getUserId());
+            UUID userId = getUserIdFromHeader(headerAccessor);
+            quizBattleService.leaveRoom(roomCode, userId);
 
             List<QuizParticipant> remainingParticipants = quizBattleService.getParticipants(roomCode);
 
             ParticipantLeftMessage message = ParticipantLeftMessage.builder()
-                    .userId(customOAuth2User.getUserId())
+                    .userId(userId)
                     .totalParticipants(remainingParticipants.size())
                     .allParticipants(remainingParticipants)
                     .status("success")
@@ -252,7 +300,7 @@ public class QuizBattleWebSocketController {
 
             messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/participants", message);
 
-            log.info("User {} left room {}", customOAuth2User.getUserId(), roomCode);
+            log.info("User {} left room {}", userId, roomCode);
 
         } catch (Exception e) {
             log.error("Error leaving room", e);
@@ -261,13 +309,14 @@ public class QuizBattleWebSocketController {
 
     @MessageMapping("/quiz/cancel/{roomCode}")
     public void cancelRoom(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @DestinationVariable String roomCode
+            @DestinationVariable String roomCode,
+            SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
+            UUID userId = getUserIdFromHeader(headerAccessor);
             QuizRoom room = quizBattleService.getRoom(roomCode);
 
-            if (!room.isHost(customOAuth2User.getUserId())) {
+            if (!room.isHost(userId)) {
                 throw new IllegalStateException("Only the host can cancel the room");
             }
 
@@ -283,7 +332,7 @@ public class QuizBattleWebSocketController {
 
             messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", message);
 
-            log.info("Room {} cancelled by host {}", roomCode, customOAuth2User.getUserId());
+            log.info("Room {} cancelled by host {}", roomCode, userId);
 
         } catch (Exception e) {
             log.error("Error cancelling room", e);

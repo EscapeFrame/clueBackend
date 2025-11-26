@@ -226,6 +226,17 @@ public class QuizBattleService {
         log.info("User {} left room {}", userId, roomCode);
     }
 
+    public void leaveRoomBySessionId(String sessionId) {
+        String roomCode = redisService.getRoomCodeBySessionId(sessionId);
+        if (roomCode != null) {
+            UUID userId = redisService.getUserIdBySessionId(roomCode, sessionId);
+            if (userId != null) {
+                redisService.removeParticipant(roomCode, userId);
+                log.info("User {} left room {} (disconnected session: {})", userId, roomCode, sessionId);
+            }
+        }
+    }
+
     public QuizRoom getRoom(String roomCode) {
         return quizRoomRepository.findByRoomCode(roomCode)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomCode));
