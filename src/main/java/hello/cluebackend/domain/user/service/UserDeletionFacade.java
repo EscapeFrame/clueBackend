@@ -1,5 +1,6 @@
 package hello.cluebackend.domain.user.service;
 
+import hello.cluebackend.domain.file.service.FileService;
 import hello.cluebackend.domain.user.model.UserEntity;
 import hello.cluebackend.infrastructure.persistence.agent.AgentJpaRepository;
 import hello.cluebackend.infrastructure.persistence.assignment.AssignmentJpaRepository;
@@ -32,6 +33,8 @@ public class UserDeletionFacade {
     private final QuizRoomJpaRepository quizRoomJpaRepository;
     private final AgentJpaRepository agentJpaRepository;
 
+    private final FileService fileService;
+
     public void deleteUser(UUID userId) {
         UserEntity user = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저가 존재하지 않습니다."));
@@ -46,6 +49,8 @@ public class UserDeletionFacade {
         quizRoomJpaRepository.deleteByHost(user);
         subjectJpaRepository.deleteByTeacher(user);
         agentJpaRepository.deleteByUser(user);
+
+        fileService.deleteFile(user.getValue());
 
         userJpaRepository.delete(user);
     }
