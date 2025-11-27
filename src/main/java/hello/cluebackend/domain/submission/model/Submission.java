@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -31,6 +33,10 @@ public class Submission {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "class_room_id")
   private ClassRoom classRoom;
+
+  @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
+  private List<SubmissionAttachment> submissionAttachments = new ArrayList<>();
 
   @Column(name = "is_submitted")
   private boolean isSubmitted;
