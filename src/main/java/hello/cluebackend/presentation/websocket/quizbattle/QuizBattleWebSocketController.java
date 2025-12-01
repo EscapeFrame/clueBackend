@@ -122,13 +122,14 @@ public class QuizBattleWebSocketController {
     @MessageMapping("/quiz/join/{roomCode}")
     public void joinRoom(
             @DestinationVariable String roomCode,
+            @Payload JoinRoomRequest request,
             SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
             String sessionId = headerAccessor.getSessionId();
 
-            QuizParticipant participant = quizBattleService.joinRoom(roomCode, userId, sessionId);
+            QuizParticipant participant = quizBattleService.joinRoom(roomCode, userId, sessionId, request.getProfileImage());
             List<QuizParticipant> allParticipants = quizBattleService.getParticipants(roomCode);
 
             ParticipantJoinedMessage message = ParticipantJoinedMessage.builder()
@@ -225,7 +226,7 @@ public class QuizBattleWebSocketController {
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
-            QuizAnswer answer = quizBattleService.submitAnswer(
+            Map<String, Object> resultData = quizBattleService.submitAnswer(
                     roomCode,
                     userId,
                     request.getQuestionNumber(),
@@ -233,6 +234,9 @@ public class QuizBattleWebSocketController {
                     request.getSubmittedAt(),
                     request.getTimeSpent()
             );
+
+            QuizAnswer answer = (QuizAnswer) resultData.get("answer");
+            int totalAnswers = (int) resultData.get("totalAnswers");
 
             AnswerResultMessage result = AnswerResultMessage.builder()
                     .questionNumber(answer.getQuestionNumber())
@@ -247,8 +251,19 @@ public class QuizBattleWebSocketController {
                     result
             );
 
-            log.info("User {} submitted answer for question {} in room {}",
-                    userId, request.getQuestionNumber(), roomCode);
+            // Notify everyone in the room about the new answer count
+            int totalParticipants = quizBattleService.getParticipants(roomCode).size();
+            AnswerCountMessage countMessage = AnswerCountMessage.builder()
+                .status("ANSWER_SUBMITTED")
+                .message("An answer was submitted.")
+                .questionNumber(request.getQuestionNumber())
+                .totalAnswers(totalAnswers)
+                .totalParticipants(totalParticipants)
+                .build();
+            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", countMessage);
+
+            log.info("User {} submitted answer for question {} in room {}, total answers now {}",
+                    userId, request.getQuestionNumber(), roomCode, totalAnswers);
 
         } catch (Exception e) {
             log.error("Error submitting answer", e);

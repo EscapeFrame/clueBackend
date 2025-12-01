@@ -93,7 +93,7 @@ public class QuizBattleService {
     return savedRoom;
   }
 
-  public QuizParticipant joinRoom(String roomCode, UUID userId, String sessionId) {
+  public QuizParticipant joinRoom(String roomCode, UUID userId, String sessionId, String profileImage) {
     QuizRoom room = quizRoomRepository.findByRoomCode(roomCode)
             .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomCode));
 
@@ -117,6 +117,7 @@ public class QuizBattleService {
             .correctAnswers(0)
             .isReady(false)
             .joinedAt(System.currentTimeMillis())
+            .profileImage(profileImage)
             .build();
 
     redisService.addParticipant(roomCode, participant);
@@ -205,7 +206,7 @@ public class QuizBattleService {
         }
     }
 
-    public QuizAnswer submitAnswer(
+    public Map<String, Object> submitAnswer(
             String roomCode, UUID userId, int questionNumber,
             int answerIndex, long submittedAt, int timeSpent) {
         QuizRoom room = quizRoomRepository.findByRoomCode(roomCode)
@@ -263,7 +264,15 @@ public class QuizBattleService {
         log.info("User {} submitted answer for question {} in room {}, correct: {}, points: {}",
                 userId, questionNumber, roomCode, isCorrect, answer.getPoints());
 
-        return answer;
+        Map<Integer, Integer> statistics = redisService.getAnswerStatistics(roomCode, questionNumber);
+        int totalAnswers = statistics.values().stream().mapToInt(Integer::intValue).sum();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("answer", answer);
+        result.put("totalAnswers", totalAnswers);
+
+
+        return result;
     }
 
     public List<QuizRanking> getRankings(String roomCode) {

@@ -20,6 +20,7 @@ public class QuizParticipant implements Serializable {
     private Integer correctAnswers;
     private Boolean isReady;
     private Long joinedAt;
+    private String profileImage;
 
     public void addScore(int points) {
         this.score = (this.score != null ? this.score : 0) + points;
