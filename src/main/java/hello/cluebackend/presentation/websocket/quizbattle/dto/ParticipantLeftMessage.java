@@ -16,4 +16,5 @@ public class ParticipantLeftMessage {
     private Integer totalParticipants;
     private List<QuizParticipant> allParticipants;
     private String status;
+    private Boolean isHostRemaining;
 }
