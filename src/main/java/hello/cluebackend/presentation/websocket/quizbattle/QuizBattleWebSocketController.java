@@ -2,7 +2,9 @@ package hello.cluebackend.presentation.websocket.quizbattle;
 
 import hello.cluebackend.common.utils.JWTUtil;
 import hello.cluebackend.domain.quizbattle.model.*;
+import hello.cluebackend.application.quizbattle.dto.SubmitAnswerResponse;
 import hello.cluebackend.domain.quizbattle.service.QuizBattleService;
+import hello.cluebackend.application.quizbattle.dto.RevealAnswerResponse;
 import hello.cluebackend.domain.quizbattle.service.QuizTimerService;
 import hello.cluebackend.presentation.websocket.quizbattle.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -226,7 +228,7 @@ public class QuizBattleWebSocketController {
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
-            Map<String, Object> resultData = quizBattleService.submitAnswer(
+            SubmitAnswerResponse resultData = quizBattleService.submitAnswer(
                     roomCode,
                     userId,
                     request.getQuestionNumber(),
@@ -235,8 +237,8 @@ public class QuizBattleWebSocketController {
                     request.getTimeSpent()
             );
 
-            QuizAnswer answer = (QuizAnswer) resultData.get("answer");
-            int totalAnswers = (int) resultData.get("totalAnswers");
+            QuizAnswer answer = resultData.getAnswer();
+            int totalAnswers = resultData.getTotalAnswers();
 
             AnswerResultMessage result = AnswerResultMessage.builder()
                     .questionNumber(answer.getQuestionNumber())
@@ -299,14 +301,14 @@ public class QuizBattleWebSocketController {
 
             quizTimerService.cancelQuestionTimer(roomCode, currentQuestionNum);
 
-            Map<String, Object> result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
+            RevealAnswerResponse result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
 
             AnswerRevealMessage message = AnswerRevealMessage.builder()
                     .questionNumber(currentQuestionNum)
-                    .correctAnswer((Integer) result.get("correctAnswer"))
-                    .explanation((String) result.get("explanation"))
-                    .statistics((Map<Integer, Integer>) result.get("statistics"))
-                    .totalAnswers((Integer) result.get("totalAnswers"))
+                    .correctAnswer(result.getCorrectAnswer())
+                    .explanation(result.getExplanation())
+                    .statistics(result.getStatistics())
+                    .totalAnswers(result.getTotalAnswers())
                     .status("success")
                     .message("Answer revealed")
                     .build();
@@ -493,14 +495,14 @@ public class QuizBattleWebSocketController {
                         // 시간이 끝나면 정답만 공개하고, 다음 문제로는 넘어가지 않음
                         Integer currentQuestionNum = quizBattleService.getCurrentQuestionNumber(roomCode);
                         if (currentQuestionNum != null) {
-                            Map<String, Object> result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
+                            RevealAnswerResponse result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
 
                             AnswerRevealMessage message = AnswerRevealMessage.builder()
                                     .questionNumber(currentQuestionNum)
-                                    .correctAnswer((Integer) result.get("correctAnswer"))
-                                    .explanation((String) result.get("explanation"))
-                                    .statistics((Map<Integer, Integer>) result.get("statistics"))
-                                    .totalAnswers((Integer) result.get("totalAnswers"))
+                                    .correctAnswer(result.getCorrectAnswer())
+                                    .explanation(result.getExplanation())
+                                    .statistics(result.getStatistics())
+                                    .totalAnswers(result.getTotalAnswers())
                                     .status("success")
                                     .message("Time's up! Answer revealed")
                                     .build();

@@ -1,6 +1,8 @@
 package hello.cluebackend.domain.quizbattle.service;
 
 import hello.cluebackend.application.agent.dto.response.AgentResponse;
+import hello.cluebackend.application.quizbattle.dto.SubmitAnswerResponse;
+import hello.cluebackend.application.quizbattle.dto.RevealAnswerResponse;
 import hello.cluebackend.application.quizbattle.dto.QuizGenerationRequest;
 import hello.cluebackend.application.quizbattle.dto.QuizGenerationResponse;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
@@ -206,7 +208,7 @@ public class QuizBattleService {
         }
     }
 
-    public Map<String, Object> submitAnswer(
+    public SubmitAnswerResponse submitAnswer(
             String roomCode, UUID userId, int questionNumber,
             int answerIndex, long submittedAt, int timeSpent) {
         QuizRoom room = quizRoomRepository.findByRoomCode(roomCode)
@@ -267,12 +269,10 @@ public class QuizBattleService {
         Map<Integer, Integer> statistics = redisService.getAnswerStatistics(roomCode, questionNumber);
         int totalAnswers = statistics.values().stream().mapToInt(Integer::intValue).sum();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("answer", answer);
-        result.put("totalAnswers", totalAnswers);
-
-
-        return result;
+        return SubmitAnswerResponse.builder()
+                .answer(answer)
+                .totalAnswers(totalAnswers)
+                .build();
     }
 
     public List<QuizRanking> getRankings(String roomCode) {
@@ -387,7 +387,7 @@ public class QuizBattleService {
         log.info("Set question {} to ACTIVE in room {}", questionNumber, roomCode);
     }
 
-    public Map<String, Object> revealAnswer(String roomCode, int questionNumber) {
+    public RevealAnswerResponse revealAnswer(String roomCode, int questionNumber) {
         QuizQuestion question = redisService.getQuestion(roomCode, questionNumber);
         if (question == null) {
             throw new IllegalArgumentException("Question not found: " + questionNumber);
@@ -403,15 +403,14 @@ public class QuizBattleService {
         Map<Integer, Integer> statistics = redisService.getAnswerStatistics(roomCode, questionNumber);
         int totalAnswers = statistics.values().stream().mapToInt(Integer::intValue).sum();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("correctAnswer", question.getCorrectAnswer());
-        result.put("explanation", question.getExplanation());
-        result.put("statistics", statistics);
-        result.put("totalAnswers", totalAnswers);
-
         log.info("Revealed answer for question {} in room {}", questionNumber, roomCode);
 
-        return result;
+        return RevealAnswerResponse.builder()
+                .correctAnswer(question.getCorrectAnswer())
+                .explanation(question.getExplanation())
+                .statistics(statistics)
+                .totalAnswers(totalAnswers)
+                .build();
     }
 
     public void nextQuestion(String roomCode) {
