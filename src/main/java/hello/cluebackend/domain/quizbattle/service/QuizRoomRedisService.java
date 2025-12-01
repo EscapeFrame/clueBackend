@@ -19,6 +19,8 @@ public class QuizRoomRedisService {
 
     private static final String PARTICIPANT_KEY_PREFIX = "quiz:room:";
     private static final String PARTICIPANT_KEY_SUFFIX = ":participants";
+    private static final String HOST_KEY_PREFIX = "quiz:room:";
+    private static final String HOST_KEY_SUFFIX = ":host";
     private static final String QUESTION_KEY_PREFIX = "quiz:room:";
     private static final String QUESTION_KEY_SUFFIX = ":questions";
     private static final String ANSWER_KEY_PREFIX = "quiz:room:";
@@ -91,6 +93,73 @@ public class QuizRoomRedisService {
         String key = getParticipantKey(roomCode);
         redisTemplate.delete(key);
         log.info("Cleared all participants from room {}", roomCode);
+    }
+
+    public void setHost(String roomCode, UUID hostId, String sessionId) {
+        String key = getHostKey(roomCode);
+        Map<String, Object> hostInfo = new HashMap<>();
+        hostInfo.put("hostId", hostId.toString());
+        hostInfo.put("sessionId", sessionId);
+
+        redisTemplate.opsForHash().putAll(key, hostInfo);
+        redisTemplate.expire(key, DEFAULT_EXPIRATION_HOURS, TimeUnit.HOURS);
+
+        if (sessionId != null) {
+            addSessionMapping(sessionId, roomCode);
+        }
+
+        log.info("Set host {} for room {}", hostId, roomCode);
+    }
+
+    public UUID getHostId(String roomCode) {
+        String key = getHostKey(roomCode);
+        Object hostIdObj = redisTemplate.opsForHash().get(key, "hostId");
+        return hostIdObj != null ? UUID.fromString((String) hostIdObj) : null;
+    }
+
+    public String getHostSessionId(String roomCode) {
+        String key = getHostKey(roomCode);
+        Object sessionIdObj = redisTemplate.opsForHash().get(key, "sessionId");
+        return sessionIdObj != null ? (String) sessionIdObj : null;
+    }
+
+    public boolean isHost(String roomCode, UUID userId) {
+        UUID hostId = getHostId(roomCode);
+        return hostId != null && hostId.equals(userId);
+    }
+
+    public void updateHostSessionId(String roomCode, String sessionId) {
+        String key = getHostKey(roomCode);
+        String oldSessionId = getHostSessionId(roomCode);
+
+        // 기존 세션 매핑 제거
+        if (oldSessionId != null) {
+            removeSessionMapping(oldSessionId);
+        }
+
+        // 새 세션 ID 저장
+        redisTemplate.opsForHash().put(key, "sessionId", sessionId);
+        redisTemplate.expire(key, DEFAULT_EXPIRATION_HOURS, TimeUnit.HOURS);
+
+        // 세션 매핑 추가
+        if (sessionId != null) {
+            addSessionMapping(sessionId, roomCode);
+        }
+
+        log.info("Updated host session ID for room {}", roomCode);
+    }
+
+    public void clearHost(String roomCode) {
+        String key = getHostKey(roomCode);
+        String sessionId = getHostSessionId(roomCode);
+
+        redisTemplate.delete(key);
+
+        if (sessionId != null) {
+            removeSessionMapping(sessionId);
+        }
+
+        log.info("Cleared host for room {}", roomCode);
     }
 
     public void storeQuestions(String roomCode, List<QuizQuestion> questions) {
@@ -195,6 +264,7 @@ public class QuizRoomRedisService {
 
     public void clearRoomData(String roomCode) {
         clearParticipants(roomCode);
+        clearHost(roomCode);
         clearQuestions(roomCode);
         String currentQuestionKey = getCurrentQuestionKey(roomCode);
         redisTemplate.delete(currentQuestionKey);
@@ -203,6 +273,10 @@ public class QuizRoomRedisService {
 
     private String getParticipantKey(String roomCode) {
         return PARTICIPANT_KEY_PREFIX + roomCode + PARTICIPANT_KEY_SUFFIX;
+    }
+
+    private String getHostKey(String roomCode) {
+        return HOST_KEY_PREFIX + roomCode + HOST_KEY_SUFFIX;
     }
 
     private String getQuestionKey(String roomCode) {

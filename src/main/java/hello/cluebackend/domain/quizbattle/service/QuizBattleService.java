@@ -85,7 +85,10 @@ public class QuizBattleService {
             finalQuestionCount, questions.size(), roomCode);
     }
 
-    log.info("Created room {} with {} questions", roomCode, questions.size());
+    // 호스트 정보를 레디스에 저장 (권한 확인용, 참가자 목록과 별도)
+    redisService.setHost(roomCode, hostId, null);
+    log.info("Created room {} with {} questions, host {} set",
+        roomCode, questions.size(), host.getUsername());
 
     return savedRoom;
   }
@@ -306,6 +309,47 @@ public class QuizBattleService {
                 log.info("User {} left room {} (disconnected session: {})", userId, roomCode, sessionId);
             }
         }
+    }
+
+    public DisconnectResult handleDisconnect(String sessionId) {
+        String roomCode = redisService.getRoomCodeBySessionId(sessionId);
+        if (roomCode == null) {
+            log.debug("No room found for disconnected session: {}", sessionId);
+            return null;
+        }
+
+        UUID userId = redisService.getUserIdBySessionId(roomCode, sessionId);
+        if (userId == null) {
+            log.debug("No user found for disconnected session: {}", sessionId);
+            return null;
+        }
+
+        QuizRoom room = quizRoomRepository.findByRoomCode(roomCode).orElse(null);
+        if (room == null) {
+            log.debug("Room {} not found in database for disconnected session: {}", roomCode, sessionId);
+            return null;
+        }
+
+        boolean wasHost = room.isHost(userId);
+
+        redisService.removeParticipant(roomCode, userId);
+        redisService.removeSessionMapping(sessionId);
+
+        log.info("User {} disconnected from room {} (host: {})", userId, roomCode, wasHost);
+
+        return DisconnectResult.builder()
+                .roomCode(roomCode)
+                .userId(userId)
+                .wasHost(wasHost)
+                .build();
+    }
+
+    @lombok.Builder
+    @lombok.Getter
+    public static class DisconnectResult {
+        private String roomCode;
+        private UUID userId;
+        private boolean wasHost;
     }
 
     public QuizRoom getRoom(String roomCode) {

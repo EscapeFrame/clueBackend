@@ -7,13 +7,16 @@ import hello.cluebackend.domain.quizbattle.service.QuizTimerService;
 import hello.cluebackend.presentation.websocket.quizbattle.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ public class QuizBattleWebSocketController {
     private final QuizTimerService quizTimerService;
     private final SimpMessagingTemplate messagingTemplate;
     private final JWTUtil jwtUtil;
+    private final hello.cluebackend.domain.quizbattle.service.QuizRoomRedisService redisService;
 
     private UUID getUserIdFromHeader(SimpMessageHeaderAccessor headerAccessor) {
         try {
@@ -80,6 +84,8 @@ public class QuizBattleWebSocketController {
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
+            String sessionId = headerAccessor.getSessionId();
+
             QuizRoom room = quizBattleService.createRoom(
                     userId,
                     request.getMaxParticipants(),
@@ -89,7 +95,10 @@ public class QuizBattleWebSocketController {
                     request.getDocumentId()
             );
 
-            log.info("Room created: {} by user {}", room.getRoomCode(), userId);
+            // 호스트의 WebSocket 세션 ID를 레디스에 업데이트
+            redisService.updateHostSessionId(room.getRoomCode(), sessionId);
+
+            log.info("Room created: {} by user {} with session {}", room.getRoomCode(), userId, sessionId);
 
             return RoomCreatedMessage.builder()
                     .roomCode(room.getRoomCode())
@@ -171,16 +180,28 @@ public class QuizBattleWebSocketController {
 
             // Schedule the first question to be sent after a delay
             quizTimerService.scheduleTask(() -> {
-                List<QuizQuestion> questions = quizBattleService.startQuiz(roomCode);
-                if (questions != null && !questions.isEmpty()) {
-                    QuizQuestion firstQuestion = questions.get(0);
-                    sendQuestionToRoom(roomCode, firstQuestion);
-                    log.info("Quiz started in room {} and first question sent", roomCode);
-                } else {
-                    log.error("No questions found for room {} after starting quiz.", roomCode);
-                     ErrorMessage error = ErrorMessage.builder()
+                try {
+                    List<QuizQuestion> questions = quizBattleService.startQuiz(roomCode);
+                    if (questions != null && !questions.isEmpty()) {
+                        QuizQuestion firstQuestion = questions.get(0);
+                        sendQuestionToRoom(roomCode, firstQuestion);
+                        log.info("Quiz started in room {} and first question sent", roomCode);
+                    } else {
+                        log.error("No questions found for room {} after starting quiz.", roomCode);
+                         ErrorMessage error = ErrorMessage.builder()
+                            .status("error")
+                            .message("Failed to start quiz: No questions were found.")
+                            .build();
+                        messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", error);
+                    }
+                } catch (IllegalStateException e) {
+                    // 이미 시작되었거나 종료된 경우 무시
+                    log.warn("Quiz already started or finished for room {}: {}", roomCode, e.getMessage());
+                } catch (Exception e) {
+                    log.error("Error starting quiz for room {}", roomCode, e);
+                    ErrorMessage error = ErrorMessage.builder()
                         .status("error")
-                        .message("Failed to start quiz: No questions were found.")
+                        .message("Failed to start quiz: " + e.getMessage())
                         .build();
                     messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", error);
                 }
@@ -375,7 +396,7 @@ public class QuizBattleWebSocketController {
                         .build();
 
                 messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", message);
-                log.info("Room {} cancelled because host {} left", roomCode, userId);
+                log.info("##### Room {} cancelled because host {} left #####", roomCode, userId);
             } else {
                 // 일반 참가자가 나간 경우
                 List<QuizParticipant> remainingParticipants = quizBattleService.getParticipants(roomCode);
