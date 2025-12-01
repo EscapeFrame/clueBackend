@@ -354,20 +354,43 @@ public class QuizBattleWebSocketController {
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
+
+            // 먼저 호스트 여부 확인
+            QuizRoom room = quizBattleService.getRoom(roomCode);
+            boolean wasHost = room.isHost(userId);
+
+            // 방을 떠남
             quizBattleService.leaveRoom(roomCode, userId);
 
-            List<QuizParticipant> remainingParticipants = quizBattleService.getParticipants(roomCode);
+            // 호스트가 나갔으면 방 전체를 취소
+            if (wasHost) {
+                quizTimerService.cancelAllTimersForRoom(roomCode);
+                quizBattleService.cancelRoom(roomCode);
 
-            ParticipantLeftMessage message = ParticipantLeftMessage.builder()
-                    .userId(userId)
-                    .totalParticipants(remainingParticipants.size())
-                    .allParticipants(remainingParticipants)
-                    .status("success")
-                    .build();
+                RoomCancelledMessage message = RoomCancelledMessage.builder()
+                        .roomCode(roomCode)
+                        .reason("host_left")
+                        .status("cancelled")
+                        .message("Room has been cancelled because the host left")
+                        .build();
 
-            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/participants", message);
+                messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", message);
+                log.info("Room {} cancelled because host {} left", roomCode, userId);
+            } else {
+                // 일반 참가자가 나간 경우
+                List<QuizParticipant> remainingParticipants = quizBattleService.getParticipants(roomCode);
 
-            log.info("User {} left room {}", userId, roomCode);
+                ParticipantLeftMessage message = ParticipantLeftMessage.builder()
+                        .userId(userId)
+                        .totalParticipants(remainingParticipants.size())
+                        .allParticipants(remainingParticipants)
+                        .status("success")
+                        .isHostRemaining(true)
+                        .build();
+
+                messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/participants", message);
+                log.info("User {} left room {}", userId, roomCode);
+            }
 
         } catch (Exception e) {
             log.error("Error leaving room", e);
@@ -431,9 +454,26 @@ public class QuizBattleWebSocketController {
                 question.getTimeLimit(),
                 () -> {
                     try {
-                        moveToNextQuestion(roomCode);
+                        // 시간이 끝나면 정답만 공개하고, 다음 문제로는 넘어가지 않음
+                        Integer currentQuestionNum = quizBattleService.getCurrentQuestionNumber(roomCode);
+                        if (currentQuestionNum != null) {
+                            Map<String, Object> result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
+
+                            AnswerRevealMessage message = AnswerRevealMessage.builder()
+                                    .questionNumber(currentQuestionNum)
+                                    .correctAnswer((Integer) result.get("correctAnswer"))
+                                    .explanation((String) result.get("explanation"))
+                                    .statistics((Map<Integer, Integer>) result.get("statistics"))
+                                    .totalAnswers((Integer) result.get("totalAnswers"))
+                                    .status("success")
+                                    .message("Time's up! Answer revealed")
+                                    .build();
+
+                            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", message);
+                            log.info("Time's up for question {} in room {}, answer revealed", currentQuestionNum, roomCode);
+                        }
                     } catch (Exception e) {
-                        log.error("Error auto-moving to next question in room {}", roomCode, e);
+                        log.error("Error revealing answer after timeout in room {}", roomCode, e);
                     }
                 }
         );
