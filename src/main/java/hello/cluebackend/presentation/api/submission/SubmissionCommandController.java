@@ -3,18 +3,14 @@ package hello.cluebackend.presentation.api.submission;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
 import hello.cluebackend.domain.submission.service.SubmissionCommandService;
-import hello.cluebackend.domain.submission.model.SubmissionAttachment;
 import hello.cluebackend.application.submission.dto.response.SubmissionCheck;
 import hello.cluebackend.application.submission.dto.response.SubmissionResponse;
 import hello.cluebackend.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,25 +55,13 @@ public class SubmissionCommandController {
     return ResponseEntity.ok(assignmentChecks);
   }
 
-  // 첨부파일 다운로드
+  // 과제 파일 다운로드
   @GetMapping("/{submissionAttachmentId}/download")
-  public ResponseEntity<Resource> submissionAttachmentDownload(
+  public ResponseEntity<String> submissionAttachmentDownload(
           @CurrentUser UUID userId,
           @PathVariable UUID submissionAttachmentId
-  ) throws IOException {
-    SubmissionAttachment submissionAttachment = submissionCommandService.findSubmissionAttachmentByIdOrThrow(submissionAttachmentId);
-    Resource resource = submissionCommandService.downloadAttachment(submissionAttachment);
-
-    String original = submissionAttachment.getOriginalFileName();
-    String contentType = submissionAttachment.getContentType();
-    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
-
-    return ResponseEntity.ok()
-            .contentType(mediaType)
-            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
-                    .filename(original, StandardCharsets.UTF_8)
-                    .build()
-                    .toString())
-            .body(resource);
+  ) {
+    String downloadUrl = submissionCommandService.getAttachmentDownloadUrl(submissionAttachmentId);
+    return ResponseEntity.ok(downloadUrl);
   }
 }

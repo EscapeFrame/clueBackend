@@ -37,7 +37,7 @@ public class SubmissionCommandService {
   private final UserService userService;
   private final ClassRoomMapper classRoomMapper;
 
-  // 과제 전체 조회 및 과제 첨부 파일 조회
+  // 과제 전체 조회 및 과제 첨부 파일 조회 (downloadUrl 포함)
   public List<SubmissionResponse> findAllByAssignmentId(UUID userId, UUID classId) {
     UserEntity user = userService.findById(userId);
     ClassRoom classRoom = classRoomMapper.fromClassRoomDtoToEntity(classRoomQueryService.findById(userId, classId));
@@ -48,7 +48,10 @@ public class SubmissionCommandService {
             .map(submission -> {
               List<SubmissionAttachmentResponse> submissionAttachmentResponses =
                       submissionAttachmentJpaRepository.findAllBySubmission(submission).stream()
-                              .map(SubmissionAttachmentResponse::from)
+                              .map(attachment -> {
+                                String downloadUrl = getDownloadUrlForAttachment(attachment);
+                                return SubmissionAttachmentResponse.from(attachment, downloadUrl);
+                              })
                               .toList();
 
               return SubmissionResponse.from(submission, submissionAttachmentResponses);
@@ -56,7 +59,7 @@ public class SubmissionCommandService {
             .toList();
   }
 
-  // 과제 제출 단일 조회
+  // 과제 제출 단일 조회 (downloadUrl 포함)
   public SubmissionResponse findByAssignmentId(UUID userId, UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
     UserEntity requestUser = userService.findById(userId);
@@ -67,7 +70,10 @@ public class SubmissionCommandService {
 
     List<SubmissionAttachment> submissionAttachments = submissionAttachmentJpaRepository.findAllBySubmission(submission);
     List<SubmissionAttachmentResponse> submissionAttachmentResponses = submissionAttachments.stream()
-            .map(SubmissionAttachmentResponse::from)
+            .map(attachment -> {
+              String downloadUrl = getDownloadUrlForAttachment(attachment);
+              return SubmissionAttachmentResponse.from(attachment, downloadUrl);
+            })
             .toList();
     return SubmissionResponse.from(submission, submissionAttachmentResponses);
   }
@@ -87,7 +93,7 @@ public class SubmissionCommandService {
             .toList();
   }
 
-  // 첨부 파일 혹은 링크 전체 조회 (학생)
+  // 첨부 파일 혹은 링크 전체 조회 (학생) - downloadUrl 포함
   public List<SubmissionAttachmentResponse> findAllAssignmentStudent(UUID userId, UUID submissionId) {
     Submission submission = findByIdOrThrow(submissionId);
     UserEntity requestUser = userService.findById(userId);
@@ -99,11 +105,14 @@ public class SubmissionCommandService {
     List<SubmissionAttachment> attachments = submissionAttachmentJpaRepository.findAllBySubmission(submission);
     return attachments.stream()
             .filter(sa -> sa.getUser().getUserId().equals(userId))
-            .map(sa -> SubmissionAttachmentResponse.from(sa))
+            .map(attachment -> {
+              String downloadUrl = getDownloadUrlForAttachment(attachment);
+              return SubmissionAttachmentResponse.from(attachment, downloadUrl);
+            })
             .toList();
   }
 
-  // 첨부 파일 혹은 링크 전체 조회 (선생)
+  // 첨부 파일 혹은 링크 전체 조회 (선생) - downloadUrl 포함
   public List<SubmissionAttachmentResponse> findAllAssignmentTeacher(UUID userId, UUID submissionId) {
     UserEntity requestUser = userService.findById(userId);
     if (!requestUser.getRole().equals(Role.TEACHER)) {
@@ -113,14 +122,25 @@ public class SubmissionCommandService {
     Submission submission = findByIdOrThrow(submissionId);
     List<SubmissionAttachment> attachments = submissionAttachmentJpaRepository.findAllBySubmission(submission);
     return attachments.stream()
-            .map(sa -> SubmissionAttachmentResponse.from(sa))
+            .map(attachment -> {
+              String downloadUrl = getDownloadUrlForAttachment(attachment);
+              return SubmissionAttachmentResponse.from(attachment, downloadUrl);
+            })
             .toList();
   }
 
-  // 첨부파일 다운로드
-  public Resource downloadAttachment(SubmissionAttachment submissionAttachment) throws IOException {
-    String path = submissionAttachment.getValue();
-    return fileService.downloadFile(path);
+  // S3 다운로드 URL 생성 함수
+  public String getAttachmentDownloadUrl(UUID submissionAttachmentId) {
+    SubmissionAttachment attachment = findSubmissionAttachmentByIdOrThrow(submissionAttachmentId);
+    return getDownloadUrlForAttachment(attachment);
+  }
+
+  //
+  private String getDownloadUrlForAttachment(SubmissionAttachment attachment) {
+    if (attachment.getType() == hello.cluebackend.domain.submission.model.FileType.FILE) {
+      return fileService.getPresignedDownloadUrl(attachment.getValue());
+    }
+    return attachment.getValue();
   }
 
   public Submission findByIdOrThrow(UUID submissionId) {

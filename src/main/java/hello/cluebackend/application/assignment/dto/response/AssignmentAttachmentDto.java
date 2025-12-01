@@ -11,16 +11,19 @@ public record AssignmentAttachmentDto(
         String value,
         String originalFileName,
         String contentType,
-        Long size
+        Long size,
+        String downloadUrl
 ) {
-  public static AssignmentAttachmentDto from(AssignmentAttachment assignmentAttachment){
+
+  public static AssignmentAttachmentDto from(AssignmentAttachment assignmentAttachment, String downloadUrl){
     return new AssignmentAttachmentDto(
       assignmentAttachment.getAssignmentAttachmentId(),
       assignmentAttachment.getType(),
       assignmentAttachment.getValue(),
       assignmentAttachment.getOriginalFileName(),
       assignmentAttachment.getContentType(),
-      assignmentAttachment.getSize()
+      assignmentAttachment.getSize(),
+      downloadUrl
     );
   }
 }

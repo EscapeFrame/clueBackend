@@ -2,7 +2,6 @@ package hello.cluebackend.presentation.api.assignment;
 
 import hello.cluebackend.domain.assignment.service.AssignmentCommandService;
 import hello.cluebackend.domain.assignment.model.Assignment;
-import hello.cluebackend.domain.assignment.model.AssignmentAttachment;
 import hello.cluebackend.domain.assignment.exception.AccessDeniedException;
 import hello.cluebackend.application.assignment.dto.response.AssignmentDto;
 import hello.cluebackend.application.assignment.dto.response.GetAllAssignmentDto;
@@ -10,10 +9,6 @@ import hello.cluebackend.domain.classroomuser.service.ClassroomUserService;
 import hello.cluebackend.application.user.dto.oauth2.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hello.cluebackend.application.assignment.dto.response.AssignmentAttachmentDto;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -86,25 +79,16 @@ public class AssignmentCommandController {
     return ResponseEntity.ok(attachments);
   }
 
-  // 첨부 파일 다운로드
   @GetMapping("/{assignmentAttachmentId}/download")
-  public ResponseEntity<Resource> assignmentAttachmentDownload(
+  public ResponseEntity<String> assignmentAttachmentDownload(
           @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
           @PathVariable UUID assignmentAttachmentId
-  ) throws IOException {
-    AssignmentAttachment assignmentAttachment = assignmentCommandService.findAssignmentAttachmentByIdOrderThrow(customOAuth2User.getUserId(),assignmentAttachmentId);
-    Resource resource = assignmentCommandService.downloadAttachment(assignmentAttachment);
+  ) {
+    String downloadUrl = assignmentCommandService.getAttachmentDownloadUrl(
+            customOAuth2User.getUserId(),
+            assignmentAttachmentId
+    );
 
-    String original = assignmentAttachment.getOriginalFileName();
-    String contentType = assignmentAttachment.getContentType();
-    MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.ALL;
-
-    return ResponseEntity.ok()
-            .contentType(mediaType)
-            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
-                            .filename(original, StandardCharsets.UTF_8)
-                            .build()
-                            .toString())
-            .body(resource);
+    return ResponseEntity.ok(downloadUrl);
   }
 }

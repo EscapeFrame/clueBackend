@@ -43,12 +43,23 @@ public class AssignmentCommandService {
             .orElseThrow(() -> new EntityNotFoundException("해당 첨부 파일을 찾을수 없습니다."));
   }
 
-  // 과제 단일 조회
   public AssignmentDto findById(UUID assignmentId) {
     Assignment a = findByIdOrThrow(assignmentId);
     List<AssignmentAttachment> assignmentAttachments = assignmentAttachmentJpaRepository.findAllByAssignment(a);
 
-    return AssignmentDto.from(a, assignmentAttachments);
+    List<AssignmentAttachmentDto> attachmentDtos = assignmentAttachments.stream()
+            .map(attachment -> {
+              String downloadUrl = null;
+              if (attachment.getType() == hello.cluebackend.domain.assignment.model.FileType.FILE) {
+                downloadUrl = fileService.getPresignedDownloadUrl(attachment.getValue());
+              } else if (attachment.getType() == hello.cluebackend.domain.assignment.model.FileType.URL) {
+                downloadUrl = attachment.getValue();
+              }
+              return AssignmentAttachmentDto.from(attachment, downloadUrl);
+            })
+            .toList();
+
+    return AssignmentDto.from(a, attachmentDtos);
   }
 
   // 사용자가 속한 모든 수업 과제 조회
@@ -80,17 +91,30 @@ public class AssignmentCommandService {
             .orElseThrow(() -> new EntityNotFoundException("해당 과제를 찾을수 없습니다."));
   }
 
-  public Resource downloadAttachment(AssignmentAttachment assignmentAttachment) throws IOException {
-    String path = assignmentAttachment.getValue();
-    return fileService.downloadFile(path);
+  public String getAttachmentDownloadUrl(UUID userId, UUID attachmentId) {
+    AssignmentAttachment attachment = findAssignmentAttachmentByIdOrderThrow(userId, attachmentId);
+
+    if (attachment.getType() == hello.cluebackend.domain.assignment.model.FileType.FILE) {
+      return fileService.getPresignedDownloadUrl(attachment.getValue());
+    }
+
+    return attachment.getValue();
   }
 
-  // 과제 첨부 파일 목록 조회
+  // 과제 첨부 파일 목록 조회 (downloadUrl 포함)
   public List<AssignmentAttachmentDto> findAttachmentsByAssignmentId(UUID assignmentId) {
     Assignment assignment = findByIdOrThrow(assignmentId);
     List<AssignmentAttachment> attachments = assignmentAttachmentJpaRepository.findAllByAssignment(assignment);
     return attachments.stream()
-            .map(AssignmentAttachmentDto::from)
+            .map(attachment -> {
+              String downloadUrl = null;
+              if (attachment.getType() == hello.cluebackend.domain.assignment.model.FileType.FILE) {
+                downloadUrl = fileService.getPresignedDownloadUrl(attachment.getValue());
+              } else if (attachment.getType() == hello.cluebackend.domain.assignment.model.FileType.URL) {
+                downloadUrl = attachment.getValue();
+              }
+              return AssignmentAttachmentDto.from(attachment, downloadUrl);
+            })
             .toList();
   }
 }
