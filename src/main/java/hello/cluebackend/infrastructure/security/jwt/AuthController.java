@@ -23,9 +23,14 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         refreshTokenService.reissueRefreshToken(request, response);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/app/reissue")
+    public ResponseEntity<AppJwtToken> appRefreshToken(HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenService.reissueRefreshToken(request));
     }
 
     @PostMapping("/api/logout")

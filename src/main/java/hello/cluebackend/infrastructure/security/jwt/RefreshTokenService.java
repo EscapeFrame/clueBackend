@@ -64,6 +64,38 @@ public class RefreshTokenService {
         response.addCookie(createCookie("refresh_token", newRefreshToken));
     }
 
+    public AppJwtToken reissueRefreshToken(HttpServletRequest request) throws AuthenticationCredentialsNotFoundException {
+        String refreshToken = getString(request);
+
+        jwtUtil.isExpired(refreshToken);
+
+        String category = jwtUtil.getCategory(refreshToken);
+
+        if (!"refresh".equals(category)) {
+            throw new AuthenticationCredentialsNotFoundException("Invalid refresh token");
+        }
+
+        if (!existsByRefresh(refreshToken)) {
+            throw new AuthenticationCredentialsNotFoundException("Invalid refresh token");
+        }
+
+        String username = jwtUtil.getUsername(refreshToken);
+        String role = jwtUtil.getRole(refreshToken).name();
+        UUID userId = jwtUtil.getUserId(refreshToken);
+        String email = jwtUtil.getEmail(refreshToken);
+
+
+        String newAccessToken = jwtUtil.createJwt("access", userId, username, email, role, 60*60*1000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", userId, username, email, role,24 * 60 * 60 * 1000L);
+
+        saveRefreshToken(newRefreshToken, username);
+        deleteByRefresh(refreshToken);
+        return AppJwtToken.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+    }
+
     @NotNull
     private static String getString(HttpServletRequest request) {
         String refreshToken = null;
