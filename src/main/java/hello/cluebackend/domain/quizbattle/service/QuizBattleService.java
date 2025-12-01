@@ -1,6 +1,8 @@
 package hello.cluebackend.domain.quizbattle.service;
 
 import hello.cluebackend.application.agent.dto.response.AgentResponse;
+import hello.cluebackend.application.quizbattle.dto.SubmitAnswerResponse;
+import hello.cluebackend.application.quizbattle.dto.RevealAnswerResponse;
 import hello.cluebackend.application.quizbattle.dto.QuizGenerationRequest;
 import hello.cluebackend.application.quizbattle.dto.QuizGenerationResponse;
 import hello.cluebackend.domain.classroom.model.ClassRoom;
@@ -93,7 +95,7 @@ public class QuizBattleService {
     return savedRoom;
   }
 
-  public QuizParticipant joinRoom(String roomCode, UUID userId, String sessionId) {
+  public QuizParticipant joinRoom(String roomCode, UUID userId, String sessionId, String profileImage) {
     QuizRoom room = quizRoomRepository.findByRoomCode(roomCode)
             .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomCode));
 
@@ -117,6 +119,7 @@ public class QuizBattleService {
             .correctAnswers(0)
             .isReady(false)
             .joinedAt(System.currentTimeMillis())
+            .profileImage(profileImage)
             .build();
 
     redisService.addParticipant(roomCode, participant);
@@ -205,7 +208,7 @@ public class QuizBattleService {
         }
     }
 
-    public QuizAnswer submitAnswer(
+    public SubmitAnswerResponse submitAnswer(
             String roomCode, UUID userId, int questionNumber,
             int answerIndex, long submittedAt, int timeSpent) {
         QuizRoom room = quizRoomRepository.findByRoomCode(roomCode)
@@ -263,7 +266,13 @@ public class QuizBattleService {
         log.info("User {} submitted answer for question {} in room {}, correct: {}, points: {}",
                 userId, questionNumber, roomCode, isCorrect, answer.getPoints());
 
-        return answer;
+        Map<Integer, Integer> statistics = redisService.getAnswerStatistics(roomCode, questionNumber);
+        int totalAnswers = statistics.values().stream().mapToInt(Integer::intValue).sum();
+
+        return SubmitAnswerResponse.builder()
+                .answer(answer)
+                .totalAnswers(totalAnswers)
+                .build();
     }
 
     public List<QuizRanking> getRankings(String roomCode) {
@@ -378,7 +387,7 @@ public class QuizBattleService {
         log.info("Set question {} to ACTIVE in room {}", questionNumber, roomCode);
     }
 
-    public Map<String, Object> revealAnswer(String roomCode, int questionNumber) {
+    public RevealAnswerResponse revealAnswer(String roomCode, int questionNumber) {
         QuizQuestion question = redisService.getQuestion(roomCode, questionNumber);
         if (question == null) {
             throw new IllegalArgumentException("Question not found: " + questionNumber);
@@ -394,15 +403,14 @@ public class QuizBattleService {
         Map<Integer, Integer> statistics = redisService.getAnswerStatistics(roomCode, questionNumber);
         int totalAnswers = statistics.values().stream().mapToInt(Integer::intValue).sum();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("correctAnswer", question.getCorrectAnswer());
-        result.put("explanation", question.getExplanation());
-        result.put("statistics", statistics);
-        result.put("totalAnswers", totalAnswers);
-
         log.info("Revealed answer for question {} in room {}", questionNumber, roomCode);
 
-        return result;
+        return RevealAnswerResponse.builder()
+                .correctAnswer(question.getCorrectAnswer())
+                .explanation(question.getExplanation())
+                .statistics(statistics)
+                .totalAnswers(totalAnswers)
+                .build();
     }
 
     public void nextQuestion(String roomCode) {

@@ -2,7 +2,9 @@ package hello.cluebackend.presentation.websocket.quizbattle;
 
 import hello.cluebackend.common.utils.JWTUtil;
 import hello.cluebackend.domain.quizbattle.model.*;
+import hello.cluebackend.application.quizbattle.dto.SubmitAnswerResponse;
 import hello.cluebackend.domain.quizbattle.service.QuizBattleService;
+import hello.cluebackend.application.quizbattle.dto.RevealAnswerResponse;
 import hello.cluebackend.domain.quizbattle.service.QuizTimerService;
 import hello.cluebackend.presentation.websocket.quizbattle.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -122,13 +124,14 @@ public class QuizBattleWebSocketController {
     @MessageMapping("/quiz/join/{roomCode}")
     public void joinRoom(
             @DestinationVariable String roomCode,
+            @Payload JoinRoomRequest request,
             SimpMessageHeaderAccessor headerAccessor
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
             String sessionId = headerAccessor.getSessionId();
 
-            QuizParticipant participant = quizBattleService.joinRoom(roomCode, userId, sessionId);
+            QuizParticipant participant = quizBattleService.joinRoom(roomCode, userId, sessionId, request.getProfileImage());
             List<QuizParticipant> allParticipants = quizBattleService.getParticipants(roomCode);
 
             ParticipantJoinedMessage message = ParticipantJoinedMessage.builder()
@@ -225,7 +228,7 @@ public class QuizBattleWebSocketController {
     ) {
         try {
             UUID userId = getUserIdFromHeader(headerAccessor);
-            QuizAnswer answer = quizBattleService.submitAnswer(
+            SubmitAnswerResponse resultData = quizBattleService.submitAnswer(
                     roomCode,
                     userId,
                     request.getQuestionNumber(),
@@ -233,6 +236,9 @@ public class QuizBattleWebSocketController {
                     request.getSubmittedAt(),
                     request.getTimeSpent()
             );
+
+            QuizAnswer answer = resultData.getAnswer();
+            int totalAnswers = resultData.getTotalAnswers();
 
             AnswerResultMessage result = AnswerResultMessage.builder()
                     .questionNumber(answer.getQuestionNumber())
@@ -247,8 +253,19 @@ public class QuizBattleWebSocketController {
                     result
             );
 
-            log.info("User {} submitted answer for question {} in room {}",
-                    userId, request.getQuestionNumber(), roomCode);
+            // Notify everyone in the room about the new answer count
+            int totalParticipants = quizBattleService.getParticipants(roomCode).size();
+            AnswerCountMessage countMessage = AnswerCountMessage.builder()
+                .status("ANSWER_SUBMITTED")
+                .message("An answer was submitted.")
+                .questionNumber(request.getQuestionNumber())
+                .totalAnswers(totalAnswers)
+                .totalParticipants(totalParticipants)
+                .build();
+            messagingTemplate.convertAndSend("/topic/quiz/" + roomCode + "/game", countMessage);
+
+            log.info("User {} submitted answer for question {} in room {}, total answers now {}",
+                    userId, request.getQuestionNumber(), roomCode, totalAnswers);
 
         } catch (Exception e) {
             log.error("Error submitting answer", e);
@@ -284,14 +301,14 @@ public class QuizBattleWebSocketController {
 
             quizTimerService.cancelQuestionTimer(roomCode, currentQuestionNum);
 
-            Map<String, Object> result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
+            RevealAnswerResponse result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
 
             AnswerRevealMessage message = AnswerRevealMessage.builder()
                     .questionNumber(currentQuestionNum)
-                    .correctAnswer((Integer) result.get("correctAnswer"))
-                    .explanation((String) result.get("explanation"))
-                    .statistics((Map<Integer, Integer>) result.get("statistics"))
-                    .totalAnswers((Integer) result.get("totalAnswers"))
+                    .correctAnswer(result.getCorrectAnswer())
+                    .explanation(result.getExplanation())
+                    .statistics(result.getStatistics())
+                    .totalAnswers(result.getTotalAnswers())
                     .status("success")
                     .message("Answer revealed")
                     .build();
@@ -478,14 +495,14 @@ public class QuizBattleWebSocketController {
                         // 시간이 끝나면 정답만 공개하고, 다음 문제로는 넘어가지 않음
                         Integer currentQuestionNum = quizBattleService.getCurrentQuestionNumber(roomCode);
                         if (currentQuestionNum != null) {
-                            Map<String, Object> result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
+                            RevealAnswerResponse result = quizBattleService.revealAnswer(roomCode, currentQuestionNum);
 
                             AnswerRevealMessage message = AnswerRevealMessage.builder()
                                     .questionNumber(currentQuestionNum)
-                                    .correctAnswer((Integer) result.get("correctAnswer"))
-                                    .explanation((String) result.get("explanation"))
-                                    .statistics((Map<Integer, Integer>) result.get("statistics"))
-                                    .totalAnswers((Integer) result.get("totalAnswers"))
+                                    .correctAnswer(result.getCorrectAnswer())
+                                    .explanation(result.getExplanation())
+                                    .statistics(result.getStatistics())
+                                    .totalAnswers(result.getTotalAnswers())
                                     .status("success")
                                     .message("Time's up! Answer revealed")
                                     .build();
