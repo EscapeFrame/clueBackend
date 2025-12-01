@@ -74,7 +74,6 @@ public class SubmissionCommandController {
 
     return ResponseEntity.ok()
             .contentType(mediaType)
-            .contentLength(resource.contentLength())
             .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
                     .filename(original, StandardCharsets.UTF_8)
                     .build()
