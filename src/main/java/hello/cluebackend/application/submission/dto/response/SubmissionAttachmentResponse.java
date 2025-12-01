@@ -13,16 +13,19 @@ public record SubmissionAttachmentResponse(
         String value,
         String originalFileName,
         String contentType,
-        Long size
+        Long size,
+        String downloadUrl
 ) {
-  public static SubmissionAttachmentResponse from(SubmissionAttachment submissionAttachment){
+
+  public static SubmissionAttachmentResponse from(SubmissionAttachment submissionAttachment, String downloadUrl){
     return new SubmissionAttachmentResponse(
       submissionAttachment.getSubmissionAttachmentId(),
       submissionAttachment.getType(),
       submissionAttachment.getValue(),
       submissionAttachment.getOriginalFileName(),
       submissionAttachment.getContentType(),
-      submissionAttachment.getSize()
+      submissionAttachment.getSize(),
+      downloadUrl
     );
   }
 }

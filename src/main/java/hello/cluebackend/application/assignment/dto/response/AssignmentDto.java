@@ -15,16 +15,9 @@ public record AssignmentDto(
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul") LocalDateTime startDate,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul") LocalDateTime endDate,
         String userName,
-
-        // 과제 첨부 데이터
         List<AssignmentAttachmentDto> attachmentDtos
 ) {
-  public static AssignmentDto from(Assignment assignment, List<AssignmentAttachment> assignmentAttachments){
-
-    List<AssignmentAttachmentDto> assignmentResponseDtos = assignmentAttachments.stream()
-            .map(aa -> AssignmentAttachmentDto.from(aa))
-            .toList();
-
+  public static AssignmentDto from(Assignment assignment, List<AssignmentAttachmentDto> attachmentDtos){
     return new AssignmentDto(
       assignment.getAssignmentId(),
       assignment.getTitle(),
@@ -32,7 +25,7 @@ public record AssignmentDto(
       assignment.getStartDate(),
       assignment.getEndDate(),
       assignment.getUser().getUsername(),
-      assignmentResponseDtos
+      attachmentDtos
     );
   }
 }
