@@ -8,6 +8,15 @@ spring:
     activate:
       on-profile: dev
 
+front:
+  base-url: http://localhost:3000
+
+app:
+  base-url: http://localhost:8080
+  redirect-url:
+    login: http://localhost:3000/login
+    register: http://localhost:3000/register
+
 logging:
   level:
     hello.cluebackend.infrastructure.client.agent.AgentClient: DEBUG

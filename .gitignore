@@ -53,3 +53,8 @@ CLAUDE.md
 QUIZ_BATTLE_GUIDE.md
 API_SPEC.md
 .claude
+
+
+# macOS system files
+.DS_Store
+**/.DS_Store

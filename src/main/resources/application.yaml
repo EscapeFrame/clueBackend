@@ -56,7 +56,6 @@ spring:
   mvc:
     static-path-pattern: /ui/**
 
-
 upload:
   local:
     dir: ${UPLOAD_FILE_DIR}
