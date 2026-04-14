@@ -55,4 +55,6 @@ API_SPEC.md
 .claude
 
 
+# macOS system files
 .DS_Store
+**/.DS_Store
