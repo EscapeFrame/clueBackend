@@ -92,12 +92,3 @@ http://localhost:8080/swagger-ui/index.html
 | LinkSave | 외부 링크 큐레이션 서비스 |
 | NEIS Open API | 학교 정보 및 시간표 데이터 조회 |
 | Google OAuth2 | 소셜 로그인 |
-
-## 스프링 프로파일
-
-| 프로파일 | 용도 | DDL 전략 |
-|----------|------|----------|
-| `dev` | 로컬 개발 | `update` |
-| `prod` | 프로덕션 배포 | `none` |
-| `create` | 초기 스키마 생성 | `create` |
-| `createDrop` | 테스트용 (실행 후 삭제) | `create-drop` |
